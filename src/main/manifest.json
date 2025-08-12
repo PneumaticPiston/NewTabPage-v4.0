@@ -4,7 +4,8 @@
     "version": "1.0.0",
     "description": "Customizes the new tab page with a personalized layout and extra features.",
     "permissions": [
-        "storage"
+        "storage",
+        "unlimitedStorage"
     ],
     "chrome_url_overrides": {
         "newtab": "/pages/ntp/ntp.html"
