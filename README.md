@@ -2,7 +2,7 @@
 
 This project is a Chromium extension template for a customizable new tab page. It provides a basic scaffold with no business logic, serving as a starting point for further development.
 
-## Project Structure
+## Extension Structure
 
 ```
 main/
@@ -16,6 +16,7 @@ main/
 │   ├── iconx48.png
 │   ├── settings.svg
 │   └── lang/
+│       # Future users' local language settings
 └── pages/
     ├── ntp/
     │   ├── loadWidgets.js
@@ -31,23 +32,9 @@ main/
     │   ├── options.css
     │   └── options.html
     └── widgets/
-        └── widgets.js
+        ├── widgets.js
+        │   # Contains links to where each widget is and a preview
+        └── loadWidgets.js
+            # Contains code to load each widget type
 ```
 
-## Getting Started
-
-1. **Clone or download** this repository.
-2. **Load as unpacked extension** in your Chromium-based browser:
-   - Go to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked" and select the `main` directory.
-
-## Notes
-
-- This is a boilerplate template; no business logic is included.
-- All assets and HTML/CSS/JS files are ready for customization.
-- See `.github/copilot-instructions.md` for project scaffolding details.
-
-## License
-
-This project is provided as a template. Add your license information here.

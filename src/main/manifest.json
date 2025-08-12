@@ -7,9 +7,9 @@
         "storage"
     ],
     "chrome_url_overrides": {
-        "newtab": "newtab.html"
+        "newtab": "/pages/ntp/ntp.html"
     },
-    "options_page": "options.html",
+    "options_page": "/pages/options/options.html",
     "background": {
         "service_worker": "background.js"
     }
