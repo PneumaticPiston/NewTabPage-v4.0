@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Create favicon image
                 let favicon = document.createElement('img');
-                favicon.src = getFavicon(link.url);
+                favicon.src = getFavicon(link.url);;
                 favicon.alt = `${link.name} favicon`;
                 favicon.className = 'favicon';
 
