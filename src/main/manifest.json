@@ -8,10 +8,6 @@
         "unlimitedStorage"
     ],
     "chrome_url_overrides": {
-        "newtab": "/pages/ntp/ntp.html"
     },
-    "options_page": "/pages/options/options.html",
-    "background": {
-        "service_worker": "background.js"
-    }
+    "options_page": "/pages/ntp/ntp.html"
 }

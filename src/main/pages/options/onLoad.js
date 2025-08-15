@@ -1,5 +1,9 @@
-import { themes } from '../global-constants.js';
+import { themes } from '../global.js';
+import { applyTheme } from '../global.js';
 
+/**
+ * This will be used to easily hide or show settings in the options page.
+ */
 const settings = {
     showThemes: true,
     themes: function() {
@@ -8,13 +12,8 @@ const settings = {
         return themes;
     },
     showStyles: false,
-    styles: [
-        {name: "Skeumorphic"},
-        {name: "Flat"},
-        {name: "Material"},
-        {name: "Minimal"},
-        {name: "Neumorphic"}
-    ],
     showBackground: true
 
 }
+
+applyTheme();
