@@ -5,7 +5,7 @@ console.log("Loading onLoad.js");
  * If true, the setting is stored in chrome.storage.sync
  * If false, the setting is stored in chrome.storage.local
  */
-var storageLocations = {
+var storedLocations = {
     theme: true,
     links: true,
     background: true,
@@ -22,7 +22,7 @@ var storageLocations = {
 //     storageLocations.background = locations.background;
 // });
 
-// if (storageLocations.links == true) {
+// if (storedLocations.links == true) {
 //     chrome.storage.sync.get(["linkGroups"], (data) => {
 //         if (data.linkGroups) {
 //             const linkGroups = data.linkGroups;
@@ -40,6 +40,8 @@ const linkGroups = [
     {
         type: "grid",
         title: "Favorites",
+        x: "10",
+        y: "10",
         links: [
             { name: "Google", url: "https://www.google.com" },
             { name: "YouTube", url: "https://www.youtube.com" },
@@ -50,6 +52,8 @@ const linkGroups = [
     {
         type: "list",
         title: "Work",
+        x: "10",
+        y: "400",
         links: [
             { name: "Stack Overflow", url: "https://stackoverflow.com" },
             { name: "MDN Web Docs", url: "https://developer.mozilla.org" },
@@ -58,48 +62,28 @@ const linkGroups = [
     }
 ]
 
+const linkTemplate = {
+    grid: function(group) {
+        `<div class="group grid" style="left: ${group.x}; top: ${group.y};">
+            <h2>${group.title}</h2>
+            <div class="links">
+                ${group.links.map(link => `<a href="${link.url}">${link.name}</a>`).join('')}
+            </div>
+        `
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get the container where groups will be added
-    const groups = document.getElementById('groups-container');
+    const groupContainer = document.getElementById('groups-container');
 
     // Iterate over each group in settings.linkGroups
     linkGroups.forEach(group => {
         if(group.type == "grid") {
-            let groupDiv = document.createElement('div');
-            groupDiv.className = 'link-group';
 
-            groupDiv.style.top = group.y;
-            groupDiv.style.left = group.x;
-
-            let title = document.createElement('h2');
-            title.textContent = group.title;
-            groupDiv.appendChild(title);
-
-            let linksDiv = document.createElement('div');
-            linksDiv.className = 'links-grid';
-
-            group.links.forEach(link => {
-                let linkElement = document.createElement('a');
-                linkElement.href = link.url;
-                linkElement.textContent = link.name;
-
-                // Create favicon image
-                let favicon = document.createElement('img');
-                favicon.src = getFavicon(link.url);;
-                favicon.alt = `${link.name} favicon`;
-                favicon.className = 'favicon';
-
-                // Insert favicon before link text
-                linkElement.prepend(favicon);
-
-                linksDiv.appendChild(linkElement);
-            });
-
-            groupDiv.appendChild(linksDiv);
-            groups.appendChild(groupDiv);
         } else if(group.type == "list") {
             let groupDiv = document.createElement('div');
-            groupDiv.className = 'link-group';
+            groupDiv.classList = 'group list';
 
             let title = document.createElement('h2');
             title.textContent = group.title;
