@@ -119,5 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getFavicon(url) {
-    return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}`;
+    // Use size=64 for higher resolution (Google supports 16, 32, 48, 64)
+
+    // Add handling for sub domains
+
+    return `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`;
 }
