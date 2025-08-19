@@ -74,6 +74,10 @@ const linkTemplate = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    document.getElementById('settings-button').addEventListener('click', () => {
+        window.location.href = '/pages/settings/settings.html';
+    });
     // Get the container where groups will be added
     const groupContainer = document.getElementById('groups-container');
 

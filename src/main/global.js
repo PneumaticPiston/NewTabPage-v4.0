@@ -3,7 +3,7 @@
  * If true, the setting is stored in chrome.storage.sync
  * If false, the setting is stored in chrome.storage.local
  */
-var storageLocations = {
+var isSynced = {
     theme: true,
     links: true,
     background: true,
@@ -15,13 +15,13 @@ var storageLocations = {
  * Retrieves the storage locations of settings and updates the storageLocations object.
  */
 chrome.storage.local.get(["locations"], (locations) => {
-    storageLocations.theme = locations.theme;
-    storageLocations.links = locations.links;
-    storageLocations.background = locations.background;
+    isSynced.theme = locations.theme;
+    isSynced.links = locations.links;
+    isSynced.background = locations.background;
 });
 
 async function getStorageLocations() {
-    if (storageLocations.links == true) {
+    if (isSynced.links == true) {
         chrome.storage.sync.get(["linkGroups"], (data) => {
             if (data.linkGroups) {
                 settings.linkGroups = data.linkGroups;
@@ -35,7 +35,7 @@ async function getStorageLocations() {
         });
     }
 
-    if (storageLocations.theme == true) {
+    if (isSynced.theme == true) {
         chrome.storage.sync.get(["themeID"], (data) => {
             if (data.themeID) {
                 settings.themeID = data.themeID;
@@ -49,7 +49,7 @@ async function getStorageLocations() {
         });
     }
 
-    if (storageLocations.background == true) {
+    if (isSynced.background == true) {
         chrome.storage.sync.get(["background"], (data) => {
             if (data.background) {
                 settings.background = data.background;

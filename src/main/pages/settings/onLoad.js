@@ -4,6 +4,8 @@ import { applyTheme } from '../global.js';
 /**
  * This will be used to easily hide or show settings in the options page.
  */
+
+console.log(themes);
 const settings = {
     showThemes: true,
     themes: function() {
