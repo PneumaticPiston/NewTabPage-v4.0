@@ -1,6 +1,3 @@
-import { themes } from '../global.js';
-import { applyTheme } from '../global.js';
-
 /**
  * This will be used to easily hide or show settings in the options page.
  */
@@ -18,4 +15,34 @@ const settings = {
 
 }
 
-applyTheme();
+var isSynced = {
+    theme: true,
+    links: true,
+    background: true,
+    header: true,
+    settings: true
+};
+
+/**
+ * Retrieves the storage locations of settings and updates the storageLocations object.
+ */
+chrome.storage.local.get(["locations"], (locations) => {
+    isSynced.theme = locations.theme;
+    isSynced.background = locations.background;
+});
+
+if (isSynced.links == true) {
+    chrome.storage.sync.get(["settings"], (data) => {
+        if (data.settings) {
+            settings.background = data.settings.background;
+            settings.themeID = data.settings.themeID;
+            
+        }
+    });
+} else {
+    chrome.storage.local.get(["settings"], (data) => {
+        if (data.linkGroups) {
+            
+        }
+    });
+}

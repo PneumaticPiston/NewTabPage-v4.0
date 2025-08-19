@@ -4,9 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Options</title>
-    <link rel="stylesheet" href="./options.css">
+    <link rel="stylesheet" href="./settings.css">
 </head>
 <body>
-
+    <header id="header">
+        <h1>New TapSettings</h1>
+    </header>
+    <main id="main-content">
+        <div id="settings-container">
+            <div class="setting-item" id="theme-settings">
+                <h1>Theme</h1>
+                <p>Choose your theme:</p>
+                <div id="theme-options" class="theme-gallery">
+                    <!-- Theme options will be dynamically loaded here -->
+                </div>
+            </div>
+            <div class="setting-item" id="background-settings">
+                <h1>Background</h1>
+                <p>Choose your background:</p>
+                <div id="background-options" class="background">
+                    <!-- Add button to turn off custom background -->
+                </div>
+            </div>
+            <div class="setting-item" id="sync-settings">
+                <h1>Sync</h1>
+                <p>Manage sync options: </p>
+                
+            </div>
+            <div class="setting-item" id="accessibility-settings">
+                <h1>Accessability</h1>
+                <!-- Font size, element scale -->
+            </div>
+        </div>
+    </main>
+    <script src="./onLoad.js"></script>
+    <script src="./onboard.js"></script>
 </body>
 </html>

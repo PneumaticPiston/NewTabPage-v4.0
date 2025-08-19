@@ -5,7 +5,7 @@ console.log("Loading onLoad.js");
  * If true, the setting is stored in chrome.storage.sync
  * If false, the setting is stored in chrome.storage.local
  */
-var storedLocations = {
+var isSynced = {
     theme: true,
     links: true,
     background: true,
@@ -16,25 +16,25 @@ var storedLocations = {
 /**
  * Retrieves the storage locations of settings and updates the storageLocations object.
  */
-// chrome.storage.local.get(["locations"], (locations) => {
-//     storageLocations.links = locations.links;
-//     storageLocations.theme = locations.theme;
-//     storageLocations.background = locations.background;
-// });
+chrome.storage.local.get(["locations"], (locations) => {
+    isSynced.links = locations.links;
+    isSynced.theme = locations.theme;
+    isSynced.background = locations.background;
+});
 
-// if (storedLocations.links == true) {
-//     chrome.storage.sync.get(["linkGroups"], (data) => {
-//         if (data.linkGroups) {
-//             const linkGroups = data.linkGroups;
-//         }
-//     });
-// } else {
-//     chrome.storage.local.get(["linkGroups"], (data) => {
-//         if (data.linkGroups) {
-//             const linkGroups = data.linkGroups;
-//         }
-//     });
-// }
+if (isSynced.links == true) {
+    chrome.storage.sync.get(["linkGroups"], (data) => {
+        if (data.linkGroups) {
+            const linkGroups = data.linkGroups;
+        }
+    });
+} else {
+    chrome.storage.local.get(["linkGroups"], (data) => {
+        if (data.linkGroups) {
+            const linkGroups = data.linkGroups;
+        }
+    });
+}
 
 const linkGroups = [
     {
@@ -84,40 +84,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Iterate over each group in settings.linkGroups
     linkGroups.forEach(group => {
         if(group.type == "grid") {
+            // Build the grid group dynamically with JavaScript
+            let template = document.createElement('div');
+            template.className = 'group grid';
+            template.style.left = `${group.x}px`;
+            template.style.top = `${group.y}px`;
 
-        } else if(group.type == "list") {
-            let groupDiv = document.createElement('div');
-            groupDiv.classList = 'group list';
-
-            let title = document.createElement('h2');
+            // Title
+            const title = document.createElement('h2');
             title.textContent = group.title;
-            groupDiv.appendChild(title);
+            template.appendChild(title);
 
-            let linksList = document.createElement('ul');
-            linksList.className = 'links-list';
+            // Links container
+            const linksDiv = document.createElement('div');
+            linksDiv.className = 'links';
 
             group.links.forEach(link => {
-                let listItem = document.createElement('li');
+                const a = document.createElement('a');
+                a.className = 'link';
+                a.href = link.url;
+                a.target = '_blank';
+                a.title = link.name;
 
-                let linkElement = document.createElement('a');
-                linkElement.href = link.url;
-                linkElement.textContent = link.name;
+                const img = document.createElement('img');
+                img.src = getFavicon(link.url);
+                img.alt = `${link.name} Favicon`;
 
-                // Create favicon image
-                let favicon = document.createElement('img');
-                favicon.src = getFavicon(link.url);
-                favicon.alt = `${link.name} favicon`;
-                favicon.className = 'favicon';
+                const span = document.createElement('span');
+                span.textContent = link.name;
 
-                // Insert favicon before link text
-                linkElement.prepend(favicon);
-
-                listItem.appendChild(linkElement);
-                linksList.appendChild(listItem);
+                a.appendChild(img);
+                a.appendChild(span);
+                linksDiv.appendChild(a);
             });
 
-            groupDiv.appendChild(linksList);
-            groups.appendChild(groupDiv);
+            template.appendChild(linksDiv);
+            groupContainer.appendChild(template);
+        } else if(group.type == "list") {
+            
         }
     });
 });
