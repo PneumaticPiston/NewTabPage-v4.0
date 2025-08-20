@@ -6,7 +6,7 @@
     <title>Options</title>
     <link rel="stylesheet" href="./settings.css">
 </head>
-<body>
+<body style="background-color: #202124; color: aliceblue;">
     <header id="header">
         <h1>New TapSettings</h1>
     </header>
@@ -29,7 +29,46 @@
             <div class="setting-item" id="sync-settings">
                 <h1>Sync</h1>
                 <p>Manage sync options: </p>
-                
+                <div class="sync-options">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Sync</th>
+                                <th>Local</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Theme Settings</td>
+                                <td>
+                                    <input type="radio" name="storage-type-theme" value="sync" checked>
+                                </td>
+                                <td>
+                                    <input type="radio" name="storage-type-theme" value="local">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Background Settings</td>
+                                <td>
+                                    <input type="radio" name="storage-type-background" value="sync" checked>
+                                </td>
+                                <td>
+                                    <input type="radio" name="storage-type-background" value="local">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Accessibility Settings</td>
+                                <td>
+                                    <input type="radio" name="storage-type-accessibility" value="sync" checked>
+                                </td>
+                                <td>
+                                    <input type="radio" name="storage-type-accessibility" value="local">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="setting-item" id="accessibility-settings">
                 <h1>Accessability</h1>

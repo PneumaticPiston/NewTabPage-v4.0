@@ -11,14 +11,23 @@
 html, body {
     width: 100vw;
     height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
     margin: 0;
     padding: 0;
     font-family: var(--font-family);
     font-size: var(--font-size);
 }
+body {
+    top: 60px
+}
+
+main {
+    
+}
 
 header {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -30,4 +39,6 @@ header {
     padding: 0 20px;
 }
 
-
+.settings-container {
+    
+}
