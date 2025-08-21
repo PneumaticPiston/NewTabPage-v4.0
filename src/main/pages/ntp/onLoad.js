@@ -37,28 +37,73 @@ if (isSynced.links == true) {
 }
 
 const linkGroups = [
+    // {
+    //     type: "grid",
+    //     title: "Favorites",
+    //     x: "10",
+    //     y: "10",
+    //     links: [
+    //         { name: "Google", url: "https://www.google.com" },
+    //         { name: "YouTube", url: "https://www.youtube.com" },
+    //         { name: "GitHub", url: "https://www.github.com" },
+    //         { name: "Reddit", url: "https://www.reddit.com" }
+    //     ]
+    // },
+    // {
+    //     type: "grid",
+    //     title: "Work",
+    //     x: "10",
+    //     y: "100",
+    //     links: [
+    //         { name: "Stack Overflow", url: "https://stackoverflow.com" },
+    //         { name: "MDN Web Docs", url: "https://developer.mozilla.org" },
+    //         { name: "W3Schools", url: "https://www.w3schools.com" }
+    //     ]
+    // },
+    // {
+    //     type: "grid",
+    //     title: "",
+    //     x: "10",
+    //     y: "200",
+    //     links: [
+    //         { name: "Twitter", url: "https://www.twitter.com" },
+    //         { name: "Facebook", url: "https://www.facebook.com" },
+    //         { name: "Instagram", url: "https://www.instagram.com" }
+    //     ]
+    // },
     {
-        type: "grid",
-        title: "Favorites",
-        x: "10",
-        y: "10",
-        links: [
-            { name: "Google", url: "https://www.google.com" },
-            { name: "YouTube", url: "https://www.youtube.com" },
-            { name: "GitHub", url: "https://www.github.com" },
-            { name: "Reddit", url: "https://www.reddit.com" }
-        ]
-    },
-    {
-        type: "list",
-        title: "Work",
-        x: "10",
-        y: "400",
-        links: [
-            { name: "Stack Overflow", url: "https://stackoverflow.com" },
-            { name: "MDN Web Docs", url: "https://developer.mozilla.org" },
-            { name: "W3Schools", url: "https://www.w3schools.com" }
-        ]
+      "links": [
+        {
+          "name": "GA View",
+          "url": "https://daltonstate.view.usg.edu/d2l/home"
+        },
+        {
+          "name": "GMail",
+          "url": "https://mail.google.com/mail/u/0/#inbox"
+        },
+        {
+          "name": "Docs",
+          "url": "https://docs.google.com/document/u/0/"
+        },
+        {
+          "name": "Google Drive",
+          "url": "https://drive.google.com/drive/u/0/my-drive"
+        },
+        {
+          "name": "Calendar",
+          "url": "https://calendar.google.com/calendar/u/0/r"
+        },
+        {
+          "name": "iCloud",
+          "url": "https://www.icloud.com/"
+        }
+      ],
+      "rows": 1,
+      "columns": 6,
+      "title": "",
+      "type": "grid",
+      "x": "50%",
+      "y": "68%"
     }
 ]
 
@@ -87,13 +132,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Build the grid group dynamically with JavaScript
             let template = document.createElement('div');
             template.className = 'group grid';
-            template.style.left = `${group.x}px`;
-            template.style.top = `${group.y}px`;
+            template.style.left = `${group.x}`;
+            template.style.top = `${group.y}`;
 
             // Title
-            const title = document.createElement('h2');
-            title.textContent = group.title;
-            template.appendChild(title);
+
+            if (!group.title || group.title.trim() === "") {
+                
+            } else {
+                const title = document.createElement('h2');
+                title.textContent = group.title;
+                template.appendChild(title);
+            }
 
             // Links container
             const linksDiv = document.createElement('div');
