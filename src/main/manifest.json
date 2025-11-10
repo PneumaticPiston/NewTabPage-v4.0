@@ -10,5 +10,5 @@
     "chrome_url_overrides": {
     },
     
-    "options_page": "/pages/ntp/ntp.html"
+    "options_page": "/pages/ntp/ntp.html#header"
 }

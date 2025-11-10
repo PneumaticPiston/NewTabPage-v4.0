@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Tab</title>
+    <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="./ntp.css">
     <link rel="icon" type="image/png" href="/assets/icon.png">
+
+    <script src="./onLoad.js" defer></script>
 </head>
 <body style="background-color:#808080;">
     <div class="background-image">
@@ -15,17 +18,18 @@
 
     </header>
     <main id="main-content">
-        <div class="" id="groups-container">
+        <div class="groups-container" id="groups-container">
             <!-- Tab groups and widgets will go here -->
         </div>
-        <div style="display:hidden;">
+        <div class="bottom-section" style="" id="bottom-section">
             <!-- Future feature to mimmick the Edge new tab page's news section -->
+            <blockquote style="color: black; text-align: center; padding: 20px;">
+                <p>This section is under development.</p>
+            </blockquote>
         </div>
     </main>
     <button id="settings-button" class="settings-button" data-i18n-title="settings" title="Settings">
         <img src="../../assets/settings.svg" data-i18n-alt="settings" alt="Settings">
     </button>
-    <script type="module" src="./onLoad.js"></script>
-    <script src="../widgets/load-widgets.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ console.log("Loading onLoad.js");
  * If true, the setting is stored in chrome.storage.sync
  * If false, the setting is stored in chrome.storage.local
  */
-var isSynced = {
+const isSynced = {
     theme: true,
     links: true,
     background: true,
@@ -71,40 +71,40 @@ const linkGroups = [
     //         { name: "Instagram", url: "https://www.instagram.com" }
     //     ]
     // },
-    {
-      "links": [
-        {
-          "name": "GA View",
-          "url": "https://daltonstate.view.usg.edu/d2l/home"
-        },
-        {
-          "name": "GMail",
-          "url": "https://mail.google.com/mail/u/0/#inbox"
-        },
-        {
-          "name": "Docs",
-          "url": "https://docs.google.com/document/u/0/"
-        },
-        {
-          "name": "Google Drive",
-          "url": "https://drive.google.com/drive/u/0/my-drive"
-        },
-        {
-          "name": "Calendar",
-          "url": "https://calendar.google.com/calendar/u/0/r"
-        },
-        {
-          "name": "iCloud",
-          "url": "https://www.icloud.com/"
-        }
-      ],
-      "rows": 1,
-      "columns": 6,
-      "title": "",
-      "type": "grid",
-      "x": "50%",
-      "y": "68%"
-    }
+    // {
+    //   "links": [
+    //     {
+    //       "name": "GA View",
+    //       "url": "https://daltonstate.view.usg.edu/d2l/home"
+    //     },
+    //     {
+    //       "name": "GMail",
+    //       "url": "https://mail.google.com/mail/u/0/#inbox"
+    //     },
+    //     {
+    //       "name": "Docs",
+    //       "url": "https://docs.google.com/document/u/0/"
+    //     },
+    //     {
+    //       "name": "Google Drive",
+    //       "url": "https://drive.google.com/drive/u/0/my-drive"
+    //     },
+    //     {
+    //       "name": "Calendar",
+    //       "url": "https://calendar.google.com/calendar/u/0/r"
+    //     },
+    //     {
+    //       "name": "iCloud",
+    //       "url": "https://www.icloud.com/"
+    //     }
+    //   ],
+    //   "rows": 1,
+    //   "columns": 6,
+    //   "title": "",
+    //   "type": "grid",
+    //   "x": "50%",
+    //   "y": "68%"
+    // }
 ]
 
 const linkTemplate = {
