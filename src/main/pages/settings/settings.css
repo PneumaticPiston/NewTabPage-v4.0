@@ -22,10 +22,6 @@ body {
     top: 60px
 }
 
-main {
-    
-}
-
 header {
     position: sticky;
     top: 0;
@@ -37,8 +33,4 @@ header {
     display: flex;
     align-items: center;
     padding: 0 20px;
-}
-
-.settings-container {
-    
 }

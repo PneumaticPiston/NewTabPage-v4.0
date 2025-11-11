@@ -31,9 +31,19 @@ header {
     left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: var(--background-color);
+    
+    opacity: 0;
+    transition: opacity .3s ease;
+
     background-size: cover;
     background-position: center;
     z-index: -1;
+}
+
+.background-image.loaded {
+    opacity: 1;
+    transition: opacity .3s ease;
 }
 
 main {

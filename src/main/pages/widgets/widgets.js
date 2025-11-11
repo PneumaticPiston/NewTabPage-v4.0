@@ -1,44 +1,69 @@
-const WIDGET_TYPES = {
-    clock: {
-        variants: ['digital', 'analog', 'world'],
+const WIDGET_TYPES = [
+    {
+        show: true,
+        name: 'Clock',
+        variants: [
+            {name: 'Digital', path: '../widgets/clock/digital.js'}, 
+            {name: 'Analog', path: '../widgets/clock/analog.js'}, 
+            {name: 'World', path: '../widgets/clock/world.js'}
+        ],
         defaultID: 0
     },
-    weather: {
-        variants: ['condition', 'forecast', 'temperature'],
+    {
+        show: true,
+        name: 'Timers',
+        variants: [
+            {name: 'Timer', path: '../widgets/timer/timer.js'}, 
+            {name: 'Stopwatch', path: '../widgets/timer/stopwatch.js'}, 
+            {name: 'Pomodoro', path: '../widgets/timer/pomodoro.js'}
+        ],
         defaultID: 0
     },
-    note: {
-        variants: ['simple'],
+    {
+        show: true,
+        name: 'Weather',
+        variants: [
+            {name: 'Condition', path: '../widgets/weather/condition.js'}, 
+            {name: 'Forecast', path: '../widgets/weather/forecast.js'}, 
+            {name: 'Temperature', path: '../widgets/weather/temperature.js'}
+        ],
         defaultID: 0
     },
-    todo: {
-        variants: ['simple', 'detailed'],
+    {
+        show: true,
+        name: 'Note',
+        variants: [
+            {name: 'Simple', path: '../widgets/note/simple.js'}
+        ],
         defaultID: 0
     },
-    rss: {
-        variants: ['feed', 'headline'],
+    {  
+        show: true,
+        name: 'Todo',
+        variants: [
+            {name: 'Simple', path: '../widgets/todo/simple.js'}, 
+            {name: 'Detailed', path: '../widgets/todo/detailed.js'}
+        ],
         defaultID: 0
     },
-    quickcopy: {
-        variants: ['text'],
+    {
+        show: false,
+        name: 'RSS',
+        variants: [
+            {name: 'Feed', path: '../widgets/rss/feed.js'}, 
+            {name: 'Headline', path: '../widgets/rss/headline.js'}
+        ],
         defaultID: 0
     },
-    google: {
-        variants: ['mail', 'calendar', 'docs', 'drive'],
-        defaultID: 0
-    },
-    timer: {
-        variants: ['countdown', 'stopwatch', 'pomodoro'],
-        defaultID: 0
-    },
-    mediaControls: {
-        variants: ['playback', 'volume', 'playlist'],
+    {
+        show: false,
+        name: 'Google',
+        variants: [
+            {name: 'Mail', path: '../widgets/google/mail.js'}, 
+            {name: 'Calendar', path: '../widgets/google/calendar.js'}, 
+            {name: 'Docs', path: '../widgets/google/docs.js'}, 
+            {name: 'Drive', path: '../widgets/google/drive.js'}
+        ],
         defaultID: 0
     }
-}
-
-function buildWidgetHTML(widget) {
-    // This function will return the HTML for a widget based on its type and settings
-    // For now, it will just return a placeholder
-    return null;
-}
+];
