@@ -44,6 +44,12 @@ header {
     padding: 0 20px;
 }
 
+main {
+    padding-left: 10%;
+    padding-right: 10%;
+    width: calc(100% - 30%);
+}
+
 #background-options {
     display: flex;
     gap: 1rem;
