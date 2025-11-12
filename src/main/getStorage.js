@@ -4,71 +4,17 @@
  * If false, the setting is stored in chrome.storage.local
  */
 var isSynced = {
-    theme: true,
-    links: true,
-    background: true,
-    header: true,
-    other: true
+    theme: false,
+    links: false,
+    background: false,
+    header: false,
+    other: false
 };
-
-/**
- * Retrieves the storage locations of settings and updates the storageLocations object.
- */
-chrome.storage.local.get(["locations"], (locations) => {
-    isSynced.theme = locations.theme;
-    isSynced.links = locations.links;
-    isSynced.background = locations.background;
-});
-
-async function getStorageLocations() {
-    if (isSynced.links == true) {
-        chrome.storage.sync.get(["linkGroups"], (data) => {
-            if (data.linkGroups) {
-                settings.linkGroups = data.linkGroups;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["linkGroups"], (data) => {
-            if (data.linkGroups) {
-                settings.linkGroups = data.linkGroups;
-            }
-        });
-    }
-
-    if (isSynced.theme == true) {
-        chrome.storage.sync.get(["themeID"], (data) => {
-            if (data.themeID) {
-                settings.themeID = data.themeID;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["themeID"], (data) => {
-            if (data.themeID) {
-                settings.themeID = data.themeID;
-            }
-        });
-    }
-
-    if (isSynced.background == true) {
-        chrome.storage.sync.get(["background"], (data) => {
-            if (data.background) {
-                settings.background = data.background;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["background"], (data) => {
-            if (data.background) {
-                settings.background = data.background;
-            }
-        });
-    }
-}
-
 
 /**
  * The settings object contains various configuration options for the application.
  */
-var settings = {
+const settings = {
     // The search bar and its settings
     search: {
         showSearch: true,
@@ -86,11 +32,8 @@ var settings = {
     linkGroups: [
         {
             name: "Test Group 1",
-            showName: true,
-            pos: {
-                x: 0,
-                y: 0
-            },
+            x: 50,
+            y: 50,
             type: "grid",
             grid: {
                 c: 3,
@@ -150,3 +93,62 @@ var settings = {
         ]
     }
 }
+
+/**
+ * Retrieves the storage locations of settings and updates the storageLocations object.
+ */
+chrome.storage.local.get(["locations"], (locations) => {
+    if (!locations) {
+        console.error("No locations found");
+        return;
+    }
+    isSynced.theme = locations.theme;
+    isSynced.links = locations.links;
+    isSynced.background = locations.background;
+});
+
+async function getStorageLocations() {
+    if (isSynced.links) {
+        chrome.storage.sync.get(["linkGroups"], (data) => {
+            if (data.linkGroups) {
+                settings.linkGroups = data.linkGroups;
+            }
+        });
+    } else {
+        chrome.storage.local.get(["linkGroups"], (data) => {
+            if (data.linkGroups) {
+                settings.linkGroups = data.linkGroups;
+            }
+        });
+    }
+
+    if (isSynced.theme) {
+        chrome.storage.sync.get(["themeID"], (data) => {
+            if (data.themeID) {
+                settings.themeID = data.themeID;
+            }
+        });
+    } else {
+        chrome.storage.local.get(["themeID"], (data) => {
+            if (data.themeID) {
+                settings.themeID = data.themeID;
+            }
+        });
+    }
+
+    if (isSynced.background) {
+        chrome.storage.sync.get(["background"], (data) => {
+            if (data.background) {
+                settings.background = data.background;
+            }
+        });
+    } else {
+        chrome.storage.local.get(["background"], (data) => {
+            if (data.background) {
+                settings.background = data.background;
+            }
+        });
+    }
+}
+
+

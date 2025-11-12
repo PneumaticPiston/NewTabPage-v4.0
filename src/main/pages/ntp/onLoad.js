@@ -1,123 +1,13 @@
 console.log("Loading onLoad.js");
 
-/**
- * Stores where settings are located
- * If true, the setting is stored in chrome.storage.sync
- * If false, the setting is stored in chrome.storage.local
- */
-const isSynced = {
-    theme: false,
-    links: false,
-    background: false,
-    header: false,
-    other: false
-};
-
-/**
- * Retrieves the storage locations of settings and updates the storageLocations object.
- */
-chrome.storage.local.get(["locations"], (locations) => {
-    if(!locations) {
-        return;
-    }
-    isSynced.links = locations.links;
-    isSynced.theme = locations.theme;
-    isSynced.background = locations.background;
-});
-
-if (isSynced.links == true) {
-    chrome.storage.sync.get(["linkGroups"], (data) => {
-        if (data.linkGroups) {
-            const linkGroups = data.linkGroups;
-        }
-    });
-} else {
-    chrome.storage.local.get(["linkGroups"], (data) => {
-        if (data.linkGroups) {
-            const linkGroups = data.linkGroups;
-        }
-    });
-}
-
-const linkGroups = [
-    // {
-    //     type: "grid",
-    //     title: "Favorites",
-    //     x: "10",
-    //     y: "10",
-    //     links: [
-    //         { name: "Google", url: "https://www.google.com" },
-    //         { name: "YouTube", url: "https://www.youtube.com" },
-    //         { name: "GitHub", url: "https://www.github.com" },
-    //         { name: "Reddit", url: "https://www.reddit.com" }
-    //     ]
-    // },
-    // {
-    //     type: "grid",
-    //     title: "Work",
-    //     x: "10",
-    //     y: "100",
-    //     links: [
-    //         { name: "Stack Overflow", url: "https://stackoverflow.com" },
-    //         { name: "MDN Web Docs", url: "https://developer.mozilla.org" },
-    //         { name: "W3Schools", url: "https://www.w3schools.com" }
-    //     ]
-    // },
-    // {
-    //     type: "grid",
-    //     title: "",
-    //     x: "10",
-    //     y: "200",
-    //     links: [
-    //         { name: "Twitter", url: "https://www.twitter.com" },
-    //         { name: "Facebook", url: "https://www.facebook.com" },
-    //         { name: "Instagram", url: "https://www.instagram.com" }
-    //     ]
-    // },
-    // {
-    //   "links": [
-    //     {
-    //       "name": "GA View",
-    //       "url": "https://daltonstate.view.usg.edu/d2l/home"
-    //     },
-    //     {
-    //       "name": "GMail",
-    //       "url": "https://mail.google.com/mail/u/0/#inbox"
-    //     },
-    //     {
-    //       "name": "Docs",
-    //       "url": "https://docs.google.com/document/u/0/"
-    //     },
-    //     {
-    //       "name": "Google Drive",
-    //       "url": "https://drive.google.com/drive/u/0/my-drive"
-    //     },
-    //     {
-    //       "name": "Calendar",
-    //       "url": "https://calendar.google.com/calendar/u/0/r"
-    //     },
-    //     {
-    //       "name": "iCloud",
-    //       "url": "https://www.icloud.com/"
-    //     }
-    //   ],
-    //   "rows": 1,
-    //   "columns": 6,
-    //   "title": "",
-    //   "type": "grid",
-    //   "x": "50%",
-    //   "y": "68%"
-    // }
-]
-
 const linkTemplate = {
     grid: function(group) {
-        `<div class="group grid" style="left: ${group.x}; top: ${group.y};">
+        return `<div class="group grid" style="left: ${group.x}; top: ${group.y};">
             <h2>${group.title}</h2>
             <div class="links">
                 ${group.links.map(link => `<a href="${link.url}">${link.name}</a>`).join('')}
             </div>
-        `
+        `;
     }
 }
 
@@ -129,13 +19,13 @@ document.getElementById('settings-button').addEventListener('click', () => {
 const groupContainer = document.getElementById('groups-container');
 
 // Iterate over each group in settings.linkGroups
-linkGroups.forEach(group => {
+settings.linkGroups.forEach(group => {
     if(group.type == "grid") {
         // Build the grid group dynamically with JavaScript
         let template = document.createElement('div');
         template.className = 'group grid';
-        template.style.left = `${group.x}`;
-        template.style.top = `${group.y}`;
+        template.style.left = `${group.x}px`;
+        template.style.top = `${group.y}px`;
 
         // Title
 
@@ -176,6 +66,8 @@ linkGroups.forEach(group => {
         
     }
 });
+
+
 
 const backgroundImage = document.querySelector(".background-image");
 
