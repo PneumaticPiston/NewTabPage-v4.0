@@ -1,13 +1,22 @@
-<!DOCTYPE html>
+<!DOCTYPE html data-theme="custom">
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Tab - Settings</title>
+
+    <style id="theme"></style>
+    <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="./settings.css">
     <link rel="icon" type="image/png" href="/assets/icon.png">
+
+    <script src="/getStorage.js"></script>
+    <script src="./settings.js" defer></script>
 </head>
-<body style="background-color: #202124; color: aliceblue;">
+<body>
+    <div class="background-image">
+        
+    </div>
     <header id="header">
         <h1>New TapSettings</h1>
     </header>
@@ -23,8 +32,39 @@
             <div class="setting-item" id="background-settings">
                 <h1>Background</h1>
                 <p>Choose your background:</p>
-                <div id="background-options" class="background">
-                    <!-- Add button to turn off custom background -->
+                <div id="background-options" class="background-gallery">
+                    <div class="background-card" data-type="solid">
+                        <input type="radio" id="bg-solid" name="background-type" value="0">
+                        <label for="bg-solid" class="card-label">
+                            <div class="card-preview solid-preview"></div>
+                            <span class="card-title">Solid Color</span>
+                        </label>
+                        <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="background-card" data-type="custom">
+                        <input type="radio" id="bg-custom" name="background-type" value="1">
+                        <label for="bg-custom" class="card-label">
+                            <div class="card-preview custom-preview">
+                                <div class="upload-placeholder">
+                                    <input type="file">Click to upload</input>
+                                </div>
+                                <img class="preview-image" style="display: none;" alt="Background preview">
+                            </div>
+                            <span class="card-title">Custom Image</span>
+                        </label>
+                        <input type="file" id="bg-file-input-custom" accept="image/*" style="display: none;">
+                    </div>
+                
+                    <div class="background-card" data-type="ink">
+                        <input type="radio" id="bg-ink" name="background-type" value="2">
+                        <label for="bg-ink" class="card-label">
+                            <div class="card-preview ink-preview">
+                                <img class="preview-image" alt="Background preview">
+                            </div>
+                            <span class="card-title">Swirling Ink</span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="setting-item" id="sync-settings">
@@ -77,7 +117,5 @@
             </div>
         </div>
     </main>
-    <script src="./onLoad.js"></script>
-    <script src="./onoard.js"></script>
 </body>
 </html>

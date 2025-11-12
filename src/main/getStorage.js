@@ -46,7 +46,7 @@ const SETTINGS = {
             ]
         }
     ],
-    themeID: "custom",
+    themeID: "light",
     themeColors: `[data-theme="custom"]{--background-color:#2e3440;--primary-color:#5e81ac;--secondary-color:#88c0d0;--text-color:#eceff4;--accent-color:#bf616a;}`,
     background: {
         imageHash: null,
