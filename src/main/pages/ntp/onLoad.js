@@ -19,11 +19,12 @@ document.getElementById('settings-button').addEventListener('click', () => {
 const groupContainer = document.getElementById('groups-container');
 
 // Iterate over each group in settings.linkGroups
-settings.linkGroups.forEach(group => {
+SETTINGS.linkGroups.forEach(group => {
     if(group.type == "grid") {
         // Build the grid group dynamically with JavaScript
         let template = document.createElement('div');
         template.className = 'group grid';
+        template.style.position = "absolute";
         template.style.left = `${group.x}px`;
         template.style.top = `${group.y}px`;
 
@@ -69,9 +70,17 @@ settings.linkGroups.forEach(group => {
 
 
 
-const backgroundImage = document.querySelector(".background-image");
+const background = document.querySelector(".background-image");
+if(SETTINGS.background.showImage && SETTINGS.background.imageHash) {
+    background.style.backgroundImage = `url(${SETTINGS.background.imageHash})`;
+}
+background.classList.add("loaded");
 
-backgroundImage.classList.add("loaded");
+document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
+const themeElement = document.getElementById('theme');
+
+themeElement.textContent = SETTINGS.themeColors;
+
 
 function getFavicon(url) {
     // Use size=64 for higher resolution (Google supports 16, 32, 48, 64)

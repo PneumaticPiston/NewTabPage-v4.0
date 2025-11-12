@@ -14,7 +14,7 @@ var isSynced = {
 /**
  * The settings object contains various configuration options for the application.
  */
-const settings = {
+const SETTINGS = {
     // The search bar and its settings
     search: {
         showSearch: true,
@@ -33,7 +33,7 @@ const settings = {
         {
             name: "Test Group 1",
             x: 50,
-            y: 50,
+            y: 500,
             type: "grid",
             grid: {
                 c: 3,
@@ -41,11 +41,13 @@ const settings = {
                 overflow: "scroll-x"
             },
             links: [
-                {name: "YouTube", url: "https://www.youtube.com"}
+                {name: "YouTube", url: "https://www.youtube.com"},
+                {name: "GitHub", url: "https://www.github.com"}
             ]
         }
     ],
-    themeID: null,
+    themeID: "custom",
+    themeColors: `[data-theme="custom"]{--background-color:#2e3440;--primary-color:#5e81ac;--secondary-color:#88c0d0;--text-color:#eceff4;--accent-color:#bf616a;}`,
     background: {
         imageHash: null,
         showImage: false
@@ -53,26 +55,11 @@ const settings = {
     header: {
         // The height of the header in pixels
         height: 50,
-        // How to handle overflow in the header
-        overflow: "scroll-x",
         // Whether or not to show the header
         showHeader: false,
-        // Whether or not to show the date/time in the header
-        time: {
-            showTime: true,
-            showDate: true,
-            showSeconds: true,
-            showDayOfWeek: true
-        },
-        // Whether or not to show the weather/condition/temperature in the header
-        weather: {
-            showWeather: true,
-            showTemperature: true,
-            showCondition: true
-        },
         // The links to show in the header
         links: [
-            {name: "Google", url: "https://www.google.com",},
+            {name: "Google", url: "https://www.google.com"},
             {name: "Gmail", url: "https://mail.google.com"}
         ],
         // The apps dropdown in the header and whether or not to show it
@@ -123,15 +110,21 @@ async function getStorageLocations() {
     }
 
     if (isSynced.theme) {
-        chrome.storage.sync.get(["themeID"], (data) => {
+        chrome.storage.sync.get(["themeID", "themeColors"], (data) => {
             if (data.themeID) {
                 settings.themeID = data.themeID;
             }
+            if (data.themeColors) {
+                settings.themeColors = data.themeColors;
+            }
         });
     } else {
-        chrome.storage.local.get(["themeID"], (data) => {
+        chrome.storage.local.get(["themeID", "themeColors"], (data) => {
             if (data.themeID) {
                 settings.themeID = data.themeID;
+            }
+            if (data.themeColors) {
+                settings.themeColors = data.themeColors;
             }
         });
     }
