@@ -98,13 +98,13 @@ async function getStorageLocations() {
     if (isSynced.links) {
         chrome.storage.sync.get(["linkGroups"], (data) => {
             if (data.linkGroups) {
-                settings.linkGroups = data.linkGroups;
+                SETTINGS.linkGroups = data.linkGroups;
             }
         });
     } else {
         chrome.storage.local.get(["linkGroups"], (data) => {
             if (data.linkGroups) {
-                settings.linkGroups = data.linkGroups;
+                SETTINGS.linkGroups = data.linkGroups;
             }
         });
     }
@@ -112,19 +112,19 @@ async function getStorageLocations() {
     if (isSynced.theme) {
         chrome.storage.sync.get(["themeID", "themeColors"], (data) => {
             if (data.themeID) {
-                settings.themeID = data.themeID;
+                SETTINGS.themeID = data.themeID;
             }
             if (data.themeColors) {
-                settings.themeColors = data.themeColors;
+                SETTINGS.themeColors = data.themeColors;
             }
         });
     } else {
         chrome.storage.local.get(["themeID", "themeColors"], (data) => {
             if (data.themeID) {
-                settings.themeID = data.themeID;
+                SETTINGS.themeID = data.themeID;
             }
             if (data.themeColors) {
-                settings.themeColors = data.themeColors;
+                SETTINGS.themeColors = data.themeColors;
             }
         });
     }
@@ -132,13 +132,13 @@ async function getStorageLocations() {
     if (isSynced.background) {
         chrome.storage.sync.get(["background"], (data) => {
             if (data.background) {
-                settings.background = data.background;
+                SETTINGS.background = data.background;
             }
         });
     } else {
         chrome.storage.local.get(["background"], (data) => {
             if (data.background) {
-                settings.background = data.background;
+                SETTINGS.background = data.background;
             }
         });
     }
