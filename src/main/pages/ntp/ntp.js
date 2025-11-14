@@ -19,34 +19,30 @@ document.getElementById('settings-button').addEventListener('click', () => {
 const groupContainer = document.getElementById('groups-container');
 
 // Iterate over each group in settings.linkGroups
-SETTINGS.linkGroups.forEach(group => {
+SETTINGS.linkGroups.forEach((group) => {
     if(group.type == "grid") {
-        // Build the grid group dynamically with JavaScript
-        let template = document.createElement('div');
-        template.className = 'group grid';
-        template.style.position = "absolute";
-        template.style.left = `${group.x}px`;
-        template.style.top = `${group.y}px`;
+        const gridGroup = document.createElement('div');
+        gridGroup.className = 'group grid';
+        gridGroup.style.left = `${group.x}px`;
+        gridGroup.style.top = `${group.y}px`;
 
-        // Title
+        gridGroup.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+        gridGroup.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
 
-        if (!group.title || group.title.trim() === "") {
-            
+        if(group.grid.overlow == "x") {
+            gridGroup.style.overflowX = 'scroll';
+            gridGroup.style.overflowY = 'hidden';
+        } else if (group.grid.overflow == "y") {
+            gridGroup.style.overflowX = 'hidden';
+            gridGroup.style.overflowY = 'scroll';
         } else {
-            const title = document.createElement('h2');
-            title.textContent = group.title;
-            template.appendChild(title);
+            gridGroup.style.overflowX = 'hidden';
         }
-
-        // Links container
-        const linksDiv = document.createElement('div');
-        linksDiv.className = 'links';
 
         group.links.forEach(link => {
             const a = document.createElement('a');
             a.className = 'link';
             a.href = link.url;
-            a.target = '_blank';
             a.title = link.name;
 
             const img = document.createElement('img');
@@ -58,11 +54,9 @@ SETTINGS.linkGroups.forEach(group => {
 
             a.appendChild(img);
             a.appendChild(span);
-            linksDiv.appendChild(a);
+            gridGroup.appendChild(a);
         });
-
-        template.appendChild(linksDiv);
-        groupContainer.appendChild(template);
+        groupContainer.appendChild(gridGroup);
     } else if(group.type == "list") {
         
     }
@@ -76,7 +70,8 @@ if(SETTINGS.background.bgID == 1 && SETTINGS.background.imageHash) {
 }
 
 if(SETTINGS.background.bgID == 2) {
-    
+    // Add gradient background
+    background.style.background = `linear-gradient(var(--grad-angle), var(--primary-color) 0%, var(--secondary-color) 100%)`;
 }
 background.classList.add("loaded");
 

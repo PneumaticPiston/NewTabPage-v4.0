@@ -79,7 +79,7 @@ main {
     transition: background-color 0.2s, transform 0.25s;
 }
 
-#main-content {
+.main-content {
     position: relative;
     top: 0;
     width: 100vw;
@@ -111,6 +111,12 @@ main {
     padding: 0;
 }
 
-.group {
-    position: relative;
+.bottom-content {
+    width: 90%;
+    height: auto;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--background-color);
+    color: var(--text-color)
 }

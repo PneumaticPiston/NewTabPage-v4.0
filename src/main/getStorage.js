@@ -36,9 +36,9 @@ const SETTINGS = {
             y: 500,
             type: "grid",
             grid: {
-                c: 3,
-                r: 2,
-                overflow: "scroll-x"
+                c: 1,
+                r: 1,
+                overflow: "x"
             },
             links: [
                 {name: "YouTube", url: "https://www.youtube.com"},
