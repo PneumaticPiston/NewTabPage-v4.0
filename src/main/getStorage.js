@@ -46,11 +46,11 @@ const SETTINGS = {
             ]
         }
     ],
-    themeID: "light",
+    themeID: "ocean",
     themeColors: `[data-theme="custom"]{--background-color:#2e3440;--primary-color:#5e81ac;--secondary-color:#88c0d0;--text-color:#eceff4;--accent-color:#bf616a;}`,
     background: {
         imageHash: "",
-        bgID: 0
+        bgID: 2
     },
     header: {
         // The height of the header in pixels
@@ -69,7 +69,21 @@ const SETTINGS = {
                 {name: "Google", url: "https://www.google.com"},
                 {name: "Gmail", url: "https://mail.google.com"},
                 {name: "YouTube", url: "https://www.youtube.com"},
-                {name: "Google Maps", url: "https://maps.google.com"}
+                {name: "Google Maps", url: "https://maps.google.com"},
+                {name: "Google Drive", url: "https://drive.google.com"},
+                {name: "Google Docs", url: "https://docs.google.com"},
+                {name: "Google Sheets", url: "https://sheets.google.com"},
+                {name: "Google Slides", url: "https://slides.google.com"},
+                {name: "Google Calendar", url: "https://calendar.google.com"},
+                {name: "Google Photos", url: "https://photos.google.com"},
+                {name: "Google News", url: "https://news.google.com"},
+                {name: "Google Translate", url: "https://translate.google.com"},
+                {name: "Google Keep", url: "https://keep.google.com"},
+                {name: "Google Shopping", url: "https://shopping.google.com"},
+                {name: "Google Play", url: "https://play.google.com"},
+                {name: "Google Books", url: "https://books.google.com"},
+                {name: "Google Scholar", url: "https://scholar.google.com"},
+                {name: "Google Forms", url: "https://forms.google.com"}
             ]
         }
     },

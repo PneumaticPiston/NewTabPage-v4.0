@@ -71,8 +71,12 @@ SETTINGS.linkGroups.forEach(group => {
 
 
 const background = document.querySelector(".background-image");
-if(SETTINGS.background.showImage && SETTINGS.background.imageHash) {
+if(SETTINGS.background.bgID == 1 && SETTINGS.background.imageHash) {
     background.style.backgroundImage = `url(${SETTINGS.background.imageHash})`;
+}
+
+if(SETTINGS.background.bgID == 2) {
+    
 }
 background.classList.add("loaded");
 
