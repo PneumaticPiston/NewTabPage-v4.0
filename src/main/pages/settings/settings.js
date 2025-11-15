@@ -9,7 +9,7 @@ loadSettings();
 const background = document.querySelector('input[name="background-type"]');
 
 background.addEventListener('change', (event) => {
-    SETTINGS.background.showImage = bg.value;
+    SETTINGS.background.showImage = background.value;
     saveSettings();
 });
 

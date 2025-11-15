@@ -176,7 +176,7 @@
 
 .group {
     transform-origin: center center;
-    position: relative;
+    position: absolute;
     border-radius: var(--border-radius);
     background-color: var(--secondary-color);
     color: var(--text-color);
@@ -221,11 +221,26 @@
     margin-bottom: 4px;
 }
 
+.list img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+ul.list {
+    padding: 5px;
+    margin: 0;
+}
+
+ul li {
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+}
 
 .group-header {
     --border-radius: 5px;
     font-size: 14px;
-    font-weight: bold;
     margin-bottom: 5px;
     padding: 5px 10px;
     user-select: none;
@@ -235,4 +250,6 @@
     max-width: 100%;
     overflow-x: hidden;
     text-overflow: ellipsis;
+    border-bottom: 1.5px solid #00000050;
+    margin: 0;
 }

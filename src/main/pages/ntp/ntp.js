@@ -1,5 +1,3 @@
-console.log("Loading onLoad.js");
-
 const linkTemplate = {
     grid: function(group) {
         return `<div class="group grid" style="left: ${group.x}; top: ${group.y};">
@@ -23,8 +21,8 @@ const groupContainer = document.getElementById('groups-container');
 SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
-    console.log(group);
     if(group.type == "grid") {
+        // Handle grid type groups
         const h2 = document.createElement('h2');
         h2.textContent = group.name;
         h2.className = 'group-header';
@@ -78,10 +76,14 @@ SETTINGS.linkGroups.forEach((group) => {
         ul.className = 'list';
 
         group.links.forEach(link => {
+            const img = document.createElement('img');
+            img.src = getFavicon(link.url);
+            img.alt = `${link.name} Favicon`;
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.href = link.url;
             a.textContent = link.name;
+            li.appendChild(img);
             li.appendChild(a);
             ul.appendChild(li);
         });
@@ -91,7 +93,7 @@ SETTINGS.linkGroups.forEach((group) => {
         // Handle widget type groups here
         const script = document.createElement('script');
         script.defer = true;
-        script.src = WIDGET_TYPES[group.id.type].variants[group.id.var].path;
+        script.src = WIDGET_TYPES[group.id.type].variants[group.id.var].path+"?"+group.settings;
         newGroup.appendChild(script);
     }
     groupContainer.appendChild(newGroup);
@@ -105,7 +107,6 @@ if(SETTINGS.background.bgID == 1 && SETTINGS.background.imageHash) {
 }
 
 if(SETTINGS.background.bgID == 2) {
-    // Add gradient background
     background.style.background = `linear-gradient(var(--grad-angle), var(--primary-color) 0%, var(--secondary-color) 100%)`;
 }
 background.classList.add("loaded");

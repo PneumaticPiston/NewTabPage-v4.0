@@ -15,25 +15,11 @@ var isSynced = {
  * The settings object contains various configuration options for the application.
  */
 const SETTINGS = {
-    // The search bar and its settings
-    search: {
-        showSearch: true,
-        showIcon: true,
-        searchEngine: "Google",
-        searchEngines: [
-            {name: "Google", url: "https://www.google.com/search?q="},
-            {name: "Bing", url: "https://www.bing.com/search?q="},
-            {name: "DuckDuckGo", url: "https://duckduckgo.com/?q="},
-            {name: "Yahoo", url: "https://search.yahoo.com/search?p="},
-            {name: "Ecosia", url: "https://www.ecosia.org/search?q="},
-            {name: "Startpage", url: "https://www.startpage.com/do/search?q="}
-        ]
-    },
     linkGroups: [
         {
             name: "Test Group 1",
-            x: 1,
-            y: 1,
+            x: 10,
+            y: 10,
             type: "grid",
             grid: {
                 c: 2,
@@ -48,8 +34,8 @@ const SETTINGS = {
         },
         {
             name: "Test Group 2",
-            x: 10,
-            y: 10,
+            x: 30,
+            y: 30,
             type: "grid",
             grid: {
                 c: 1,
@@ -64,9 +50,9 @@ const SETTINGS = {
         },
         {
             name: "Test Group 3",
-            x: 20,
-            y: 20,
-            type: "grid",
+            x: 50,
+            y: 50,
+            type: "list",
             grid: {
                 c: 3,
                 r: 2,
@@ -78,13 +64,24 @@ const SETTINGS = {
                 {name: "Facebook", url: "https://facebook.com"},
                 {name: "Instagram", url: "https://instagram.com"}
             ]
+        },
+        {
+            name: "Test Widget",
+            type: "widget",
+            x: 80,
+            y: 70,
+            id: {
+                type: 0,
+                var: 0
+            },
+            settings: ""
         }
     ],
     themeID: "ocean",
     themeColors: `[data-theme="custom"]{--background-color:#2e3440;--primary-color:#5e81ac;--secondary-color:#88c0d0;--text-color:#eceff4;--accent-color:#bf616a;}`,
     background: {
         imageHash: "",
-        bgID: 2
+        bgID: 1
     },
     header: {
         // The height of the header in pixels

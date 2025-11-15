@@ -9,9 +9,6 @@ Basic structure and files created: manifest.json, background.js, content.js, pop
 - [ ] Customize the Project
 No customization required for empty template.
 
-- [ ] Install Required Extensions
-No extensions needed.
-
 - [ ] Compile the Project
 No compilation required for Chromium extension template.
 

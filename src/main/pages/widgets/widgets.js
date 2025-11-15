@@ -6,8 +6,7 @@ const WIDGET_TYPES = [
             {name: 'Digital', path: '/pages/widgets/clock/digital.js'}, 
             {name: 'Analog', path: '/pages/widgets/clock/analog.js'}, 
             {name: 'World', path: '/pages/widgets/clock/world.js'}
-        ],
-        defaultID: 0
+        ]
     },
     {
         show: true,
@@ -16,8 +15,15 @@ const WIDGET_TYPES = [
             {name: 'Timer', path: '/pages/widgets/timer/timer.js'}, 
             {name: 'Stopwatch', path: '/pages/widgets/timer/stopwatch.js'}, 
             {name: 'Pomodoro', path: '/pages/widgets/timer/pomodoro.js'}
-        ],
-        defaultID: 0
+        ]
+    },
+    {
+        show: true,
+        name: 'Search',
+        variants: [
+            {name: 'Google', path: '/pages/widgets/search/google.js'},
+            {name: 'Simple', path: '/pages/widgets/search/simple.js'}
+        ]
     },
     {
         show: true,
@@ -26,16 +32,14 @@ const WIDGET_TYPES = [
             {name: 'Condition', path: '/pages/widgets/weather/condition.js'}, 
             {name: 'Forecast', path: '/pages/widgets/weather/forecast.js'}, 
             {name: 'Temperature', path: '/pages/widgets/weather/temperature.js'}
-        ],
-        defaultID: 0
+        ]
     },
     {
         show: true,
         name: 'Note',
         variants: [
             {name: 'Simple', path: '/pages/widgets/note/simple.js'}
-        ],
-        defaultID: 0
+        ]
     },
     {  
         show: true,
@@ -43,8 +47,7 @@ const WIDGET_TYPES = [
         variants: [
             {name: 'Simple', path: '/pages/widgets/todo/simple.js'}, 
             {name: 'Detailed', path: '/pages/widgets/todo/detailed.js'}
-        ],
-        defaultID: 0
+        ]
     },
     {
         show: false,
@@ -52,8 +55,7 @@ const WIDGET_TYPES = [
         variants: [
             {name: 'Feed', path: '/pages/widgets/rss/feed.js'}, 
             {name: 'Headline', path: '/pages/widgets/rss/headline.js'}
-        ],
-        defaultID: 0
+        ]
     },
     {
         show: false,
@@ -63,7 +65,6 @@ const WIDGET_TYPES = [
             {name: 'Calendar', path: '/pages/widgets/google/calendar.js'}, 
             {name: 'Docs', path: '/pages/widgets/google/docs.js'}, 
             {name: 'Drive', path: '/pages/widgets/google/drive.js'}
-        ],
-        defaultID: 0
+        ]
     }
 ];
