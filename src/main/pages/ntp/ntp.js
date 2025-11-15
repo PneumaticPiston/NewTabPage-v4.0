@@ -20,24 +20,31 @@ const groupContainer = document.getElementById('groups-container');
 
 // Iterate over each group in settings.linkGroups
 SETTINGS.linkGroups.forEach((group) => {
+    const newGroup = document.createElement('div');
     console.log(group);
     if(group.type == "grid") {
-        const gridGroup = document.createElement('div');
-        gridGroup.className = 'group grid';
-        gridGroup.style.left = `${group.x}vw`;
-        gridGroup.style.top = `${group.y}vh`;
+        const h2 = document.createElement('h2');
+        h2.textContent = group.name;
+        h2.className = 'group-header';
+        newGroup.appendChild(h2);
 
-        gridGroup.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
-        gridGroup.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
+        
+
+        newGroup.className = 'group grid';
+        newGroup.style.left = `${group.x}vw`;
+        newGroup.style.top = `${group.y}vh`;
+
+        newGroup.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+        newGroup.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
 
         if(group.grid.overlow == "x") {
-            gridGroup.style.overflowX = 'scroll';
-            gridGroup.style.overflowY = 'hidden';
+            newGroup.style.overflowX = 'scroll';
+            newGroup.style.overflowY = 'hidden';
         } else if (group.grid.overflow == "y") {
-            gridGroup.style.overflowX = 'hidden';
-            gridGroup.style.overflowY = 'scroll';
+            newGroup.style.overflowX = 'hidden';
+            newGroup.style.overflowY = 'scroll';
         } else {
-            gridGroup.style.overflowX = 'hidden';
+            newGroup.style.overflowX = 'hidden';
         }
 
         group.links.forEach(link => {
@@ -55,11 +62,11 @@ SETTINGS.linkGroups.forEach((group) => {
 
             a.appendChild(img);
             a.appendChild(span);
-            gridGroup.appendChild(a);
+            newGroup.appendChild(a);
         });
-        groupContainer.appendChild(gridGroup);
+        groupContainer.appendChild(newGroup);
     } else if(group.type == "list") {
-        
+
     }
 });
 

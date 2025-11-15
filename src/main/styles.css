@@ -220,3 +220,21 @@
     height: 50px;
     margin-bottom: 4px;
 }
+
+
+.group-header {
+    user-select: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    mix-blend-mode: difference;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    width: auto; /* Let it size to content without extending beyond container */
+    max-width: 100%; /* Prevent overflow */
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; /* Block-level for better container control */
+}
