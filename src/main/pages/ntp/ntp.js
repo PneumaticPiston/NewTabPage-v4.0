@@ -20,11 +20,12 @@ const groupContainer = document.getElementById('groups-container');
 
 // Iterate over each group in settings.linkGroups
 SETTINGS.linkGroups.forEach((group) => {
+    console.log(group);
     if(group.type == "grid") {
         const gridGroup = document.createElement('div');
         gridGroup.className = 'group grid';
-        gridGroup.style.left = `${group.x}px`;
-        gridGroup.style.top = `${group.y}px`;
+        gridGroup.style.left = `${group.x}vw`;
+        gridGroup.style.top = `${group.y}vh`;
 
         gridGroup.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         gridGroup.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;

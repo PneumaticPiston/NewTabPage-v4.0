@@ -32,17 +32,51 @@ const SETTINGS = {
     linkGroups: [
         {
             name: "Test Group 1",
-            x: 50,
-            y: 500,
+            x: 1,
+            y: 1,
             type: "grid",
             grid: {
-                c: 1,
+                c: 2,
                 r: 1,
                 overflow: "x"
             },
             links: [
                 {name: "YouTube", url: "https://www.youtube.com"},
-                {name: "GitHub", url: "https://www.github.com"}
+                {name: "GitHub", url: "https://www.github.com"},
+                {name: "GitLab", url: "https://www.gitlab.com"}
+            ]
+        },
+        {
+            name: "Test Group 2",
+            x: 10,
+            y: 10,
+            type: "grid",
+            grid: {
+                c: 1,
+                r: 3,
+                overflow: "y"
+            },
+            links: [
+                {name: "Stack Overflow", url: "https://stackoverflow.com"},
+                {name: "MDN Web Docs", url: "https://developer.mozilla.org"},
+                {name: "Reddit", url: "https://www.reddit.com"}
+            ]
+        },
+        {
+            name: "Test Group 3",
+            x: 20,
+            y: 20,
+            type: "grid",
+            grid: {
+                c: 3,
+                r: 2,
+                overflow: "y"
+            },
+            links: [
+                {name: "Twitter", url: "https://twitter.com"},
+                {name: "LinkedIn", url: "https://linkedin.com"},
+                {name: "Facebook", url: "https://facebook.com"},
+                {name: "Instagram", url: "https://instagram.com"}
             ]
         }
     ],

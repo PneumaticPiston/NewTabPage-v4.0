@@ -175,6 +175,7 @@
 }
 
 .group {
+    transform-origin: center center;
     position: relative;
     border-radius: var(--border-radius);
     background-color: var(--secondary-color);

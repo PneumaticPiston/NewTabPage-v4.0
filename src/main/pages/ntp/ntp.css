@@ -89,17 +89,19 @@ main {
 }
 
 .groups-container {
+    overflow-x: hidden;
     width: 100vw;
     height: 100vh;
-    padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    top: 0px;
+    left: 0px;
     justify-content: center;
     align-items: flex-start;
     margin: 0;
     padding: 0;
+    gap: 0;
 }
 
 .bottom-section {
