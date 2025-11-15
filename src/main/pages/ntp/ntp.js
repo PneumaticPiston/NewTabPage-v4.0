@@ -18,9 +18,11 @@ document.getElementById('settings-button').addEventListener('click', () => {
 // Get the container where groups will be added
 const groupContainer = document.getElementById('groups-container');
 
+
 // Iterate over each group in settings.linkGroups
 SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
+    newGroup.className = 'group';
     console.log(group);
     if(group.type == "grid") {
         const h2 = document.createElement('h2');
@@ -28,14 +30,14 @@ SETTINGS.linkGroups.forEach((group) => {
         h2.className = 'group-header';
         newGroup.appendChild(h2);
 
-        
+        const linksContainer = document.createElement('div');
+        linksContainer.className = 'grid';
 
-        newGroup.className = 'group grid';
         newGroup.style.left = `${group.x}vw`;
         newGroup.style.top = `${group.y}vh`;
 
-        newGroup.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
-        newGroup.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
+        linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+        linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
 
         if(group.grid.overlow == "x") {
             newGroup.style.overflowX = 'scroll';
@@ -62,12 +64,37 @@ SETTINGS.linkGroups.forEach((group) => {
 
             a.appendChild(img);
             a.appendChild(span);
-            newGroup.appendChild(a);
+            linksContainer.appendChild(a);
         });
-        groupContainer.appendChild(newGroup);
-    } else if(group.type == "list") {
+        newGroup.appendChild(linksContainer);
+    } else if (group.type == "list") {
+        // Handle list type groups here
+        const h2 = document.createElement('h2');
+        h2.textContent = group.name;
+        h2.className = 'group-header';
+        newGroup.appendChild(h2);
 
+        const ul = document.createElement('ul');
+        ul.className = 'list';
+
+        group.links.forEach(link => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.textContent = link.name;
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+
+        newGroup.appendChild(ul);
+    } else if (group.type == "widget") {
+        // Handle widget type groups here
+        const script = document.createElement('script');
+        script.defer = true;
+        script.src = WIDGET_TYPES[group.id.type].variants[group.id.var].path;
+        newGroup.appendChild(script);
     }
+    groupContainer.appendChild(newGroup);
 });
 
 

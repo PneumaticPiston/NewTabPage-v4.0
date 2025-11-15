@@ -223,18 +223,16 @@
 
 
 .group-header {
-    user-select: none;
+    --border-radius: 5px;
     font-size: 14px;
     font-weight: bold;
-    padding: 5px 10px;
-    mix-blend-mode: difference;
-    color: var(--primary-color);
     margin-bottom: 5px;
-    width: auto; /* Let it size to content without extending beyond container */
-    max-width: 100%; /* Prevent overflow */
+    padding: 5px 10px;
+    user-select: none;
+    width: auto;
     box-sizing: border-box;
-    white-space: nowrap;
-    overflow: hidden;
+    color: var(--text-color);
+    max-width: 100%;
+    overflow-x: hidden;
     text-overflow: ellipsis;
-    display: block; /* Block-level for better container control */
 }
