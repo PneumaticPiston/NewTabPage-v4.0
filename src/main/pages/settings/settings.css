@@ -56,6 +56,13 @@ main {
     margin-top: 1rem;
 }
 
+#theme-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
 .background-card {
     position: relative;
     border: 2px solid transparent;
@@ -63,14 +70,23 @@ main {
     transition: border-color 0.2s ease;
 }
 
-.background-card input[type="radio"] {
+.theme-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.background-card input[type="radio"],
+.theme-card input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-.background-card input[type="radio"]:checked + .card-label {
+.background-card input[type="radio"]:checked + .card-label,
+.theme-card input[type="radio"]:checked + .card-label {
     border-color: var(--accent-color, #007acc);
+    box-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
 }
 
 .card-label {
@@ -81,20 +97,41 @@ main {
     border-radius: 8px;
     text-align: center;
     transition: all 0.2s ease;
+    box-sizing: border-box;
+    overflow: hidden; /* ensure inner preview/content is clipped to the label's rounded corners */
 }
 
 .card-label:hover {
     border-color: var(--accent-color, #007acc);
     background-color: rgba(0, 122, 204, 0.05);
+    transform: translateY(-2px);
 }
 
 .card-preview {
-    width: 120px;
-    height: 80px;
-    border-radius: 4px;
+    width: 100%;
+    max-width: 120px;
+    height: 120px;
+    border-radius: 8px;
     margin-bottom: 0.5rem;
     overflow: hidden;
     border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* prevent padding/border from causing overflow */
+}
+
+.theme-preview {
+    background-color: #f5f5f5;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.pie-chart {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .solid-preview {
@@ -124,4 +161,7 @@ main {
 .card-title {
     font-weight: 500;
     color: var(--text-color, #333);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

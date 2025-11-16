@@ -112,70 +112,127 @@ const SETTINGS = {
         sections: [
             
         ]
+    },
+    accessibility: {
+        fontSize: 100,
+        uiScale: 100,
+        reduceMotion: false,
+        highContrast: false
     }
 }
 
 /**
- * Retrieves the storage locations of settings and updates the storageLocations object.
+ * Promisified chrome.storage.get for easier async/await usage
  */
-chrome.storage.local.get(["locations"], (locations) => {
-    if (!locations) {
-        console.error("No locations found");
-        return;
-    }
-    isSynced.theme = locations.theme;
-    isSynced.links = locations.links;
-    isSynced.background = locations.background;
-});
+function chromeStorageGet(storageArea, keys) {
+    return new Promise((resolve, reject) => {
+        storageArea.get(keys, (result) => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
 
-async function getStorageLocations() {
-    if (isSynced.links) {
-        chrome.storage.sync.get(["linkGroups"], (data) => {
-            if (data.linkGroups) {
-                SETTINGS.linkGroups = data.linkGroups;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["linkGroups"], (data) => {
-            if (data.linkGroups) {
-                SETTINGS.linkGroups = data.linkGroups;
-            }
-        });
-    }
+/**
+ * Initializes all settings by loading from storage
+ */
+async function initializeSettings() {
+    try {
+        // First, load the sync location preferences
+        const locations = await chromeStorageGet(chrome.storage.local, ["locations"]);
+        if (locations && locations.locations) {
+            isSynced.theme = locations.locations.theme !== undefined ? locations.locations.theme : isSynced.theme;
+            isSynced.links = locations.locations.links !== undefined ? locations.locations.links : isSynced.links;
+            isSynced.background = locations.locations.background !== undefined ? locations.locations.background : isSynced.background;
+            isSynced.header = locations.locations.header !== undefined ? locations.locations.header : isSynced.header;
+            isSynced.other = locations.locations.other !== undefined ? locations.locations.other : isSynced.other;
+        }
 
-    if (isSynced.theme) {
-        chrome.storage.sync.get(["themeID", "themeColors"], (data) => {
-            if (data.themeID) {
-                SETTINGS.themeID = data.themeID;
-            }
-            if (data.themeColors) {
-                SETTINGS.themeColors = data.themeColors;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["themeID", "themeColors"], (data) => {
-            if (data.themeID) {
-                SETTINGS.themeID = data.themeID;
-            }
-            if (data.themeColors) {
-                SETTINGS.themeColors = data.themeColors;
-            }
-        });
-    }
+        // Load all settings in parallel
+        await Promise.all([
+            loadLinkGroupsFromStorage(),
+            loadThemeFromStorage(),
+            loadBackgroundFromStorage(),
+            loadHeaderFromStorage()
+        ]);
 
-    if (isSynced.background) {
-        chrome.storage.sync.get(["background"], (data) => {
-            if (data.background) {
-                SETTINGS.background = data.background;
-            }
-        });
-    } else {
-        chrome.storage.local.get(["background"], (data) => {
-            if (data.background) {
-                SETTINGS.background = data.background;
-            }
-        });
+        console.log("All settings loaded successfully");
+    } catch (error) {
+        console.error("Error initializing settings:", error);
     }
 }
+
+/**
+ * Loads link groups from the appropriate storage
+ */
+async function loadLinkGroupsFromStorage() {
+    try {
+        const storageArea = isSynced.links ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["linkGroups"]);
+        if (data.linkGroups) {
+            SETTINGS.linkGroups = data.linkGroups;
+            console.log("Loaded linkGroups from " + (isSynced.links ? "sync" : "local") + " storage");
+        }
+    } catch (error) {
+        console.error("Error loading linkGroups:", error);
+    }
+}
+
+/**
+ * Loads theme settings from the appropriate storage
+ */
+async function loadThemeFromStorage() {
+    try {
+        const storageArea = isSynced.theme ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["themeID", "themeColors"]);
+        if (data.themeID) {
+            SETTINGS.themeID = data.themeID;
+        }
+        if (data.themeColors) {
+            SETTINGS.themeColors = data.themeColors;
+        }
+        console.log("Loaded theme settings from " + (isSynced.theme ? "sync" : "local") + " storage");
+    } catch (error) {
+        console.error("Error loading theme:", error);
+    }
+}
+
+/**
+ * Loads background settings from the appropriate storage
+ */
+async function loadBackgroundFromStorage() {
+    try {
+        const storageArea = isSynced.background ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["background"]);
+        if (data.background) {
+            SETTINGS.background = data.background;
+        }
+        console.log("Loaded background settings from " + (isSynced.background ? "sync" : "local") + " storage");
+    } catch (error) {
+        console.error("Error loading background:", error);
+    }
+}
+
+/**
+ * Loads header settings from the appropriate storage
+ */
+async function loadHeaderFromStorage() {
+    try {
+        const storageArea = isSynced.header ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["header"]);
+        if (data.header) {
+            SETTINGS.header = data.header;
+        }
+        console.log("Loaded header settings from " + (isSynced.header ? "sync" : "local") + " storage");
+    } catch (error) {
+        console.error("Error loading header:", error);
+    }
+}
+
+// Initialize settings when script loads
+initializeSettings();
 
 

@@ -24,6 +24,57 @@ header {
     height: var(--header-height);
     color: var(--text-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.left-header,
+.center-header,
+.right-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+}
+
+/* Left group stays at the start */
+.left-header {
+    justify-content: flex-start;
+}
+
+/* Center group is visually centered regardless of left/right widths */
+.center-header {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+
+    /* keep the center area constrained so it won't overlap side groups */
+    max-width: calc(100% - 240px); /* tweak if needed */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 8px;
+
+    /* allow multiline text and wrapping instead of truncation */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    overflow: visible;
+
+    /* center text content */
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Right group stays at the end */
+.right-header {
+    justify-content: flex-end;
 }
 
 .background-image {

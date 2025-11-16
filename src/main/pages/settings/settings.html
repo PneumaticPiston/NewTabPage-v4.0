@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" href="/assets/icon.png">
 
     <script src="/getStorage.js"></script>
+    <script src="./themeLoader.js"></script>
     <script src="./settings.js" defer></script>
 </head>
 <body>
@@ -26,7 +27,30 @@
                 <h1>Theme</h1>
                 <p>Choose your theme:</p>
                 <div id="theme-options" class="theme-gallery">
-                    <!-- Theme options will be dynamically loaded here -->
+                    <!-- Themes will be dynamically loaded here -->
+                </div>
+                <div id="custom-theme-section" style="display: none; margin-top: 20px;">
+                    <h3>Custom Theme Colors</h3>
+                    <div class="color-picker-group">
+                        <label for="custom-bg-color">Background Color:</label>
+                        <input type="color" id="custom-bg-color" name="custom-bg-color">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="custom-primary-color">Primary Color:</label>
+                        <input type="color" id="custom-primary-color" name="custom-primary-color">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="custom-secondary-color">Secondary Color:</label>
+                        <input type="color" id="custom-secondary-color" name="custom-secondary-color">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="custom-text-color">Text Color:</label>
+                        <input type="color" id="custom-text-color" name="custom-text-color">
+                    </div>
+                    <div class="color-picker-group">
+                        <label for="custom-accent-color">Accent Color:</label>
+                        <input type="color" id="custom-accent-color" name="custom-accent-color">
+                    </div>
                 </div>
             </div>
             <div class="setting-item" id="background-settings">
@@ -70,46 +94,60 @@
             <div class="setting-item">
                 <h1>Layout</h1>
                 <p>Customize your layout preferences:</p>
-                
+                <div class="layout-options">
+                    <div class="layout-option">
+                        <label for="show-bottom-section">Show Bottom Section:</label>
+                        <input type="checkbox" id="show-bottom-section" name="show-bottom-section">
+                    </div>
+                </div>
             </div>
             <div class="setting-item" id="sync-settings">
                 <h1>Sync</h1>
-                <p>Manage sync options: </p>
+                <p>Manage where your settings are stored:</p>
                 <div class="sync-options">
                     <table>
                         <thead>
                             <tr>
-                                <th>Label</th>
-                                <th>Sync</th>
-                                <th>Local</th>
+                                <th>Setting</th>
+                                <th>Cloud Sync</th>
+                                <th>Local Only</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Theme Settings</td>
+                                <td>Theme</td>
                                 <td>
-                                    <input type="radio" name="storage-type-theme" value="sync" checked>
+                                    <input type="radio" name="storage-type-theme" value="sync">
                                 </td>
                                 <td>
                                     <input type="radio" name="storage-type-theme" value="local">
                                 </td>
                             </tr>
                             <tr>
-                                <td>Background Settings</td>
+                                <td>Links</td>
                                 <td>
-                                    <input type="radio" name="storage-type-background" value="sync" checked>
+                                    <input type="radio" name="storage-type-links" value="sync">
+                                </td>
+                                <td>
+                                    <input type="radio" name="storage-type-links" value="local">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Background</td>
+                                <td>
+                                    <input type="radio" name="storage-type-background" value="sync">
                                 </td>
                                 <td>
                                     <input type="radio" name="storage-type-background" value="local">
                                 </td>
                             </tr>
                             <tr>
-                                <td>Accessibility Settings</td>
+                                <td>Other</td>
                                 <td>
-                                    <input type="radio" name="storage-type-accessibility" value="sync" checked>
+                                    <input type="radio" name="storage-type-other" value="sync">
                                 </td>
                                 <td>
-                                    <input type="radio" name="storage-type-accessibility" value="local">
+                                    <input type="radio" name="storage-type-other" value="local">
                                 </td>
                             </tr>
                         </tbody>
@@ -117,8 +155,32 @@
                 </div>
             </div>
             <div class="setting-item" id="accessibility-settings">
-                <h1>Accessability</h1>
-                <!-- Font size, element scale -->
+                <h1>Accessibility</h1>
+                <p>Adjust accessibility and display settings:</p>
+                <div class="accessibility-options">
+                    <div class="accessibility-option">
+                        <label for="font-size-slider">Font Size:</label>
+                        <div class="slider-container">
+                            <span class="slider-value">100%</span>
+                            <input type="range" id="font-size-slider" name="font-size" min="80" max="150" value="100" step="5">
+                        </div>
+                    </div>
+                    <div class="accessibility-option">
+                        <label for="scale-slider">UI Scale:</label>
+                        <div class="slider-container">
+                            <span class="slider-value">100%</span>
+                            <input type="range" id="scale-slider" name="ui-scale" min="80" max="150" value="100" step="5">
+                        </div>
+                    </div>
+                    <div class="accessibility-option">
+                        <label for="reduce-motion">Reduce Motion:</label>
+                        <input type="checkbox" id="reduce-motion" name="reduce-motion">
+                    </div>
+                    <div class="accessibility-option">
+                        <label for="high-contrast">High Contrast:</label>
+                        <input type="checkbox" id="high-contrast" name="high-contrast">
+                    </div>
+                </div>
             </div>
         </div>
     </main>
