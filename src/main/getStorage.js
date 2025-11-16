@@ -4,7 +4,7 @@
  * If false, the setting is stored in chrome.storage.local
  */
 var isSynced = {
-    theme: false,
+    theme: true,
     links: false,
     background: false,
     header: false,
@@ -64,17 +64,6 @@ const SETTINGS = {
                 {name: "Facebook", url: "https://facebook.com"},
                 {name: "Instagram", url: "https://instagram.com"}
             ]
-        },
-        {
-            name: "Test Widget",
-            type: "widget",
-            x: 80,
-            y: 70,
-            id: {
-                type: 0,
-                var: 0
-            },
-            settings: ""
         }
     ],
     themeID: "ocean",

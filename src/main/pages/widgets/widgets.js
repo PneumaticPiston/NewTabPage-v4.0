@@ -21,8 +21,8 @@ const WIDGET_TYPES = [
         show: true,
         name: 'Search',
         variants: [
-            {name: 'Google', path: '/pages/widgets/search/google.js'},
-            {name: 'Simple', path: '/pages/widgets/search/simple.js'}
+            {name: 'Bar', path: '/pages/widgets/search/bar.js'},
+            {name: 'Box', path: '/pages/widgets/search/box.js'}
         ]
     },
     {

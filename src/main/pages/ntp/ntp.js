@@ -1,14 +1,3 @@
-const linkTemplate = {
-    grid: function(group) {
-        return `<div class="group grid" style="left: ${group.x}; top: ${group.y};">
-            <h2>${group.title}</h2>
-            <div class="links">
-                ${group.links.map(link => `<a href="${link.url}">${link.name}</a>`).join('')}
-            </div>
-        `;
-    }
-}
-
 document.getElementById('settings-button').addEventListener('click', () => {
     window.location.href = '/pages/settings/settings.html';
 });
@@ -105,7 +94,6 @@ const background = document.querySelector(".background-image");
 if(SETTINGS.background.bgID == 1 && SETTINGS.background.imageHash) {
     background.style.backgroundImage = `url(${SETTINGS.background.imageHash})`;
 }
-
 if(SETTINGS.background.bgID == 2) {
     background.style.background = `linear-gradient(var(--grad-angle), var(--primary-color) 0%, var(--secondary-color) 100%)`;
 }
@@ -122,5 +110,94 @@ function getFavicon(url) {
 
     // Add handling for sub domains
 
-    return `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`;
+    // Default icon as SVG data URI if all else fails
+    const DEFAULT_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJmZWF0aGVyIGZlYXRoZXItbGluayI+PHBhdGggZD0iTTEwIDEzYTUgNSAwIDAgMCA3LjU0LjU0bDMtM2E1IDUgMCAwIDAtNy4wNy03LjA3bC0xLjcyIDEuNzEiPjwvcGF0aD48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zIDNhNSA1IDAgMCAwIDcuMDcgNy4wN2wxLjcxLTEuNzEiPjwvcGF0aD48L3N2Zz4=';
+    
+    try {
+        // Return default icon if URL is empty
+        if (!url || url.trim() === '') {
+            return DEFAULT_ICON;
+        }
+        
+        // Make sure URL is properly formatted with protocol
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+        
+        // Extract domain information
+        let parsedUrl;
+        try {
+            parsedUrl = new URL(url);
+        } catch (e) {
+            Debugger.error('Invalid URL format:', url, e);
+            return DEFAULT_ICON;
+        }
+        
+        const domain = parsedUrl.hostname;
+        
+        // Create a local favicon cache for this session if it doesn't exist
+        if (!window.faviconCache) {
+            window.faviconCache = new Map();
+        }
+        
+        // Special handling for Google Calendar's dynamic favicon
+        if (domain === 'calendar.google.com') {
+            // Get today's date for the dynamic calendar icon
+            // Since Google Calendar changes its favicon to match the current date
+            const today = new Date();
+            const dateString = today.getDate().toString();
+            
+            // Either use a static calendar icon or a dynamically generated one
+            // Option 1: Use a generic calendar icon (doesn't show current date but always works)
+            const calendarGenericIcon = 'https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_' + dateString + '_2x.png';
+            
+            // Cache with a timestamp so it refreshes daily
+            const cacheKey = `${domain}_${today.toDateString()}`;
+            window.faviconCache.set(cacheKey, calendarGenericIcon);
+            return calendarGenericIcon;
+        }
+        
+        // Return cached favicon if available for other domains
+        if (window.faviconCache.has(domain)) {
+            return window.faviconCache.get(domain);
+        }
+        
+        // Check for offline mode
+        if (!navigator.onLine) {
+            return DEFAULT_ICON;
+        }
+        
+        // Special handling just for Google services that need specific icons
+        const googleServiceIcons = {
+            'mail.google.com': 'https://www.gstatic.com/images/branding/product/1x/gmail_2020q4_32dp.png',
+            'drive.google.com': 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png',
+            'docs.google.com': 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico',
+            'sheets.google.com': 'https://ssl.gstatic.com/docs/spreadsheets/images/favicon_jfk2.png',
+            'slides.google.com': 'https://ssl.gstatic.com/docs/presentations/images/favicon5.ico',
+            'meet.google.com': 'https://www.gstatic.com/meet/favicon_meet_2023_32dp.png',
+            'chat.google.com': 'https://www.gstatic.com/chat/favicon_chat_32px.png',
+            'classroom.google.com': 'https://ssl.gstatic.com/classroom/favicon.png',
+            'keep.google.com': 'https://ssl.gstatic.com/keep/icon_2020q4v2_32dp.png'
+            // Calendar is handled separately above
+        };
+        
+        // Check if this is a Google service with known icon
+        if (googleServiceIcons[domain]) {
+            const iconUrl = googleServiceIcons[domain];
+            window.faviconCache.set(domain, iconUrl);
+            return iconUrl;
+        }
+        
+        // For non-special cases, use Google's favicon service
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        
+        // Cache the result for future use
+        window.faviconCache.set(domain, faviconUrl);
+        
+        return faviconUrl;
+    } catch (e) {
+        Debugger.warn('Error getting favicon for URL:', url, e);
+        return DEFAULT_ICON;
+    }
 }
+

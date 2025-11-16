@@ -1,6 +1,14 @@
 console.log("Digital clock widget loaded");
 {
+
 const parentDiv = document.currentScript.parentElement;
+const currentScript = document.currentScript;
+const scriptSrc = currentScript.src;
+const url = new URL(scriptSrc);
+const searchParam = url.searchParams.get('log');
+console.log(searchParam);
+
+console.log(url.searchParams.get('url'));
 
 // Create clock container
 const clockContainer = document.createElement('div');
