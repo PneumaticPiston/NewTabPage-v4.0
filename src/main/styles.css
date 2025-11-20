@@ -12,6 +12,7 @@
     --s-col: #2ecc71;
     --b-col: #ecf0f1;
     --t-col: #2c3e50;
+    --a-col: #f39c12;
 }
 
 [data-theme="dark"] {
@@ -19,6 +20,7 @@
     --s-col: #27ae60;
     --b-col: #2c3e50;
     --t-col: #ecf0f1;
+    --a-col: #ff6b6b;
 }
 
 /* Modern Dark Theme */
