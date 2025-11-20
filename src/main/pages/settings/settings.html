@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Tab - Settings</title>
-
-    <style id="theme"></style>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="./settings.css">
     <link rel="icon" type="image/png" href="/assets/icon.png">
@@ -18,9 +16,6 @@
     <div class="background-image">
         
     </div>
-    <header id="header">
-        <h1>Settings</h1>
-    </header>
     <main id="main-content">
         <div id="settings-container">
             <div class="setting-item" id="theme-settings">
@@ -30,27 +25,9 @@
                     <!-- Themes will be dynamically loaded here -->
                 </div>
                 <div id="custom-theme-section" style="display: none; margin-top: 20px;">
-                    <h3>Custom Theme Colors</h3>
-                    <div class="color-picker-group">
-                        <label for="custom-bg-color">Background Color:</label>
-                        <input type="color" id="custom-bg-color" name="custom-bg-color">
-                    </div>
-                    <div class="color-picker-group">
-                        <label for="custom-primary-color">Primary Color:</label>
-                        <input type="color" id="custom-primary-color" name="custom-primary-color">
-                    </div>
-                    <div class="color-picker-group">
-                        <label for="custom-secondary-color">Secondary Color:</label>
-                        <input type="color" id="custom-secondary-color" name="custom-secondary-color">
-                    </div>
-                    <div class="color-picker-group">
-                        <label for="custom-text-color">Text Color:</label>
-                        <input type="color" id="custom-text-color" name="custom-text-color">
-                    </div>
-                    <div class="color-picker-group">
-                        <label for="custom-accent-color">Accent Color:</label>
-                        <input type="color" id="custom-accent-color" name="custom-accent-color">
-                    </div>
+                    <style id="theme" contenteditable="true">
+
+                    </style>
                 </div>
             </div>
             <div class="setting-item" id="background-settings">
@@ -60,10 +37,9 @@
                     <div class="background-card" data-type="solid">
                         <input type="radio" id="bg-solid" name="background-type" value="0">
                         <label for="bg-solid" class="card-label">
-                            <div class="card-preview solid-preview"></div>
+                            <div class="card-preview" style="background-color: var(--b-col);">Uses background color from theme</div>
                             <span class="card-title">Solid Color</span>
                         </label>
-                        <input type="file" id="bg-file-input" accept="image/*" style="display: none;">
                     </div>
                     
                     <div class="background-card" data-type="custom">
@@ -184,5 +160,8 @@
             </div>
         </div>
     </main>
+    <header id="header">
+        <h1>Settings</h1>
+    </header>
 </body>
 </html>

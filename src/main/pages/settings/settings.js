@@ -27,21 +27,15 @@ function setupEventListeners() {
     // Note: Theme change listeners are set up in themeLoader.js after themes are loaded
     // This is done in initializeThemeSelector() to ensure dynamic themes have listeners
 
-    // Custom theme color changes
-    const colorInputs = document.querySelectorAll('input[type="color"]');
-    colorInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            updateCustomTheme();
-            saveSetting('theme');
-        });
-    });
-
     // Background type change
     const backgroundInputs = document.querySelectorAll('input[name="background-type"]');
     backgroundInputs.forEach(input => {
         input.addEventListener('change', (event) => {
-            SETTINGS.background.bgID = parseInt(event.target.value);
+            const newBgID = parseInt(event.target.value);
+            console.log('Background type changed to:', newBgID);
+            SETTINGS.background.bgID = newBgID;
             saveSetting('background');
+            console.log('Background saved:', SETTINGS.background);
         });
     });
 
@@ -85,6 +79,99 @@ function setupEventListeners() {
             saveSetting('sync');
         });
     });
+
+    // File input handling for background image
+    const fileInput = document.getElementById('bg-file-input-custom');
+    if (fileInput) {
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                try {
+                    console.log('File selected:', file.name, 'Size:', file.size);
+                    // Calculate file hash
+                    const fileHash = await calculateFileHash(file);
+                    console.log('File hash calculated:', fileHash);
+                    
+                    // Read file as data URL
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const dataUrl = e.target.result;
+                        
+                        // Check size before saving (Chrome storage limit is ~10MB per item)
+                        const sizeInMB = dataUrl.length / (1024 * 1024);
+                        if (sizeInMB > 5) {
+                            console.error('Image file is too large to save. Max 5MB allowed. Current:', sizeInMB.toFixed(2), 'MB');
+                            alert('Image file is too large. Please use an image smaller than 5MB.');
+                            return;
+                        }
+                        
+                        SETTINGS.background.imageHash = dataUrl;
+                        SETTINGS.background.fileHash = fileHash;
+                        SETTINGS.background.bgID = 1; // Ensure bgID is set to custom
+                        console.log('Background settings updated:', {
+                            bgID: SETTINGS.background.bgID,
+                            hasImageHash: !!SETTINGS.background.imageHash,
+                            hasFileHash: !!SETTINGS.background.fileHash,
+                            sizeInMB: sizeInMB.toFixed(2)
+                        });
+                        
+                        // Update UI to reflect custom background is now selected
+                        const customBgRadio = document.getElementById('bg-custom');
+                        if (customBgRadio) {
+                            customBgRadio.checked = true;
+                        }
+                        
+                        // Update preview
+                        const previewImg = document.querySelector('.custom-preview .preview-image');
+                        if (previewImg) {
+                            previewImg.src = dataUrl;
+                            previewImg.style.display = 'block';
+                            console.log('Preview image updated');
+                        }
+                        
+                        // Save to storage
+                        await saveSetting('background');
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                }
+            }
+        });
+    }
+
+    // Trigger file input click when custom background card is clicked
+    const customBgCard = document.querySelector('.background-card[data-type="custom"]');
+    if (customBgCard) {
+        const uploadPlaceholder = customBgCard.querySelector('.upload-placeholder');
+        if (uploadPlaceholder) {
+            uploadPlaceholder.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Upload placeholder clicked');
+                if (fileInput) {
+                    fileInput.click();
+                } else {
+                    console.error('File input not found');
+                }
+            });
+        }
+    } else {
+        console.warn('Custom background card not found');
+    }
+}
+
+
+/**
+ * Updates the custom theme colors in SETTINGS
+ */
+function updateCustomTheme() {
+    const themeElement = document.getElementById('theme');
+    if (!themeElement) {
+        console.error('Theme element not found');
+        return;
+    }
+    SETTINGS.themeColors = themeElement.textContent;
+    saveSetting('theme');
 }
 
 /**
@@ -95,24 +182,6 @@ function updateAccessibilitySliderValue(input) {
     const valueSpan = container.querySelector('.slider-value');
     if (valueSpan) {
         valueSpan.textContent = input.value + '%';
-    }
-}
-
-/**
- * Updates the custom theme colors in SETTINGS
- */
-function updateCustomTheme() {
-    const bgColor = document.getElementById('custom-bg-color')?.value || '#2e3440';
-    const primaryColor = document.getElementById('custom-primary-color')?.value || '#5e81ac';
-    const secondaryColor = document.getElementById('custom-secondary-color')?.value || '#88c0d0';
-    const textColor = document.getElementById('custom-text-color')?.value || '#eceff4';
-    const accentColor = document.getElementById('custom-accent-color')?.value || '#bf616a';
-
-    SETTINGS.themeColors = `[data-theme="custom"]{--background-color:${bgColor};--primary-color:${primaryColor};--secondary-color:${secondaryColor};--text-color:${textColor};--accent-color:${accentColor};}`;
-    
-    const themeElement = document.getElementById('theme');
-    if (themeElement) {
-        themeElement.textContent = SETTINGS.themeColors;
     }
 }
 
@@ -153,6 +222,19 @@ function saveAccessibilitySettings() {
 }
 
 /**
+ * Calculates the SHA-256 hash of a file
+ * @param {File} file - The file to hash
+ * @returns {Promise<string>} - The hex string representation of the file hash
+ */
+async function calculateFileHash(file) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+/**
  * Saves a specific setting to storage
  * @param {string} settingType - The type of setting to save (background, theme, links, header, other, sync)
  */
@@ -161,8 +243,10 @@ async function saveSetting(settingType) {
         case 'linkGroups':
             if (isSynced.links) {
                 chrome.storage.sync.set({ linkGroups: SETTINGS.linkGroups });
+                console.log('linkGroups saved to sync storage');
             } else {
                 chrome.storage.local.set({ linkGroups: SETTINGS.linkGroups });
+                console.log('linkGroups saved to local storage');
             }
             break;
 
@@ -172,47 +256,67 @@ async function saveSetting(settingType) {
                     themeID: SETTINGS.themeID, 
                     themeColors: SETTINGS.themeColors 
                 });
+                console.log('theme saved to sync storage');
             } else {
                 chrome.storage.local.set({ 
                     themeID: SETTINGS.themeID, 
                     themeColors: SETTINGS.themeColors 
                 });
+                console.log('theme saved to local storage');
             }
             break;
 
         case 'background':
-            if (isSynced.background) {
-                chrome.storage.sync.set({ background: SETTINGS.background });
-            } else {
-                chrome.storage.local.set({ background: SETTINGS.background });
-            }
+            const storageArea = isSynced.background ? chrome.storage.sync : chrome.storage.local;
+            const bgData = {
+                bgID: SETTINGS.background.bgID,
+                imageHash: SETTINGS.background.imageHash || "",
+                fileHash: SETTINGS.background.fileHash || ""
+            };
+            const backgroundDataStr = JSON.stringify(bgData);
+            console.log('Saving background to', isSynced.background ? 'sync' : 'local', 'storage:', backgroundDataStr);
+            storageArea.set({ background: bgData }, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('Error saving background:', chrome.runtime.lastError);
+                } else {
+                    console.log('Background saved successfully');
+                }
+            });
             break;
 
         case 'header':
             if (isSynced.header) {
                 chrome.storage.sync.set({ header: SETTINGS.header });
+                console.log('header saved to sync storage');
             } else {
                 chrome.storage.local.set({ header: SETTINGS.header });
+                console.log('header saved to local storage');
             }
             break;
 
         case 'other':
             if (isSynced.other) {
                 chrome.storage.sync.set({ search: SETTINGS.search });
+                console.log('other settings saved to sync storage');
             } else {
                 chrome.storage.local.set({ search: SETTINGS.search });
+                console.log('other settings saved to local storage');
             }
             break;
 
         case 'sync':
-            chrome.storage.local.set({ locations: isSynced });
+            chrome.storage.local.set({ locations: isSynced }, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('Error saving sync locations:', chrome.runtime.lastError);
+                } else {
+                    console.log('Sync locations saved successfully');
+                }
+            });
             break;
 
         default:
             console.warn(`Unknown setting type: ${settingType}`);
     }
-
-    console.log(`Setting "${settingType}" saved successfully`);
 }
 
 function loadSettings() {
@@ -238,6 +342,21 @@ function loadSettings() {
     const bgInput = document.querySelector(`input[name="background-type"][value="${SETTINGS.background.bgID}"]`);
     if (bgInput) {
         bgInput.checked = true;
+    }
+
+    // Load background image preview if available
+    if (SETTINGS.background.bgID === 1 && SETTINGS.background.imageHash) {
+        const previewImg = document.querySelector('.custom-preview .preview-image');
+        if (previewImg) {
+            previewImg.src = SETTINGS.background.imageHash;
+            previewImg.style.display = 'block';
+            console.log('Background preview loaded');
+        }
+    } else {
+        const previewImg = document.querySelector('.custom-preview .preview-image');
+        if (previewImg) {
+            previewImg.style.display = 'none';
+        }
     }
 
     // Load layout settings
@@ -298,7 +417,7 @@ function loadSettings() {
  */
 function loadCustomThemeColors() {
     // Parse the theme colors string to extract hex values
-    const match = SETTINGS.themeColors.match(/--background-color:(#[0-9a-f]+);--primary-color:(#[0-9a-f]+);--secondary-color:(#[0-9a-f]+);--text-color:(#[0-9a-f]+);--accent-color:(#[0-9a-f]+)/i);
+    const match = SETTINGS.themeColors.match(/--b-col:(#[0-9a-f]+);--p-col:(#[0-9a-f]+);--s-col:(#[0-9a-f]+);--t-col:(#[0-9a-f]+);--a-col:(#[0-9a-f]+)/i);
     
     if (match) {
         const bgColorInput = document.getElementById('custom-bg-color');

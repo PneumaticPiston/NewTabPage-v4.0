@@ -12,8 +12,8 @@ body {
     padding: 0;
     height: 100vh;
     width: 100vw;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--b-col);
+    color: var(--t-col);
 }
 
 header {
@@ -22,7 +22,7 @@ header {
     left: 0;
     width: 100%;
     height: var(--header-height);
-    color: var(--text-color);
+    color: var(--t-col);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 
     display: flex;
@@ -83,7 +83,7 @@ header {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--background-color);
+    background-color: var(--b-col);
     
     opacity: 0;
     transition: opacity .3s ease;
@@ -103,7 +103,7 @@ main {
     height: 100vh;
     margin: 0;
     padding: 0;
-    color: var(--text-color);
+    color: var(--t-col);
 }
 
 .settings-button {
@@ -116,15 +116,15 @@ main {
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
-    color: var(--text-color);
-    background-color: var(--primary-color);
+    color: var(--t-col);
+    background-color: var(--p-col);
     transition: background-color 0.1s, transform 0.2s;
     rotate: 0deg;
     scale: 1;
 }
 
 .settings-button:hover {
-    background-color: var(--accent-color);
+    background-color: var(--a-col);
     transform: scale(1.1) rotate(90deg);
     transform-origin: center;
     rotate: 90deg;
@@ -173,6 +173,6 @@ main {
     margin: 0 auto;
     padding: 20px;
     border-radius: 10px;
-    background-color: var(--background-color);
-    color: var(--text-color)
+    background-color: var(--b-col);
+    color: var(--t-col)
 }

@@ -91,11 +91,34 @@ SETTINGS.linkGroups.forEach((group) => {
 
 
 const background = document.querySelector(".background-image");
-if(SETTINGS.background.bgID == 1 && SETTINGS.background.imageHash) {
-    background.style.backgroundImage = `url(${SETTINGS.background.imageHash})`;
-}
-if(SETTINGS.background.bgID == 2) {
-    background.style.background = `linear-gradient(var(--grad-angle), var(--primary-color) 0%, var(--secondary-color) 100%)`;
+console.log('Loading background with settings:', {
+    bgID: SETTINGS.background.bgID,
+    bgID_type: typeof SETTINGS.background.bgID,
+    hasImageHash: !!SETTINGS.background.imageHash
+});
+
+// Ensure bgID is a number
+const bgID = parseInt(SETTINGS.background.bgID) || 0;
+
+if(bgID === 1) {
+    // Custom image background
+    if(SETTINGS.background.imageHash) {
+        console.log('Loading custom background image');
+        background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
+        background.style.backgroundSize = 'cover';
+        background.style.backgroundPosition = 'center';
+    } else {
+        console.warn('Custom background selected but no image provided, falling back to solid color');
+        background.style.background = '';
+    }
+} else if(bgID === 2) {
+    // Gradient background
+    console.log('Loading gradient background');
+    background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
+} else {
+    // Solid color background (default)
+    console.log('Loading solid color background');
+    background.style.background = '';
 }
 background.classList.add("loaded");
 

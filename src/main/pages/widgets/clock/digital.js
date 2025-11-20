@@ -16,8 +16,8 @@ clockContainer.style.cssText = `
   font-family: 'Courier New', monospace;
   font-size: 48px;
   font-weight: bold;
-  color: var(--text-color);;
-  background-color: var(--secondary-color);
+  color: var(--t-col);;
+  background-color: var(--s-col);
   padding: 30px 50px;
   border-radius: 15px;
   display: inline-block;

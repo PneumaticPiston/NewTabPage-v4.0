@@ -10,7 +10,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--background-color);
+    background-color: var(--b-col);
     background-size: cover;
     background-position: center;
     z-index: -1;
@@ -25,26 +25,27 @@ html, body {
     padding: 0;
     font-family: var(--font-family);
     font-size: var(--font-size);
-    background-color: var(--background-color);
+    background-color: var(--b-col);
 }
 body {
     top: 60px
 }
 
 header {
-    position: sticky;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
-    background-color: var(--primary-color);
-    color: var(--text-color);
+    height: var(--header-height);
+    background-color: var(--p-col);
+    color: var(--t-col);
     display: flex;
     align-items: center;
     padding: 0 20px;
 }
 
 main {
+    padding-top: var(--header-height);
     padding-left: 10%;
     padding-right: 10%;
     width: calc(100% - 30%);
@@ -85,7 +86,7 @@ main {
 
 .background-card input[type="radio"]:checked + .card-label,
 .theme-card input[type="radio"]:checked + .card-label {
-    border-color: var(--accent-color, #007acc);
+    border-color: var(--a-col, #007acc);
     box-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
 }
 
@@ -102,7 +103,7 @@ main {
 }
 
 .card-label:hover {
-    border-color: var(--accent-color, #007acc);
+    border-color: var(--a-col, #007acc);
     background-color: rgba(0, 122, 204, 0.05);
     transform: translateY(-2px);
 }
@@ -160,7 +161,7 @@ main {
 
 .card-title {
     font-weight: 500;
-    color: var(--text-color, #333);
+    color: var(--t-col, #333);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
