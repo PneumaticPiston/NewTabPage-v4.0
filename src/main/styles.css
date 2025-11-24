@@ -8,19 +8,19 @@
 }
 
 [data-theme="light"] {
-    --p-col: #3498db;
-    --s-col: #2ecc71;
-    --b-col: #ecf0f1;
-    --t-col: #2c3e50;
-    --a-col: #f39c12;
+    --b-col: #ffffff;   /* background color */
+    --p-col: #2f3a44;   /* primary color */
+    --s-col: #f3f4f6;   /* secondary color */
+    --t-col: #111827;   /* text color */
+    --a-col: #3b82f6;   /* accent accent */
 }
 
 [data-theme="dark"] {
-    --p-col: #2980b9;
-    --s-col: #27ae60;
-    --b-col: #2c3e50;
-    --t-col: #ecf0f1;
-    --a-col: #ff6b6b;
+    --b-col: #0b1220; 
+    --p-col: #111827; 
+    --s-col: #0f1724; 
+    --t-col: #e6eef6; 
+    --a-col: #60a5fa; 
 }
 
 /* Modern Dark Theme */

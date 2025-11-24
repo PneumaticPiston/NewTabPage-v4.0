@@ -15,12 +15,17 @@ var isSynced = {
  * The settings object contains various configuration options for the application.
  */
 const SETTINGS = {
+    /*
+     * type: 0 = grid
+     *       1 = list
+     *       2 = widget
+     */
     linkGroups: [
         {
             name: "Test Group 1",
             x: 10,
             y: 10,
-            type: "grid",
+            type: 0,
             grid: {
                 c: 2,
                 r: 1,
@@ -36,7 +41,7 @@ const SETTINGS = {
             name: "Test Group 2",
             x: 30,
             y: 30,
-            type: "grid",
+            type: 0,
             grid: {
                 c: 1,
                 r: 3,
@@ -52,7 +57,7 @@ const SETTINGS = {
             name: "Test Group 3",
             x: 50,
             y: 50,
-            type: "list",
+            type: 1,
             grid: {
                 c: 3,
                 r: 2,
@@ -66,11 +71,11 @@ const SETTINGS = {
             ]
         }
     ],
-    themeID: "nord",
+    themeID: "modern-dark",
     themeData: `[data-theme="custom"]{--b-col:#2e3440;--p-col:#5e81ac;--s-col:#88c0d0;--t-col:#eceff4;--a-col:#bf616a;}`,
     background: {
         imageHash: "",
-        bgID: 1
+        bgID: 0
     },
     header: {
         // The height of the header in pixels

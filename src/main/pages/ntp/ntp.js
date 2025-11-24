@@ -10,7 +10,7 @@ const groupContainer = document.getElementById('groups-container');
 SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
-    if(group.type == "grid") {
+    if(group.type == 0) {
         // Handle grid type groups
         const h2 = document.createElement('h2');
         h2.textContent = group.name;
@@ -54,7 +54,7 @@ SETTINGS.linkGroups.forEach((group) => {
             linksContainer.appendChild(a);
         });
         newGroup.appendChild(linksContainer);
-    } else if (group.type == "list") {
+    } else if (group.type == 1) {
         // Handle list type groups here
         const h2 = document.createElement('h2');
         h2.textContent = group.name;
@@ -78,7 +78,7 @@ SETTINGS.linkGroups.forEach((group) => {
         });
 
         newGroup.appendChild(ul);
-    } else if (group.type == "widget") {
+    } else if (group.type == 2) {
         // Handle widget type groups here
         const script = document.createElement('script');
         script.defer = true;
@@ -91,34 +91,27 @@ SETTINGS.linkGroups.forEach((group) => {
 
 
 const background = document.querySelector(".background-image");
-console.log('Loading background with settings:', {
-    bgID: SETTINGS.background.bgID,
-    bgID_type: typeof SETTINGS.background.bgID,
-    hasImageHash: !!SETTINGS.background.imageHash
-});
 
 // Ensure bgID is a number
-const bgID = parseInt(SETTINGS.background.bgID) || 0;
-
-if(bgID === 1) {
-    // Custom image background
-    if(SETTINGS.background.imageHash) {
-        console.log('Loading custom background image');
-        background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
-        background.style.backgroundSize = 'cover';
-        background.style.backgroundPosition = 'center';
-    } else {
-        console.warn('Custom background selected but no image provided, falling back to solid color');
+switch (parseInt(SETTINGS.background.bgID) || 0) {
+    case 0:
+        break;
+    case 1: 
+        if(SETTINGS.background.imageHash) {
+            background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
+            background.style.backgroundSize = 'cover';
+            background.style.backgroundPosition = 'center';
+        } else {
+            background.style.background = '';
+        }
+        break;
+    case 2:
+        background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
+        break;
+    default:
         background.style.background = '';
-    }
-} else if(bgID === 2) {
-    // Gradient background
-    console.log('Loading gradient background');
-    background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
-} else {
-    // Solid color background (default)
-    console.log('Loading solid color background');
-    background.style.background = '';
+        break;
+
 }
 background.classList.add("loaded");
 
