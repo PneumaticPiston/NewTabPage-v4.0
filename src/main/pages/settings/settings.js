@@ -11,21 +11,17 @@ initializeSettings().then(() => {
     loadSettings();
     setupEventListeners();
     // Initialize theme selector after other settings are loaded
-    initializeThemeSelector();
 }).catch(error => {
     console.error("Failed to initialize settings:", error);
     // Fall back to default behavior even if initialization fails
     loadSettings();
     setupEventListeners();
-    initializeThemeSelector();
 });
 
 /**
  * Sets up event listeners for all setting changes
  */
 function setupEventListeners() {
-    // Note: Theme change listeners are set up in themeLoader.js after themes are loaded
-    // This is done in initializeThemeSelector() to ensure dynamic themes have listeners
 
     // Background type change
     const backgroundInputs = document.querySelectorAll('input[name="background-type"]');
@@ -433,3 +429,7 @@ function loadCustomThemeColors() {
         if (accentColorInput) accentColorInput.value = match[5];
     }
 }
+
+document.getElementById('to-editor').addEventListener('click', () => {
+    window.location.href = '/pages/ntp-editor/editor.html';
+});

@@ -9,7 +9,6 @@
     <link rel="icon" type="image/png" href="/assets/icon.png">
 
     <script src="/getStorage.js"></script>
-    <script src="./themeLoader.js"></script>
     <script src="./settings.js" defer></script>
 </head>
 <body>
@@ -69,7 +68,12 @@
             </div>
             <div class="setting-item">
                 <h1>Layout</h1>
-                <p>Customize your layout preferences:</p>
+                <p>Customize your layout:</p>
+                <div class="layout-options">
+                    <div class="layout-option">
+                        <button id="to-editor">Layout Editor</button>
+                    </div>
+                </div>
                 <div class="layout-options">
                     <div class="layout-option">
                         <label for="show-bottom-section">Show Bottom Section:</label>

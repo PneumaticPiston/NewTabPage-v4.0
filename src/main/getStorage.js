@@ -71,7 +71,7 @@ const SETTINGS = {
             ]
         }
     ],
-    themeID: "modern-dark",
+    themeID: "custom",
     themeData: `[data-theme="custom"]{--b-col:#2e3440;--p-col:#5e81ac;--s-col:#88c0d0;--t-col:#eceff4;--a-col:#bf616a;}`,
     background: {
         imageHash: "",
