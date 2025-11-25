@@ -177,7 +177,6 @@
 }
 
 .group {
-    transform-origin: center center;
     position: absolute;
     border-radius: var(--border-radius);
     background-color: var(--s-col);

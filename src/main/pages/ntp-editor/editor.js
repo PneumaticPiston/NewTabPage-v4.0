@@ -6,8 +6,12 @@ let i = 0;
 SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
+
+    const groupHoverPopup = document.createElement('div');
+    groupHoverPopup.className = 'group-hover-popup';
+    newGroup.appendChild(groupHoverPopup);
+
     makeDraggable(newGroup);
-    
     newGroup.dataset.index = i; 
     if(group.type == 0) {
         // Handle grid type groups

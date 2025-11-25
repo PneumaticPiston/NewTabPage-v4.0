@@ -4,3 +4,22 @@
         linear-gradient(to right, #e0e0e0 .5px, transparent .5px),
         linear-gradient(to bottom, #e0e0e0 .5px, transparent .5px);
 }
+
+.group .group-header {
+    position: relative;
+}
+
+.group .list {
+    position: relative;
+}
+
+.group-hover-popup {
+    position: absolute;
+    bottom: 100%;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.container:hover .popup {
+    transform: translateY(0);
+}
