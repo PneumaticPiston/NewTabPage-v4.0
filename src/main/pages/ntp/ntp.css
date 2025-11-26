@@ -17,6 +17,7 @@ body {
 }
 
 header {
+    background-color: var(--b-col);
     position: absolute;
     top: 0;
     left: 0;

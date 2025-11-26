@@ -28,8 +28,7 @@ const SETTINGS = {
             type: 0,
             grid: {
                 c: 2,
-                r: 1,
-                overflow: "x"
+                r: 1
             },
             links: [
                 {name: "YouTube", url: "https://www.youtube.com"},
@@ -44,8 +43,7 @@ const SETTINGS = {
             type: 0,
             grid: {
                 c: 1,
-                r: 3,
-                overflow: "y"
+                r: 3
             },
             links: [
                 {name: "Stack Overflow", url: "https://stackoverflow.com"},
@@ -60,8 +58,7 @@ const SETTINGS = {
             type: 1,
             grid: {
                 c: 3,
-                r: 2,
-                overflow: "y"
+                r: 2
             },
             links: [
                 {name: "Twitter", url: "https://twitter.com"},
@@ -71,7 +68,7 @@ const SETTINGS = {
             ]
         }
     ],
-    themeID: "dark",
+    themeID: "nord",
     themeData: `[data-theme="custom"]{--b-col:#2e3440;--p-col:#5e81ac;--s-col:#88c0d0;--t-col:#eceff4;--a-col:#bf616a;}`,
     background: {
         imageHash: "",
@@ -123,6 +120,39 @@ const SETTINGS = {
         uiScale: 100,
         reduceMotion: false,
         highContrast: false
+    }
+}
+
+function saveToSettings(key, value) {
+    switch (key) {
+        case "linkGroups":
+            SETTINGS.linkGroups = value;
+            break;
+        case "themeID":
+            SETTINGS.themeID = value;
+            break;
+        case "themeData":
+            SETTINGS.themeData = value;
+            break;
+        case "background":
+            SETTINGS.background = value;
+            break;
+        case "header":
+            SETTINGS.header = value;
+            break;
+        default:
+            console.warn("Unknown SETTINGS key:", key);
+    }
+    if (isSynced.links && (key === "linkGroups")) {
+        chrome.storage.sync.set({[key]: value});
+    } else if (isSynced.theme && (key === "themeID" || key === "themeData")) {
+        chrome.storage.sync.set({[key]: value});
+    } else if (isSynced.background && (key === "background")) {
+        chrome.storage.sync.set({[key]: value});
+    } else if (isSynced.header && (key === "header")) {
+        chrome.storage.sync.set({[key]: value});
+    } else {
+        chrome.storage.local.set({[key]: value});
     }
 }
 

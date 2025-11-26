@@ -1,8 +1,11 @@
 .background-image {
     background-size: 20px 20px;
-    background-image:
-        linear-gradient(to right, #e0e0e0 .5px, transparent .5px),
-        linear-gradient(to bottom, #e0e0e0 .5px, transparent .5px);
+    background-image: radial-gradient(circle at 1px 1px, var(--t-col) 1.5px, transparent 1.6px);
+    background-repeat: repeat;
+}
+
+.group {
+    z-index: 1;
 }
 
 .group .group-header {
@@ -14,12 +17,48 @@
 }
 
 .group-hover-popup {
+    opacity: 0;
     position: absolute;
     bottom: 100%;
+    z-index: -1;
     transform: translateY(100%);
     transition: transform 0.3s;
 }
 
-.container:hover .popup {
+.group:hover .group-hover-popup {
+    opacity: 1;
+    z-index: 2;
     transform: translateY(0);
+}
+
+.grid .link:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    transition: box-shadow 0.8s ease, scale .2s ease;
+    scale: 1;
+}
+
+.settings-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--t-col);
+    background-color: var(--p-col);
+    transition: background-color 0.1s, transform 0.2s;
+    rotate: 0deg;
+    scale: 1;
+}
+
+.settings-button:hover {
+    background-color: var(--a-col);
+    transform: scale(1.1) rotate(90deg);
+    transform-origin: center;
+    rotate: 90deg;
+    scale: 1.05;
+    transition: background-color 0.2s, transform 0.25s;
 }

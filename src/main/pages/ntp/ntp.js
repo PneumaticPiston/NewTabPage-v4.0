@@ -26,16 +26,6 @@ SETTINGS.linkGroups.forEach((group) => {
         linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
 
-        if(group.grid.overlow == "x") {
-            newGroup.style.overflowX = 'scroll';
-            newGroup.style.overflowY = 'hidden';
-        } else if (group.grid.overflow == "y") {
-            newGroup.style.overflowX = 'hidden';
-            newGroup.style.overflowY = 'scroll';
-        } else {
-            newGroup.style.overflowX = 'hidden';
-        }
-
         group.links.forEach(link => {
             const a = document.createElement('a');
             a.className = 'link';

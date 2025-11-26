@@ -218,6 +218,7 @@
 }
 
 .grid .link img {
+    background-color: var(--s-col);
     width: 50px;
     height: 50px;
     margin-bottom: 4px;

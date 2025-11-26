@@ -1,7 +1,7 @@
 // Get the container where groups will be added
 const groupContainer = document.getElementById('groups-container');
 
-let i = 0;
+var i = 0;
 // Iterate over each group in settings.linkGroups
 SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
@@ -9,10 +9,30 @@ SETTINGS.linkGroups.forEach((group) => {
 
     const groupHoverPopup = document.createElement('div');
     groupHoverPopup.className = 'group-hover-popup';
+
+    
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.ariaLabel = 'Edit Group';
+    editButton.addEventListener('click', () => {
+        
+    });
+    groupHoverPopup.appendChild(editButton);
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'X';
+    removeButton.ariaLabel = 'Remove Group';
+    removeButton.addEventListener('click', () => {
+        newGroup.remove();
+        SETTINGS.linkGroups.splice(i, 1);
+        saveSettings();
+    });
+    groupHoverPopup.appendChild(removeButton);
+
     newGroup.appendChild(groupHoverPopup);
 
     makeDraggable(newGroup);
-    newGroup.dataset.index = i; 
+    newGroup.dataset.index = i;
     if(group.type == 0) {
         // Handle grid type groups
         const h2 = document.createElement('h2');
@@ -28,16 +48,6 @@ SETTINGS.linkGroups.forEach((group) => {
 
         linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
-
-        if(group.grid.overlow == "x") {
-            newGroup.style.overflowX = 'scroll';
-            newGroup.style.overflowY = 'hidden';
-        } else if (group.grid.overflow == "y") {
-            newGroup.style.overflowX = 'hidden';
-            newGroup.style.overflowY = 'scroll';
-        } else {
-            newGroup.style.overflowX = 'hidden';
-        }
 
         group.links.forEach(link => {
             const a = document.createElement('a');
@@ -275,6 +285,7 @@ function stopDrag(e) {
   
   const canvas = draggedElement.parentElement;
   const canvasRect = canvas.getBoundingClientRect();
+  const elementIndex = draggedElement.dataset.index;
   
   let x = parseInt(draggedElement.style.left);
   let y = parseInt(draggedElement.style.top);
@@ -282,11 +293,17 @@ function stopDrag(e) {
   // Store position as percentage for resize handling
   draggedElement.dataset.percentX = (x / canvasRect.width * 100).toFixed(2);
   draggedElement.dataset.percentY = (y / canvasRect.height * 100).toFixed(2);
+
+  // Update settings with new position
+  SETTINGS.linkGroups[elementIndex].x = (x / canvasRect.width * 100).toFixed(2);
+  SETTINGS.linkGroups[elementIndex].y = (y / canvasRect.height * 100).toFixed(2);
   
   draggedElement = null;
   
   document.removeEventListener('mousemove', drag);
   document.removeEventListener('mouseup', stopDrag);
+
+  saveSettings();
 }
 
 // Handle window resize (call this on resize event)
@@ -310,3 +327,16 @@ function handleResize(canvas) {
 } 
 const canvas = document.getElementById('groups-container');
 window.addEventListener('resize', () => handleResize(canvas));
+
+function saveSettings() {
+    // Update group positions before saving
+    const groups = document.querySelectorAll('.group');
+    groups.forEach((group, index) => {
+        const canvasRect = canvas.getBoundingClientRect();
+        const x = parseInt(group.style.left);
+        const y = parseInt(group.style.top);
+        SETTINGS.linkGroups[index].x = ((x / canvasRect.width) * 100).toFixed(2);
+        SETTINGS.linkGroups[index].y = ((y / canvasRect.height) * 100).toFixed(2);
+    });
+    saveToSettings('linkGroups', SETTINGS.linkGroups);
+}
