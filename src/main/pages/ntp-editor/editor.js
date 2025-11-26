@@ -7,6 +7,8 @@ SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
 
+    newGroup.dataset.index = i;
+
     const groupHoverPopup = document.createElement('div');
     groupHoverPopup.className = 'group-hover-popup';
 
@@ -24,7 +26,7 @@ SETTINGS.linkGroups.forEach((group) => {
     removeButton.ariaLabel = 'Remove Group';
     removeButton.addEventListener('click', () => {
         newGroup.remove();
-        SETTINGS.linkGroups.splice(i, 1);
+        SETTINGS.linkGroups.splice(newGroup.dataset.index, 1);
         saveSettings();
     });
     groupHoverPopup.appendChild(removeButton);
@@ -32,7 +34,6 @@ SETTINGS.linkGroups.forEach((group) => {
     newGroup.appendChild(groupHoverPopup);
 
     makeDraggable(newGroup);
-    newGroup.dataset.index = i;
     if(group.type == 0) {
         // Handle grid type groups
         const h2 = document.createElement('h2');
@@ -283,27 +284,33 @@ function drag(e) {
 function stopDrag(e) {
   if (!draggedElement) return;
   
-  const canvas = draggedElement.parentElement;
-  const canvasRect = canvas.getBoundingClientRect();
-  const elementIndex = draggedElement.dataset.index;
-  
-  let x = parseInt(draggedElement.style.left);
-  let y = parseInt(draggedElement.style.top);
-  
-  // Store position as percentage for resize handling
-  draggedElement.dataset.percentX = (x / canvasRect.width * 100).toFixed(2);
-  draggedElement.dataset.percentY = (y / canvasRect.height * 100).toFixed(2);
+  try {
+        const canvas = draggedElement.parentElement;
+        const canvasRect = canvas.getBoundingClientRect();
+        const elementIndex = parseInt(draggedElement.dataset.index); // Ensure it's a number
+        
+        let x = parseInt(draggedElement.style.left) || 0;
+        let y = parseInt(draggedElement.style.top) || 0;
+        
+        // Store position as percentage for resize handling
+        draggedElement.dataset.percentX = (x / canvasRect.width * 100).toFixed(2);
+        draggedElement.dataset.percentY = (y / canvasRect.height * 100).toFixed(2);
 
-  // Update settings with new position
-  SETTINGS.linkGroups[elementIndex].x = (x / canvasRect.width * 100).toFixed(2);
-  SETTINGS.linkGroups[elementIndex].y = (y / canvasRect.height * 100).toFixed(2);
-  
-  draggedElement = null;
-  
-  document.removeEventListener('mousemove', drag);
-  document.removeEventListener('mouseup', stopDrag);
-
-  saveSettings();
+        // Update settings with new position - add safety check
+        if (SETTINGS.linkGroups[elementIndex]) {
+            SETTINGS.linkGroups[elementIndex].x = (x / canvasRect.width * 100).toFixed(2);
+            SETTINGS.linkGroups[elementIndex].y = (y / canvasRect.height * 100).toFixed(2);
+        }
+        
+        saveSettings();
+    } catch (error) {
+        console.error('Error in stopDrag:', error);
+    } finally {
+        // Always clean up, even if there's an error
+        draggedElement = null;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+    }
 }
 
 // Handle window resize (call this on resize event)
@@ -329,14 +336,29 @@ const canvas = document.getElementById('groups-container');
 window.addEventListener('resize', () => handleResize(canvas));
 
 function saveSettings() {
+    console.log('Saving settings...');
     // Update group positions before saving
     const groups = document.querySelectorAll('.group');
-    groups.forEach((group, index) => {
+    groups.forEach((group, index) => { // Added index parameter here
         const canvasRect = canvas.getBoundingClientRect();
         const x = parseInt(group.style.left);
         const y = parseInt(group.style.top);
-        SETTINGS.linkGroups[index].x = ((x / canvasRect.width) * 100).toFixed(2);
-        SETTINGS.linkGroups[index].y = ((y / canvasRect.height) * 100).toFixed(2);
+        if (SETTINGS.linkGroups[index]) { // Add safety check
+            SETTINGS.linkGroups[index].x = ((x / canvasRect.width) * 100).toFixed(2);
+            SETTINGS.linkGroups[index].y = ((y / canvasRect.height) * 100).toFixed(2);
+        }
     });
     saveToSettings('linkGroups', SETTINGS.linkGroups);
 }
+
+document.getElementById('save-button').addEventListener('click', () => {
+    saveSettings();
+});
+document.getElementById('add-group-button').addEventListener('click', () => {
+    // Logic to add a new group
+    console.log('Add Group button clicked');
+});
+document.getElementById('add-widget-button').addEventListener('click', () => {
+    // Logic to add a new widget
+    console.log('Add Widget button clicked');
+});

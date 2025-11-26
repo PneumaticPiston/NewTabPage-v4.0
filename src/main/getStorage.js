@@ -124,6 +124,7 @@ const SETTINGS = {
 }
 
 function saveToSettings(key, value) {
+    console.log(`Saving ${key} to ${isSynced.links ? "sync" : "local"} storage`);
     switch (key) {
         case "linkGroups":
             SETTINGS.linkGroups = value;
@@ -143,13 +144,7 @@ function saveToSettings(key, value) {
         default:
             console.warn("Unknown SETTINGS key:", key);
     }
-    if (isSynced.links && (key === "linkGroups")) {
-        chrome.storage.sync.set({[key]: value});
-    } else if (isSynced.theme && (key === "themeID" || key === "themeData")) {
-        chrome.storage.sync.set({[key]: value});
-    } else if (isSynced.background && (key === "background")) {
-        chrome.storage.sync.set({[key]: value});
-    } else if (isSynced.header && (key === "header")) {
+    if (isSynced.links) {
         chrome.storage.sync.set({[key]: value});
     } else {
         chrome.storage.local.set({[key]: value});
