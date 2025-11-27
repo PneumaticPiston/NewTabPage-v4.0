@@ -66,6 +66,16 @@ const SETTINGS = {
                 {name: "Facebook", url: "https://facebook.com"},
                 {name: "Instagram", url: "https://instagram.com"}
             ]
+        },
+        {
+            name: "Test Group 4",
+            x: 70,
+            y: 70,
+            type: 2,
+            id: {
+                type: 0,
+                var: 0
+            }
         }
     ],
     themeID: "nord",

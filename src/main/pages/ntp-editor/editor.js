@@ -1,6 +1,8 @@
 // Get the container where groups will be added
 const groupContainer = document.getElementById('groups-container');
 
+const editorElement = document.getElementById('group-editor');
+
 var i = 0;
 // Iterate over each group in settings.linkGroups
 SETTINGS.linkGroups.forEach((group) => {
@@ -17,7 +19,7 @@ SETTINGS.linkGroups.forEach((group) => {
     editButton.textContent = 'Edit';
     editButton.ariaLabel = 'Edit Group';
     editButton.addEventListener('click', () => {
-        
+        editGroup(newGroup.dataset.index);
     });
     groupHoverPopup.appendChild(editButton);
 
@@ -357,8 +359,128 @@ document.getElementById('save-button').addEventListener('click', () => {
 document.getElementById('add-group-button').addEventListener('click', () => {
     // Logic to add a new group
     console.log('Add Group button clicked');
+
+    const newGroup = document.createElement('div');
+    newGroup.className = 'group';
+
+    newGroup.dataset.index = SETTINGS.linkGroups.length;
+
+    const groupHoverPopup = document.createElement('div');
+    groupHoverPopup.className = 'group-hover-popup';
+
+    
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.ariaLabel = 'Edit Group';
+    editButton.addEventListener('click', () => {
+        editGroup(newGroup.dataset.index);
+    });
+    groupHoverPopup.appendChild(editButton);
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'X';
+    removeButton.ariaLabel = 'Remove Group';
+    removeButton.addEventListener('click', () => {
+        newGroup.remove();
+        SETTINGS.linkGroups.splice(newGroup.dataset.index, 1);
+        saveSettings();
+    });
+    groupHoverPopup.appendChild(removeButton);
+
+    newGroup.appendChild(groupHoverPopup);
+
+    makeDraggable(newGroup);
+
+    makeDraggable(newGroup);
+
+    const group = {
+        name: "New Group",
+        x: 40,
+        y: 40,
+        type: 0,
+        grid: {r: 1, c: 1},
+        links: [
+            
+        ]
+    };
+    SETTINGS.linkGroups.push();
+
+    // Handle grid type groups
+    const h2 = document.createElement('h2');
+    h2.textContent = group.name;
+    h2.className = 'group-header';
+    newGroup.appendChild(h2);
+
+    const linksContainer = document.createElement('div');
+    linksContainer.className = 'grid';
+
+    newGroup.style.left = `${group.x}vw`;
+    newGroup.style.top = `${group.y}vh`;
+
+    linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+    linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
+
+    group.links.forEach(link => {
+        const a = document.createElement('a');
+        a.className = 'link';
+        a.href = link.url;
+        a.title = link.name;
+
+        const img = document.createElement('img');
+        img.src = getFavicon(link.url);
+        img.alt = `${link.name} Favicon`;
+
+        const span = document.createElement('span');
+        span.textContent = link.name;
+
+        a.appendChild(img);
+        a.appendChild(span);
+        linksContainer.appendChild(a);
+    });
+    newGroup.appendChild(linksContainer);
+    groupContainer.appendChild(newGroup);
+
+    saveSettings();
 });
+
 document.getElementById('add-widget-button').addEventListener('click', () => {
     // Logic to add a new widget
     console.log('Add Widget button clicked');
 });
+
+function editGroup(index) {
+    // Logic to edit the group at the given index
+    console.log('Edit Group button clicked for index:', index);
+
+    const element = document.querySelector(`.group[data-index='${index}']`);
+    const group = SETTINGS.linkGroups[index];
+    if (!element) {
+        console.error('Group element or data not found for index:', index);
+        return;
+    }
+
+    console.log('Editing group:', group);
+    // Open the editor with the group's data
+    editorElement.style.display = 'block';
+
+    // Populate the editor with the group's current data
+    document.getElementById('group-name-input').value = group.name;
+    document.getElementById('group-type-select').value = group.type;
+
+    // Save changes when the save button is clicked
+    document.getElementById('save-group-button').onclick = () => {
+        console.log('Saving group changes for index:', index);
+        group.name = document.getElementById('group-name-input').value;
+        group.type = parseInt(document.getElementById('group-type-select').value);
+        // Update the group element in the DOM
+        element.querySelector('.group-header').textContent = group.name;
+        saveSettings();
+        editorElement.style.display = 'none';
+    }
+
+    // Close the editor when the cancel button is clicked
+    document.getElementById('cancel-group-button').onclick = () => {
+        console.log('Cancelling group edit for index:', index);
+        editorElement.style.display = 'none';
+    }
+}
