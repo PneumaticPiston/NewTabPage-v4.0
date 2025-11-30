@@ -4,9 +4,6 @@
     background-repeat: repeat;
 }
 
-.group {
-}
-
 .group .group-header {
     position: relative;
 }
@@ -46,6 +43,11 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     transition: box-shadow 0.8s ease, scale .2s ease;
     scale: 1;
+}
+
+ul li:hover {
+    box-shadow: none;
+    transition: box-shadow 0.8s ease, scale .2s ease;
 }
 
 .buttons-container .button {
@@ -89,11 +91,120 @@
     top: 50%;
     left: 50%;
     width: 50%;
-    height: auto;
+    max-height: 80vh;
+    overflow-y: auto;
     transform: translate(-50%, -50%);
     background-color: var(--b-col);
     border: 2px solid var(--p-col);
     border-radius: 10px;
     padding: 20px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    z-index: 1000;
+}
+
+.group-editor-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.group-editor-content h2 {
+    margin: 0;
+    color: var(--t-col);
+}
+
+.group-editor-content h3 {
+    margin: 10px 0 5px 0;
+    color: var(--t-col);
+}
+
+.group-editor-content label {
+    color: var(--t-col);
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.group-editor-content input[type="text"],
+.group-editor-content input[type="number"],
+.group-editor-content select {
+    padding: 8px;
+    border: 1px solid var(--p-col);
+    border-radius: 5px;
+    background-color: var(--b-col);
+    color: var(--t-col);
+    font-size: 14px;
+}
+
+#grid-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#grid-options input {
+    width: 60px;
+}
+
+.group-editor-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.editor-link-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    background-color: rgba(94, 129, 172, 0.1);
+    border-radius: 5px;
+}
+
+.link-name-input,
+.link-url-input {
+    width: 100%;
+}
+
+.remove-link-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--a-col);
+    color: var(--t-col);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.remove-link-btn:hover {
+    opacity: 0.8;
+}
+
+#add-link-btn {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.group-editor-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.group-editor-buttons .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--p-col);
+    color: var(--t-col);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.group-editor-buttons .button:hover {
+    background-color: var(--s-col);
 }

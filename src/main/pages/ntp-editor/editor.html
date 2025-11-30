@@ -49,10 +49,26 @@
             <h2 data-i18n="edit_group">Edit Group</h2>
             <label for="group-name-input" data-i18n="group_name">Group Name:</label>
             <input type="text" id="group-name-input" placeholder="Group Name">
+
+            <label for="group-type-select">Group Type:</label>
+            <select id="group-type-select">
+                <option value="0">Grid</option>
+                <option value="1">Stack</option>
+            </select>
+
+            <div id="grid-options" style="display: none;">
+                <label for="grid-rows">Rows:</label>
+                <input type="number" id="grid-rows" min="1" value="1">
+                <label for="grid-columns">Columns:</label>
+                <input type="number" id="grid-columns" min="1" value="1">
+            </div>
+
+            <h3>Links:</h3>
             <div>
                 <ul class="group-editor-links" id="group-editor-links">
-                    <!-- Tabs will be populated here -->
+                    <!-- Links will be populated here -->
                 </ul>
+                <button id="add-link-btn" class="button">Add Link</button>
             </div>
             <div class="group-editor-buttons">
                 <button id="save-group-button" class="button" data-i18n="save">Save</button>

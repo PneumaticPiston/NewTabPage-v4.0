@@ -27,8 +27,11 @@ SETTINGS.linkGroups.forEach((group) => {
     removeButton.textContent = 'X';
     removeButton.ariaLabel = 'Remove Group';
     removeButton.addEventListener('click', () => {
+        const indexToRemove = parseInt(newGroup.dataset.index);
         newGroup.remove();
-        SETTINGS.linkGroups.splice(newGroup.dataset.index, 1);
+        SETTINGS.linkGroups.splice(indexToRemove, 1);
+        // Reindex all remaining groups
+        reindexGroups();
         saveSettings();
     });
     groupHoverPopup.appendChild(removeButton);
@@ -46,8 +49,12 @@ SETTINGS.linkGroups.forEach((group) => {
         const linksContainer = document.createElement('div');
         linksContainer.className = 'grid';
 
-        newGroup.style.left = `${group.x}vw`;
-        newGroup.style.top = `${group.y}vh`;
+        // Convert percentage to px for consistency with drag system
+        const canvasRect = groupContainer.getBoundingClientRect();
+        const xPx = (group.x / 100) * canvasRect.width;
+        const yPx = (group.y / 100) * canvasRect.height;
+        newGroup.style.left = `${xPx}px`;
+        newGroup.style.top = `${yPx}px`;
 
         linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
@@ -333,23 +340,32 @@ function handleResize(canvas) {
     el.style.left = x + 'px';
     el.style.top = y + 'px';
   });
-} 
-const canvas = document.getElementById('groups-container');
-window.addEventListener('resize', () => handleResize(canvas));
+}
+window.addEventListener('resize', () => handleResize(groupContainer));
+
+function reindexGroups() {
+    const groups = document.querySelectorAll('.group');
+    groups.forEach((group, index) => {
+        group.dataset.index = index;
+    });
+}
 
 function saveSettings() {
     console.log('Saving settings...');
     // Update group positions before saving
     const groups = document.querySelectorAll('.group');
-    groups.forEach((group, index) => { // Added index parameter here
-        const canvasRect = canvas.getBoundingClientRect();
-        const x = parseInt(group.style.left);
-        const y = parseInt(group.style.top);
-        if (SETTINGS.linkGroups[index]) { // Add safety check
-            SETTINGS.linkGroups[index].x = ((x / canvasRect.width) * 100).toFixed(2);
-            SETTINGS.linkGroups[index].y = ((y / canvasRect.height) * 100).toFixed(2);
+    groups.forEach((group, index) => {
+        const canvasRect = groupContainer.getBoundingClientRect();
+        const x = parseInt(group.style.left) || 0;
+        const y = parseInt(group.style.top) || 0;
+        if (SETTINGS.linkGroups[index]) {
+            // Convert to percentage and ensure it's a number
+            SETTINGS.linkGroups[index].x = parseFloat(((x / canvasRect.width) * 100).toFixed(2));
+            SETTINGS.linkGroups[index].y = parseFloat(((y / canvasRect.height) * 100).toFixed(2));
         }
     });
+
+    console.log('Settings to save:', JSON.stringify(SETTINGS.linkGroups, null, 2));
     saveToSettings('linkGroups', SETTINGS.linkGroups);
 }
 
@@ -381,15 +397,16 @@ document.getElementById('add-group-button').addEventListener('click', () => {
     removeButton.textContent = 'X';
     removeButton.ariaLabel = 'Remove Group';
     removeButton.addEventListener('click', () => {
+        const indexToRemove = parseInt(newGroup.dataset.index);
         newGroup.remove();
-        SETTINGS.linkGroups.splice(newGroup.dataset.index, 1);
+        SETTINGS.linkGroups.splice(indexToRemove, 1);
+        // Reindex all remaining groups
+        reindexGroups();
         saveSettings();
     });
     groupHoverPopup.appendChild(removeButton);
 
     newGroup.appendChild(groupHoverPopup);
-
-    makeDraggable(newGroup);
 
     makeDraggable(newGroup);
 
@@ -400,10 +417,10 @@ document.getElementById('add-group-button').addEventListener('click', () => {
         type: 0,
         grid: {r: 1, c: 1},
         links: [
-            
+
         ]
     };
-    SETTINGS.linkGroups.push();
+    SETTINGS.linkGroups.push(group);
 
     // Handle grid type groups
     const h2 = document.createElement('h2');
@@ -414,8 +431,12 @@ document.getElementById('add-group-button').addEventListener('click', () => {
     const linksContainer = document.createElement('div');
     linksContainer.className = 'grid';
 
-    newGroup.style.left = `${group.x}vw`;
-    newGroup.style.top = `${group.y}vh`;
+    // Convert percentage to px for consistency with drag system
+    const canvasRect = groupContainer.getBoundingClientRect();
+    const xPx = (group.x / 100) * canvasRect.width;
+    const yPx = (group.y / 100) * canvasRect.height;
+    newGroup.style.left = `${xPx}px`;
+    newGroup.style.top = `${yPx}px`;
 
     linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
     linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
@@ -454,7 +475,7 @@ function editGroup(index) {
 
     const element = document.querySelector(`.group[data-index='${index}']`);
     const group = SETTINGS.linkGroups[index];
-    if (!element) {
+    if (!element || !group) {
         console.error('Group element or data not found for index:', index);
         return;
     }
@@ -464,23 +485,234 @@ function editGroup(index) {
     editorElement.style.display = 'block';
 
     // Populate the editor with the group's current data
-    document.getElementById('group-name-input').value = group.name;
-    document.getElementById('group-type-select').value = group.type;
+    document.getElementById('group-name-input').value = group.name || '';
+    document.getElementById('group-type-select').value = group.type || 0;
+
+    // Set grid options if it's a grid type
+    const gridOptions = document.getElementById('grid-options');
+    const gridRowsInput = document.getElementById('grid-rows');
+    const gridColumnsInput = document.getElementById('grid-columns');
+
+    if (group.type === 0 && group.grid) {
+        gridOptions.style.display = 'block';
+        gridRowsInput.value = group.grid.r || 1;
+        gridColumnsInput.value = group.grid.c || 1;
+    } else {
+        gridOptions.style.display = 'none';
+    }
+
+    // Handle type change to show/hide grid options
+    const typeSelect = document.getElementById('group-type-select');
+    typeSelect.onchange = () => {
+        if (typeSelect.value === '0') {
+            gridOptions.style.display = 'block';
+        } else {
+            gridOptions.style.display = 'none';
+        }
+    };
+
+    // Populate links list
+    const linksList = document.getElementById('group-editor-links');
+    linksList.innerHTML = ''; // Clear existing links
+
+    if (group.links && group.links.length > 0) {
+        group.links.forEach((link) => {
+            addLinkToEditor(linksList, link.name, link.url);
+        });
+    }
+
+    // Setup Add Link button
+    const addLinkBtn = document.getElementById('add-link-btn');
+    addLinkBtn.onclick = () => {
+        addLinkToEditor(linksList, '', '');
+    };
 
     // Save changes when the save button is clicked
     document.getElementById('save-group-button').onclick = () => {
         console.log('Saving group changes for index:', index);
+
+        // Update group properties
         group.name = document.getElementById('group-name-input').value;
-        group.type = parseInt(document.getElementById('group-type-select').value);
-        // Update the group element in the DOM
-        element.querySelector('.group-header').textContent = group.name;
+        const newType = parseInt(document.getElementById('group-type-select').value);
+        const typeChanged = group.type !== newType;
+        group.type = newType;
+
+        // Update grid settings if it's a grid type
+        if (group.type === 0) {
+            if (!group.grid) {
+                group.grid = { r: 1, c: 1 };
+            }
+            group.grid.r = parseInt(gridRowsInput.value) || 1;
+            group.grid.c = parseInt(gridColumnsInput.value) || 1;
+        }
+
+        // Collect all links from the editor
+        const linkItems = linksList.querySelectorAll('.editor-link-item');
+        group.links = [];
+        linkItems.forEach(item => {
+            const nameInput = item.querySelector('.link-name-input');
+            const urlInput = item.querySelector('.link-url-input');
+            if (nameInput && urlInput && nameInput.value.trim() && urlInput.value.trim()) {
+                group.links.push({
+                    name: nameInput.value.trim(),
+                    url: urlInput.value.trim()
+                });
+            }
+        });
+
+        // Update the SETTINGS object
+        SETTINGS.linkGroups[index] = group;
+
+        // Rebuild the entire group element if type changed
+        if (typeChanged) {
+            rebuildGroupElement(element, group, index);
+        } else {
+            // Just update the header and links
+            const header = element.querySelector('.group-header');
+            if (header) {
+                header.textContent = group.name;
+            }
+
+            // Rebuild the links display
+            const linksContainer = element.querySelector('.grid, .list');
+            if (linksContainer) {
+                linksContainer.innerHTML = '';
+
+                if (group.type === 0) {
+                    // Grid type
+                    linksContainer.className = 'grid';
+                    linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+                    linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
+
+                    group.links.forEach(link => {
+                        const a = document.createElement('a');
+                        a.className = 'link';
+                        a.title = link.name;
+
+                        const img = document.createElement('img');
+                        img.src = getFavicon(link.url);
+                        img.alt = `${link.name} Favicon`;
+
+                        const span = document.createElement('span');
+                        span.textContent = link.name;
+
+                        a.appendChild(img);
+                        a.appendChild(span);
+                        linksContainer.appendChild(a);
+                    });
+                } else if (group.type === 1) {
+                    // List/Stack type
+                    linksContainer.className = 'list';
+                    group.links.forEach(link => {
+                        const img = document.createElement('img');
+                        img.src = getFavicon(link.url);
+                        img.alt = `${link.name} Favicon`;
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.textContent = link.name;
+                        li.appendChild(img);
+                        li.appendChild(a);
+                        linksContainer.appendChild(li);
+                    });
+                }
+            }
+        }
+
         saveSettings();
         editorElement.style.display = 'none';
-    }
+    };
 
     // Close the editor when the cancel button is clicked
     document.getElementById('cancel-group-button').onclick = () => {
         console.log('Cancelling group edit for index:', index);
         editorElement.style.display = 'none';
+    };
+}
+
+function addLinkToEditor(linksList, name, url) {
+    const li = document.createElement('li');
+    li.className = 'editor-link-item';
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = name;
+    nameInput.placeholder = 'Link Name';
+    nameInput.className = 'link-name-input';
+
+    const urlInput = document.createElement('input');
+    urlInput.type = 'text';
+    urlInput.value = url;
+    urlInput.placeholder = 'URL';
+    urlInput.className = 'link-url-input';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.className = 'remove-link-btn';
+    removeBtn.onclick = () => {
+        li.remove();
+    };
+
+    li.appendChild(nameInput);
+    li.appendChild(urlInput);
+    li.appendChild(removeBtn);
+    linksList.appendChild(li);
+}
+
+function rebuildGroupElement(element, group, index) {
+    // Clear the element content except for the hover popup
+    const hoverPopup = element.querySelector('.group-hover-popup');
+    element.innerHTML = '';
+    if (hoverPopup) {
+        element.appendChild(hoverPopup);
+    }
+
+    // Add header
+    const h2 = document.createElement('h2');
+    h2.textContent = group.name;
+    h2.className = 'group-header';
+    element.appendChild(h2);
+
+    // Add links container based on type
+    if (group.type === 0) {
+        // Grid type
+        const linksContainer = document.createElement('div');
+        linksContainer.className = 'grid';
+        linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
+        linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
+
+        group.links.forEach(link => {
+            const a = document.createElement('a');
+            a.className = 'link';
+            a.title = link.name;
+
+            const img = document.createElement('img');
+            img.src = getFavicon(link.url);
+            img.alt = `${link.name} Favicon`;
+
+            const span = document.createElement('span');
+            span.textContent = link.name;
+
+            a.appendChild(img);
+            a.appendChild(span);
+            linksContainer.appendChild(a);
+        });
+        element.appendChild(linksContainer);
+    } else if (group.type === 1) {
+        // List/Stack type
+        const ul = document.createElement('ul');
+        ul.className = 'list';
+
+        group.links.forEach(link => {
+            const img = document.createElement('img');
+            img.src = getFavicon(link.url);
+            img.alt = `${link.name} Favicon`;
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.textContent = link.name;
+            li.appendChild(img);
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+        element.appendChild(ul);
     }
 }
