@@ -3,9 +3,16 @@ const groupContainer = document.getElementById('groups-container');
 
 const editorElement = document.getElementById('group-editor');
 
-var i = 0;
-// Iterate over each group in settings.linkGroups
-SETTINGS.linkGroups.forEach((group) => {
+/**
+ * Initialize the editor once settings are loaded
+ */
+async function initializeEditor() {
+    // Wait for settings to be loaded from storage
+    await settingsInitialized;
+
+    var i = 0;
+    // Iterate over each group in settings.linkGroups
+    SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
 
@@ -39,6 +46,14 @@ SETTINGS.linkGroups.forEach((group) => {
     newGroup.appendChild(groupHoverPopup);
 
     makeDraggable(newGroup);
+
+    // Set position for all group types - convert percentage to px for consistency with drag system
+    const canvasRect = groupContainer.getBoundingClientRect();
+    const xPx = (parseFloat(group.x) / 100) * canvasRect.width;
+    const yPx = (parseFloat(group.y) / 100) * canvasRect.height;
+    newGroup.style.left = `${xPx}px`;
+    newGroup.style.top = `${yPx}px`;
+
     if(group.type == 0) {
         // Handle grid type groups
         const h2 = document.createElement('h2');
@@ -48,13 +63,6 @@ SETTINGS.linkGroups.forEach((group) => {
 
         const linksContainer = document.createElement('div');
         linksContainer.className = 'grid';
-
-        // Convert percentage to px for consistency with drag system
-        const canvasRect = groupContainer.getBoundingClientRect();
-        const xPx = (group.x / 100) * canvasRect.width;
-        const yPx = (group.y / 100) * canvasRect.height;
-        newGroup.style.left = `${xPx}px`;
-        newGroup.style.top = `${yPx}px`;
 
         linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
@@ -106,48 +114,48 @@ SETTINGS.linkGroups.forEach((group) => {
         script.src = WIDGET_TYPES[group.id.type].variants[group.id.var].path+"?"+group.settings;
         newGroup.appendChild(script);
     }
-    groupContainer.appendChild(newGroup);
-    i++;
-});
+        groupContainer.appendChild(newGroup);
+        i++;
+    });
 
+    const background = document.querySelector(".background-image");
 
-
-const background = document.querySelector(".background-image");
-
-// Ensure bgID is a number
-switch (parseInt(SETTINGS.background.bgID) || 0) {
-    case 0:
-        break;
-    case 1: 
-        if(SETTINGS.background.imageHash) {
-            background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
-            background.style.backgroundSize = 'cover';
-            background.style.backgroundPosition = 'center';
-        } else {
+    // Ensure bgID is a number
+    switch (parseInt(SETTINGS.background.bgID) || 0) {
+        case 0:
+            break;
+        case 1:
+            if(SETTINGS.background.imageHash) {
+                background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
+                background.style.backgroundSize = 'cover';
+                background.style.backgroundPosition = 'center';
+            } else {
+                background.style.background = '';
+            }
+            break;
+        case 2:
+            background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
+            break;
+        default:
             background.style.background = '';
-        }
-        break;
-    case 2:
-        background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
-        break;
-    default:
-        background.style.background = '';
-        break;
+            break;
 
+    }
+    background.classList.add("loaded");
+
+    document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
+    const themeElement = document.getElementById('theme');
+
+    themeElement.textContent = SETTINGS.themeData;
 }
-background.classList.add("loaded");
 
-document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
-const themeElement = document.getElementById('theme');
-
-themeElement.textContent = SETTINGS.themeColors;
+// Initialize the editor when the page loads
+initializeEditor();
 
 
 function getFavicon(url) {
     // Use size=64 for higher resolution (Google supports 16, 32, 48, 64)
-
     // Add handling for sub domains
-
     // Default icon as SVG data URI if all else fails
     const DEFAULT_ICON = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJmZWF0aGVyIGZlYXRoZXItbGluayI+PHBhdGggZD0iTTEwIDEzYTUgNSAwIDAgMCA3LjU0LjU0bDMtM2E1IDUgMCAwIDAtNy4wNy03LjA3bC0xLjcyIDEuNzEiPjwvcGF0aD48cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zIDNhNSA1IDAgMCAwIDcuMDcgNy4wN2wxLjcxLTEuNzEiPjwvcGF0aD48L3N2Zz4=';
     
@@ -307,13 +315,13 @@ function stopDrag(e) {
 
         // Update settings with new position - add safety check
         if (SETTINGS.linkGroups[elementIndex]) {
-            SETTINGS.linkGroups[elementIndex].x = (x / canvasRect.width * 100).toFixed(2);
-            SETTINGS.linkGroups[elementIndex].y = (y / canvasRect.height * 100).toFixed(2);
+            SETTINGS.linkGroups[elementIndex].x = parseFloat((x / canvasRect.width * 100).toFixed(2));
+            SETTINGS.linkGroups[elementIndex].y = parseFloat((y / canvasRect.height * 100).toFixed(2));
         }
         
         saveSettings();
     } catch (error) {
-        console.error('Error in stopDrag:', error);
+        debug.error('Error in stopDrag:', error);
     } finally {
         // Always clean up, even if there's an error
         draggedElement = null;
@@ -351,7 +359,7 @@ function reindexGroups() {
 }
 
 function saveSettings() {
-    console.log('Saving settings...');
+    debug.log('Saving settings...');
     // Update group positions before saving
     const groups = document.querySelectorAll('.group');
     groups.forEach((group, index) => {
@@ -365,7 +373,7 @@ function saveSettings() {
         }
     });
 
-    console.log('Settings to save:', JSON.stringify(SETTINGS.linkGroups, null, 2));
+    debug.log('Settings to save:', JSON.stringify(SETTINGS.linkGroups, null, 2));
     saveToSettings('linkGroups', SETTINGS.linkGroups);
 }
 
@@ -374,7 +382,7 @@ document.getElementById('save-button').addEventListener('click', () => {
 });
 document.getElementById('add-group-button').addEventListener('click', () => {
     // Logic to add a new group
-    console.log('Add Group button clicked');
+    debug.log('Add Group button clicked');
 
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
@@ -433,8 +441,8 @@ document.getElementById('add-group-button').addEventListener('click', () => {
 
     // Convert percentage to px for consistency with drag system
     const canvasRect = groupContainer.getBoundingClientRect();
-    const xPx = (group.x / 100) * canvasRect.width;
-    const yPx = (group.y / 100) * canvasRect.height;
+    const xPx = (parseFloat(group.x) / 100) * canvasRect.width;
+    const yPx = (parseFloat(group.y) / 100) * canvasRect.height;
     newGroup.style.left = `${xPx}px`;
     newGroup.style.top = `${yPx}px`;
 
@@ -462,25 +470,29 @@ document.getElementById('add-group-button').addEventListener('click', () => {
     groupContainer.appendChild(newGroup);
 
     saveSettings();
+
+    // Open the editor for the newly created group
+    editGroup(SETTINGS.linkGroups.length - 1);
 });
 
 document.getElementById('add-widget-button').addEventListener('click', () => {
     // Logic to add a new widget
-    console.log('Add Widget button clicked');
+    debug.log('Add Widget button clicked');
+    showWidgetSelector();
 });
 
 function editGroup(index) {
     // Logic to edit the group at the given index
-    console.log('Edit Group button clicked for index:', index);
+    debug.log('Edit Group button clicked for index:', index);
 
     const element = document.querySelector(`.group[data-index='${index}']`);
     const group = SETTINGS.linkGroups[index];
     if (!element || !group) {
-        console.error('Group element or data not found for index:', index);
+        debug.error('Group element or data not found for index:', index);
         return;
     }
 
-    console.log('Editing group:', group);
+    debug.log('Editing group:', group);
     // Open the editor with the group's data
     editorElement.style.display = 'block';
 
@@ -529,7 +541,7 @@ function editGroup(index) {
 
     // Save changes when the save button is clicked
     document.getElementById('save-group-button').onclick = () => {
-        console.log('Saving group changes for index:', index);
+        debug.log('Saving group changes for index:', index);
 
         // Update group properties
         group.name = document.getElementById('group-name-input').value;
@@ -624,7 +636,7 @@ function editGroup(index) {
 
     // Close the editor when the cancel button is clicked
     document.getElementById('cancel-group-button').onclick = () => {
-        console.log('Cancelling group edit for index:', index);
+        debug.log('Cancelling group edit for index:', index);
         editorElement.style.display = 'none';
     };
 }
@@ -715,4 +727,390 @@ function rebuildGroupElement(element, group, index) {
         });
         element.appendChild(ul);
     }
+}
+
+function createWidgetPreview(typeName, variantName) {
+    const preview = document.createElement('div');
+    preview.className = 'widget-preview';
+
+    switch (typeName) {
+        case 'Clock':
+            if (variantName === 'Digital') {
+                const digitalTime = document.createElement('div');
+                digitalTime.className = 'widget-preview-digital';
+                digitalTime.textContent = '12:34:56';
+                preview.appendChild(digitalTime);
+            } else if (variantName === 'Analog') {
+                const canvas = document.createElement('canvas');
+                canvas.width = 60;
+                canvas.height = 60;
+                canvas.className = 'widget-preview-analog';
+                const ctx = canvas.getContext('2d');
+                // Draw simple clock face
+                ctx.beginPath();
+                ctx.arc(30, 30, 28, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                // Draw clock hands (10:10 position)
+                ctx.beginPath();
+                ctx.moveTo(30, 30);
+                ctx.lineTo(30, 15);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(30, 30);
+                ctx.lineTo(42, 30);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                preview.appendChild(canvas);
+            } else if (variantName === 'World') {
+                const worldText = document.createElement('div');
+                worldText.className = 'widget-preview-digital';
+                worldText.textContent = '🌍 12:34';
+                preview.appendChild(worldText);
+            }
+            break;
+        case 'Search':
+            if (variantName === 'Bar') {
+                const searchBar = document.createElement('div');
+                searchBar.className = 'widget-preview-search-bar';
+                searchBar.textContent = '🔍 Search...';
+                preview.appendChild(searchBar);
+            } else if (variantName === 'Box') {
+                const searchBox = document.createElement('div');
+                searchBox.className = 'widget-preview-search-box';
+                searchBox.textContent = '🔍 Search';
+                preview.appendChild(searchBox);
+            }
+            break;
+        case 'Weather':
+            const weatherIcon = document.createElement('div');
+            weatherIcon.className = 'widget-preview-weather';
+            if (variantName === 'Condition') {
+                weatherIcon.textContent = '⛅ 72°F';
+            } else if (variantName === 'Forecast') {
+                weatherIcon.textContent = '📅 5-Day';
+            } else if (variantName === 'Temperature') {
+                weatherIcon.textContent = '🌡️ 72°';
+            }
+            preview.appendChild(weatherIcon);
+            break;
+        case 'Timers':
+            const timerText = document.createElement('div');
+            timerText.className = 'widget-preview-timer';
+            if (variantName === 'Timer') {
+                timerText.textContent = '⏱️ 00:00';
+            } else if (variantName === 'Stopwatch') {
+                timerText.textContent = '⏱️ 00:00:00';
+            } else if (variantName === 'Pomodoro') {
+                timerText.textContent = '🍅 25:00';
+            }
+            preview.appendChild(timerText);
+            break;
+        case 'Note':
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'widget-preview-note';
+            noteDiv.textContent = '📝 Note...';
+            preview.appendChild(noteDiv);
+            break;
+        case 'Todo':
+            const todoDiv = document.createElement('div');
+            todoDiv.className = 'widget-preview-todo';
+            todoDiv.innerHTML = '☑️ Todo List<br>□ Task 1<br>□ Task 2';
+            preview.appendChild(todoDiv);
+            break;
+        default:
+            preview.textContent = variantName;
+    }
+
+    return preview;
+}
+
+function showWidgetSelector() {
+    const widgetSelector = document.getElementById('widget-selector');
+    const widgetCategories = document.getElementById('widget-categories');
+
+    // Clear existing content
+    widgetCategories.innerHTML = '';
+
+    // Populate widget categories
+    WIDGET_TYPES.forEach((widgetType, typeIndex) => {
+        // Only show widgets that have show: true
+        if (!widgetType.show) {
+            return;
+        }
+
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'widget-category';
+
+        const categoryTitle = document.createElement('h3');
+        categoryTitle.textContent = widgetType.name;
+        categoryDiv.appendChild(categoryTitle);
+
+        const variantsDiv = document.createElement('div');
+        variantsDiv.className = 'widget-variants';
+
+        widgetType.variants.forEach((variant, variantIndex) => {
+            const variantButton = document.createElement('button');
+            variantButton.className = 'widget-variant-button';
+
+            // Add preview
+            const preview = createWidgetPreview(widgetType.name, variant.name);
+            variantButton.appendChild(preview);
+
+            // Add label
+            const label = document.createElement('span');
+            label.textContent = variant.name;
+            variantButton.appendChild(label);
+
+            variantButton.addEventListener('click', () => {
+                widgetSelector.style.display = 'none';
+                showWidgetSettings(typeIndex, variantIndex, widgetType.name, variant.name);
+            });
+            variantsDiv.appendChild(variantButton);
+        });
+
+        categoryDiv.appendChild(variantsDiv);
+        widgetCategories.appendChild(categoryDiv);
+    });
+
+    // Show the widget selector
+    widgetSelector.style.display = 'block';
+
+    // Setup cancel button
+    document.getElementById('cancel-widget-button').onclick = () => {
+        widgetSelector.style.display = 'none';
+    };
+}
+
+function showWidgetSettings(typeIndex, variantIndex, typeName, variantName) {
+    const settingsDialog = document.getElementById('widget-settings-dialog');
+    const settingsForm = document.getElementById('widget-settings-form');
+    const settingsTitle = document.getElementById('widget-settings-title');
+
+    // Clear existing settings
+    settingsForm.innerHTML = '';
+    settingsTitle.textContent = `Configure ${typeName} - ${variantName}`;
+
+    // Generate settings based on widget type
+    if (typeName === 'Clock') {
+        // Timezone setting
+        const timezoneGroup = document.createElement('div');
+        timezoneGroup.className = 'setting-group';
+
+        const timezoneLabel = document.createElement('label');
+        timezoneLabel.textContent = 'Timezone:';
+        timezoneLabel.htmlFor = 'widget-timezone';
+        timezoneGroup.appendChild(timezoneLabel);
+
+        const timezoneSelect = document.createElement('select');
+        timezoneSelect.id = 'widget-timezone';
+        const timezones = [
+            'Local', 'UTC', 'America/New_York', 'America/Chicago', 'America/Denver',
+            'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Tokyo',
+            'Asia/Shanghai', 'Australia/Sydney'
+        ];
+        timezones.forEach(tz => {
+            const option = document.createElement('option');
+            option.value = tz;
+            option.textContent = tz;
+            timezoneSelect.appendChild(option);
+        });
+        timezoneGroup.appendChild(timezoneSelect);
+        settingsForm.appendChild(timezoneGroup);
+
+        // Show background setting
+        const backgroundGroup = document.createElement('div');
+        backgroundGroup.className = 'setting-group';
+
+        const backgroundLabel = document.createElement('label');
+        backgroundLabel.textContent = 'Show Background:';
+        backgroundGroup.appendChild(backgroundLabel);
+
+        const checkboxWrapper = document.createElement('div');
+        checkboxWrapper.className = 'checkbox-wrapper';
+
+        const backgroundCheckbox = document.createElement('input');
+        backgroundCheckbox.type = 'checkbox';
+        backgroundCheckbox.id = 'widget-background';
+        backgroundCheckbox.checked = true;
+        checkboxWrapper.appendChild(backgroundCheckbox);
+
+        const checkboxLabel = document.createElement('label');
+        checkboxLabel.htmlFor = 'widget-background';
+        checkboxLabel.textContent = 'Display widget background';
+        checkboxWrapper.appendChild(checkboxLabel);
+
+        backgroundGroup.appendChild(checkboxWrapper);
+        settingsForm.appendChild(backgroundGroup);
+
+    } else if (typeName === 'Search') {
+        // Search engine setting
+        const engineGroup = document.createElement('div');
+        engineGroup.className = 'setting-group';
+
+        const engineLabel = document.createElement('label');
+        engineLabel.textContent = 'Search Engine:';
+        engineLabel.htmlFor = 'widget-search-engine';
+        engineGroup.appendChild(engineLabel);
+
+        const engineSelect = document.createElement('select');
+        engineSelect.id = 'widget-search-engine';
+        const engines = [
+            { name: 'Google', value: 'https://www.google.com/search?q=' },
+            { name: 'Bing', value: 'https://www.bing.com/search?q=' },
+            { name: 'DuckDuckGo', value: 'https://duckduckgo.com/?q=' },
+            { name: 'Yahoo', value: 'https://search.yahoo.com/search?p=' },
+            { name: 'Brave', value: 'https://search.brave.com/search?q=' }
+        ];
+        engines.forEach(engine => {
+            const option = document.createElement('option');
+            option.value = engine.value;
+            option.textContent = engine.name;
+            engineSelect.appendChild(option);
+        });
+        engineGroup.appendChild(engineSelect);
+        settingsForm.appendChild(engineGroup);
+
+        // Show background setting
+        const backgroundGroup = document.createElement('div');
+        backgroundGroup.className = 'setting-group';
+
+        const backgroundLabel = document.createElement('label');
+        backgroundLabel.textContent = 'Show Background:';
+        backgroundGroup.appendChild(backgroundLabel);
+
+        const checkboxWrapper = document.createElement('div');
+        checkboxWrapper.className = 'checkbox-wrapper';
+
+        const backgroundCheckbox = document.createElement('input');
+        backgroundCheckbox.type = 'checkbox';
+        backgroundCheckbox.id = 'widget-background';
+        backgroundCheckbox.checked = true;
+        checkboxWrapper.appendChild(backgroundCheckbox);
+
+        const checkboxLabel = document.createElement('label');
+        checkboxLabel.htmlFor = 'widget-background';
+        checkboxLabel.textContent = 'Display widget background';
+        checkboxWrapper.appendChild(checkboxLabel);
+
+        backgroundGroup.appendChild(checkboxWrapper);
+        settingsForm.appendChild(backgroundGroup);
+
+    } else {
+        // Default settings for other widgets
+        const infoText = document.createElement('p');
+        infoText.textContent = 'This widget has no additional settings.';
+        infoText.style.color = 'var(--t-col)';
+        settingsForm.appendChild(infoText);
+    }
+
+    // Show the settings dialog
+    settingsDialog.style.display = 'block';
+
+    // Setup confirm button
+    document.getElementById('add-widget-confirm').onclick = () => {
+        const settings = collectWidgetSettings(typeName);
+        addWidget(typeIndex, variantIndex, typeName, variantName, settings);
+        settingsDialog.style.display = 'none';
+    };
+
+    // Setup cancel button
+    document.getElementById('cancel-widget-settings').onclick = () => {
+        settingsDialog.style.display = 'none';
+        // Show widget selector again
+        showWidgetSelector();
+    };
+}
+
+function collectWidgetSettings(typeName) {
+    const params = new URLSearchParams();
+
+    if (typeName === 'Clock') {
+        const timezone = document.getElementById('widget-timezone')?.value;
+        const showBackground = document.getElementById('widget-background')?.checked;
+
+        if (timezone && timezone !== 'Local') {
+            params.append('timezone', timezone);
+        }
+        if (showBackground !== undefined) {
+            params.append('background', showBackground ? '1' : '0');
+        }
+
+    } else if (typeName === 'Search') {
+        const searchEngine = document.getElementById('widget-search-engine')?.value;
+        const showBackground = document.getElementById('widget-background')?.checked;
+
+        if (searchEngine) {
+            params.append('engine', encodeURIComponent(searchEngine));
+        }
+        if (showBackground !== undefined) {
+            params.append('background', showBackground ? '1' : '0');
+        }
+    }
+
+    return params.toString();
+}
+
+function addWidget(typeIndex, variantIndex, typeName, variantName, settings = '') {
+    debug.log('Adding widget:', typeName, '-', variantName, 'with settings:', settings);
+
+    const newGroup = document.createElement('div');
+    newGroup.className = 'group';
+    newGroup.dataset.index = SETTINGS.linkGroups.length;
+
+    // Add hover popup for editing/removing
+    const groupHoverPopup = document.createElement('div');
+    groupHoverPopup.className = 'group-hover-popup';
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'X';
+    removeButton.ariaLabel = 'Remove Widget';
+    removeButton.addEventListener('click', () => {
+        const indexToRemove = parseInt(newGroup.dataset.index);
+        newGroup.remove();
+        SETTINGS.linkGroups.splice(indexToRemove, 1);
+        reindexGroups();
+        saveSettings();
+    });
+    groupHoverPopup.appendChild(removeButton);
+
+    newGroup.appendChild(groupHoverPopup);
+
+    makeDraggable(newGroup);
+
+    // Create the widget group data
+    const widgetGroup = {
+        name: `${typeName} - ${variantName}`,
+        x: 40,
+        y: 40,
+        type: 2, // Widget type
+        id: {
+            type: typeIndex,
+            var: variantIndex
+        },
+        settings: settings
+    };
+
+    SETTINGS.linkGroups.push(widgetGroup);
+
+    // Set position
+    const canvasRect = groupContainer.getBoundingClientRect();
+    const xPx = (parseFloat(widgetGroup.x) / 100) * canvasRect.width;
+    const yPx = (parseFloat(widgetGroup.y) / 100) * canvasRect.height;
+    newGroup.style.left = `${xPx}px`;
+    newGroup.style.top = `${yPx}px`;
+
+    // Add the widget script
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = WIDGET_TYPES[typeIndex].variants[variantIndex].path + (settings ? '?' + settings : '');
+    newGroup.appendChild(script);
+
+    groupContainer.appendChild(newGroup);
+
+    saveSettings();
 }

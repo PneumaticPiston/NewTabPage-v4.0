@@ -5,11 +5,22 @@ document.getElementById('settings-button').addEventListener('click', () => {
 // Get the container where groups will be added
 const groupContainer = document.getElementById('groups-container');
 
+/**
+ * Initialize the new tab page once settings are loaded
+ */
+async function initializeNewTabPage() {
+    // Wait for settings to be loaded from storage
+    await settingsInitialized;
 
-// Iterate over each group in settings.linkGroups
-SETTINGS.linkGroups.forEach((group) => {
+    // Iterate over each group in settings.linkGroups
+    SETTINGS.linkGroups.forEach((group) => {
     const newGroup = document.createElement('div');
     newGroup.className = 'group';
+
+    // Set position for all group types using viewport units
+    newGroup.style.left = `${parseFloat(group.x)}vw`;
+    newGroup.style.top = `${parseFloat(group.y)}vh`;
+
     if(group.type == 0) {
         // Handle grid type groups
         const h2 = document.createElement('h2');
@@ -19,9 +30,6 @@ SETTINGS.linkGroups.forEach((group) => {
 
         const linksContainer = document.createElement('div');
         linksContainer.className = 'grid';
-
-        newGroup.style.left = `${group.x}vw`;
-        newGroup.style.top = `${group.y}vh`;
 
         linksContainer.style.gridTemplateRows = `repeat(${group.grid.r}, 1fr)`;
         linksContainer.style.gridTemplateColumns = `repeat(${group.grid.c}, 1fr)`;
@@ -75,40 +83,42 @@ SETTINGS.linkGroups.forEach((group) => {
         script.src = WIDGET_TYPES[group.id.type].variants[group.id.var].path+"?"+group.settings;
         newGroup.appendChild(script);
     }
-    groupContainer.appendChild(newGroup);
-});
+        groupContainer.appendChild(newGroup);
+    });
 
+    const background = document.querySelector(".background-image");
 
-
-const background = document.querySelector(".background-image");
-
-// Ensure bgID is a number
-switch (parseInt(SETTINGS.background.bgID) || 0) {
-    case 0:
-        break;
-    case 1: 
-        if(SETTINGS.background.imageHash) {
-            background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
-            background.style.backgroundSize = 'cover';
-            background.style.backgroundPosition = 'center';
-        } else {
+    // Ensure bgID is a number
+    switch (parseInt(SETTINGS.background.bgID) || 0) {
+        case 0:
+            break;
+        case 1:
+            if(SETTINGS.background.imageHash) {
+                background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
+                background.style.backgroundSize = 'cover';
+                background.style.backgroundPosition = 'center';
+            } else {
+                background.style.background = '';
+            }
+            break;
+        case 2:
+            background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
+            break;
+        default:
             background.style.background = '';
-        }
-        break;
-    case 2:
-        background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
-        break;
-    default:
-        background.style.background = '';
-        break;
+            break;
 
+    }
+    background.classList.add("loaded");
+
+    document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
+    const themeElement = document.getElementById('theme');
+
+    themeElement.textContent = SETTINGS.themeData;
 }
-background.classList.add("loaded");
 
-document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
-const themeElement = document.getElementById('theme');
-
-themeElement.textContent = SETTINGS.themeColors;
+// Initialize the new tab page when it loads
+initializeNewTabPage();
 
 
 function getFavicon(url) {

@@ -1,4 +1,4 @@
-console.log("World clock widget loaded");
+debug.log("World clock widget loaded");
 {
 const parentDiv = document.currentScript.parentElement;
 

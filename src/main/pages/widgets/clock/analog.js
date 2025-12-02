@@ -1,4 +1,4 @@
-console.log("Analog clock widget loaded");
+debug.log("Analog clock widget loaded");
 {
 const parentDiv = document.currentScript.parentElement;
 

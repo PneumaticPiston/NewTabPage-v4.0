@@ -2,17 +2,17 @@
 document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
 const themeElement = document.getElementById('theme');
 
-themeElement.textContent = SETTINGS.themeColors;
+themeElement.textContent = SETTINGS.themeData;
 
 // Wait for settings to be initialized, then load UI
 initializeSettings().then(() => {
     document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
-    themeElement.textContent = SETTINGS.themeColors;
+    themeElement.textContent = SETTINGS.themeData;
     loadSettings();
     setupEventListeners();
     // Initialize theme selector after other settings are loaded
 }).catch(error => {
-    console.error("Failed to initialize settings:", error);
+    debug.error("Failed to initialize settings:", error);
     // Fall back to default behavior even if initialization fails
     loadSettings();
     setupEventListeners();
@@ -28,10 +28,10 @@ function setupEventListeners() {
     backgroundInputs.forEach(input => {
         input.addEventListener('change', (event) => {
             const newBgID = parseInt(event.target.value);
-            console.log('Background type changed to:', newBgID);
+            debug.log('Background type changed to:', newBgID);
             SETTINGS.background.bgID = newBgID;
             saveSetting('background');
-            console.log('Background saved:', SETTINGS.background);
+            debug.log('Background saved:', SETTINGS.background);
         });
     });
 
@@ -83,10 +83,10 @@ function setupEventListeners() {
             const file = event.target.files[0];
             if (file) {
                 try {
-                    console.log('File selected:', file.name, 'Size:', file.size);
+                    debug.log('File selected:', file.name, 'Size:', file.size);
                     // Calculate file hash
                     const fileHash = await calculateFileHash(file);
-                    console.log('File hash calculated:', fileHash);
+                    debug.log('File hash calculated:', fileHash);
                     
                     // Read file as data URL
                     const reader = new FileReader();
@@ -96,7 +96,7 @@ function setupEventListeners() {
                         // Check size before saving (Chrome storage limit is ~10MB per item)
                         const sizeInMB = dataUrl.length / (1024 * 1024);
                         if (sizeInMB > 5) {
-                            console.error('Image file is too large to save. Max 5MB allowed. Current:', sizeInMB.toFixed(2), 'MB');
+                            debug.error('Image file is too large to save. Max 5MB allowed. Current:', sizeInMB.toFixed(2), 'MB');
                             alert('Image file is too large. Please use an image smaller than 5MB.');
                             return;
                         }
@@ -104,7 +104,7 @@ function setupEventListeners() {
                         SETTINGS.background.imageHash = dataUrl;
                         SETTINGS.background.fileHash = fileHash;
                         SETTINGS.background.bgID = 1; // Ensure bgID is set to custom
-                        console.log('Background settings updated:', {
+                        debug.log('Background settings updated:', {
                             bgID: SETTINGS.background.bgID,
                             hasImageHash: !!SETTINGS.background.imageHash,
                             hasFileHash: !!SETTINGS.background.fileHash,
@@ -122,7 +122,7 @@ function setupEventListeners() {
                         if (previewImg) {
                             previewImg.src = dataUrl;
                             previewImg.style.display = 'block';
-                            console.log('Preview image updated');
+                            debug.log('Preview image updated');
                         }
                         
                         // Save to storage
@@ -130,7 +130,7 @@ function setupEventListeners() {
                     };
                     reader.readAsDataURL(file);
                 } catch (error) {
-                    console.error('Error processing file:', error);
+                    debug.error('Error processing file:', error);
                 }
             }
         });
@@ -143,16 +143,16 @@ function setupEventListeners() {
         if (uploadPlaceholder) {
             uploadPlaceholder.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Upload placeholder clicked');
+                debug.log('Upload placeholder clicked');
                 if (fileInput) {
                     fileInput.click();
                 } else {
-                    console.error('File input not found');
+                    debug.error('File input not found');
                 }
             });
         }
     } else {
-        console.warn('Custom background card not found');
+        debug.warn('Custom background card not found');
     }
 }
 
@@ -163,10 +163,10 @@ function setupEventListeners() {
 function updateCustomTheme() {
     const themeElement = document.getElementById('theme');
     if (!themeElement) {
-        console.error('Theme element not found');
+        debug.error('Theme element not found');
         return;
     }
-    SETTINGS.themeColors = themeElement.textContent;
+    SETTINGS.themeData = themeElement.textContent;
     saveSetting('theme');
 }
 
@@ -239,26 +239,26 @@ async function saveSetting(settingType) {
         case 'linkGroups':
             if (isSynced.links) {
                 chrome.storage.sync.set({ linkGroups: SETTINGS.linkGroups });
-                console.log('linkGroups saved to sync storage');
+                debug.log('linkGroups saved to sync storage');
             } else {
                 chrome.storage.local.set({ linkGroups: SETTINGS.linkGroups });
-                console.log('linkGroups saved to local storage');
+                debug.log('linkGroups saved to local storage');
             }
             break;
 
         case 'theme':
             if (isSynced.theme) {
-                chrome.storage.sync.set({ 
-                    themeID: SETTINGS.themeID, 
-                    themeColors: SETTINGS.themeColors 
+                chrome.storage.sync.set({
+                    themeID: SETTINGS.themeID,
+                    themeData: SETTINGS.themeData
                 });
-                console.log('theme saved to sync storage');
+                debug.log('theme saved to sync storage');
             } else {
-                chrome.storage.local.set({ 
-                    themeID: SETTINGS.themeID, 
-                    themeColors: SETTINGS.themeColors 
+                chrome.storage.local.set({
+                    themeID: SETTINGS.themeID,
+                    themeData: SETTINGS.themeData
                 });
-                console.log('theme saved to local storage');
+                debug.log('theme saved to local storage');
             }
             break;
 
@@ -270,12 +270,12 @@ async function saveSetting(settingType) {
                 fileHash: SETTINGS.background.fileHash || ""
             };
             const backgroundDataStr = JSON.stringify(bgData);
-            console.log('Saving background to', isSynced.background ? 'sync' : 'local', 'storage:', backgroundDataStr);
+            debug.log('Saving background to', isSynced.background ? 'sync' : 'local', 'storage:', backgroundDataStr);
             storageArea.set({ background: bgData }, () => {
                 if (chrome.runtime.lastError) {
-                    console.error('Error saving background:', chrome.runtime.lastError);
+                    debug.error('Error saving background:', chrome.runtime.lastError);
                 } else {
-                    console.log('Background saved successfully');
+                    debug.log('Background saved successfully');
                 }
             });
             break;
@@ -283,35 +283,35 @@ async function saveSetting(settingType) {
         case 'header':
             if (isSynced.header) {
                 chrome.storage.sync.set({ header: SETTINGS.header });
-                console.log('header saved to sync storage');
+                debug.log('header saved to sync storage');
             } else {
                 chrome.storage.local.set({ header: SETTINGS.header });
-                console.log('header saved to local storage');
+                debug.log('header saved to local storage');
             }
             break;
 
         case 'other':
             if (isSynced.other) {
                 chrome.storage.sync.set({ search: SETTINGS.search });
-                console.log('other settings saved to sync storage');
+                debug.log('other settings saved to sync storage');
             } else {
                 chrome.storage.local.set({ search: SETTINGS.search });
-                console.log('other settings saved to local storage');
+                debug.log('other settings saved to local storage');
             }
             break;
 
         case 'sync':
             chrome.storage.local.set({ locations: isSynced }, () => {
                 if (chrome.runtime.lastError) {
-                    console.error('Error saving sync locations:', chrome.runtime.lastError);
+                    debug.error('Error saving sync locations:', chrome.runtime.lastError);
                 } else {
-                    console.log('Sync locations saved successfully');
+                    debug.log('Sync locations saved successfully');
                 }
             });
             break;
 
         default:
-            console.warn(`Unknown setting type: ${settingType}`);
+            debug.warn(`Unknown setting type: ${settingType}`);
     }
 }
 
@@ -327,7 +327,7 @@ function loadSettings() {
     if (SETTINGS.themeID === 'custom') {
         customSection.style.display = 'block';
         // Load custom theme colors
-        if (SETTINGS.themeColors) {
+        if (SETTINGS.themeData) {
             loadCustomThemeColors();
         }
     } else {
@@ -346,7 +346,7 @@ function loadSettings() {
         if (previewImg) {
             previewImg.src = SETTINGS.background.imageHash;
             previewImg.style.display = 'block';
-            console.log('Background preview loaded');
+            debug.log('Background preview loaded');
         }
     } else {
         const previewImg = document.querySelector('.custom-preview .preview-image');
@@ -413,7 +413,7 @@ function loadSettings() {
  */
 function loadCustomThemeColors() {
     // Parse the theme colors string to extract hex values
-    const match = SETTINGS.themeColors.match(/--b-col:(#[0-9a-f]+);--p-col:(#[0-9a-f]+);--s-col:(#[0-9a-f]+);--t-col:(#[0-9a-f]+);--a-col:(#[0-9a-f]+)/i);
+    const match = SETTINGS.themeData.match(/--b-col:(#[0-9a-f]+);--p-col:(#[0-9a-f]+);--s-col:(#[0-9a-f]+);--t-col:(#[0-9a-f]+);--a-col:(#[0-9a-f]+)/i);
     
     if (match) {
         const bgColorInput = document.getElementById('custom-bg-color');

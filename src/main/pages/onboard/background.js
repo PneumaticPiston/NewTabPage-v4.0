@@ -4,14 +4,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     
     // Handle extension updates - migrate from sync to local storage
     if (details.reason === 'update') {
-        console.log('Extension updated, checking for migration needs');
+        debug.log('Extension updated, checking for migration needs');
         
         // Get all data from sync storage
         const syncData = await chrome.storage.sync.get(null);
         
         // Check if there's data in sync storage that needs migration
         if (syncData && Object.keys(syncData).length > 0) {
-            console.log('Migrating data from sync to local storage');
+            debug.log('Migrating data from sync to local storage');
             
             // Migrate all sync data to local storage
             await chrome.storage.local.set(syncData);
@@ -20,9 +20,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
             // Uncomment the next line if you want to clean up sync storage
             // await chrome.storage.sync.clear();
             
-            console.log('Migration completed successfully');
+            debug.log('Migration completed successfully');
         } else {
-            console.log('No data found in sync storage to migrate');
+            debug.log('No data found in sync storage to migrate');
         }
         
         return; // Exit early for updates, don't run install logic
@@ -38,7 +38,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         // Set enhanced default settings if they don't exist
         if (!hasSettings) {
             
-            console.log('Applying default settings');
+            debug.log('Applying default settings');
             await chrome.storage.sync.set({ settings: defaultSettings });
         }
         

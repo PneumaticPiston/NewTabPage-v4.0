@@ -1,4 +1,26 @@
 /**
+ * Debug logging utility
+ */
+const debug = {
+    log: function(...args) {
+        if (this.enabled) {
+            console.log(...args);
+        }
+    },
+    error: function(...args) {
+        if (this.enabled) {
+            console.error(...args);
+        }
+    },
+    warn: function(...args) {
+        if (this.enabled) {
+            console.warn(...args);
+        }
+    },
+    enabled: false
+};
+
+/**
  * Stores where settings are located
  * If true, the setting is stored in chrome.storage.sync
  * If false, the setting is stored in chrome.storage.local
@@ -8,11 +30,14 @@ var isSynced = {
     links: false,
     background: false,
     header: false,
+    bottom: false,
+    accessibility: true,
     other: false
 };
 
 /**
- * The settings object contains various configuration options for the application.
+ * This is hard coded with default settings but will be overwritten by stored settings on load. 
+ * Users can reset to these defaults by clearing their storage. 
  */
 const SETTINGS = {
     /*
@@ -27,6 +52,7 @@ const SETTINGS = {
             y: 10,
             type: 0,
             grid: {
+                // Columns and rows for grid layout
                 c: 2,
                 r: 1
             },
@@ -52,30 +78,18 @@ const SETTINGS = {
             ]
         },
         {
-            name: "Test Group 3",
-            x: 50,
-            y: 50,
-            type: 1,
-            grid: {
-                c: 3,
-                r: 2
-            },
-            links: [
-                {name: "Twitter", url: "https://twitter.com"},
-                {name: "LinkedIn", url: "https://linkedin.com"},
-                {name: "Facebook", url: "https://facebook.com"},
-                {name: "Instagram", url: "https://instagram.com"}
-            ]
-        },
-        {
+            // Not necessary for widget, should not be saved to storage
             name: "Test Group 4",
             x: 70,
             y: 70,
             type: 2,
+            // Widget specific settings
             id: {
                 type: 0,
                 var: 0
-            }
+            },
+            // A URL query string containing any settings for the widget
+            settings: ""
         }
     ],
     themeID: "nord",
@@ -90,34 +104,9 @@ const SETTINGS = {
         // Whether or not to show the header
         showHeader: false,
         // The links to show in the header
-        links: [
-            {name: "Google", url: "https://www.google.com"},
-            {name: "Gmail", url: "https://mail.google.com"}
-        ],
-        // The apps dropdown in the header and whether or not to show it
-        appsDropdown: {
-            showAppsDropdown: true,
-            apps: [
-                {name: "Google", url: "https://www.google.com"},
-                {name: "Gmail", url: "https://mail.google.com"},
-                {name: "YouTube", url: "https://www.youtube.com"},
-                {name: "Google Maps", url: "https://maps.google.com"},
-                {name: "Google Drive", url: "https://drive.google.com"},
-                {name: "Google Docs", url: "https://docs.google.com"},
-                {name: "Google Sheets", url: "https://sheets.google.com"},
-                {name: "Google Slides", url: "https://slides.google.com"},
-                {name: "Google Calendar", url: "https://calendar.google.com"},
-                {name: "Google Photos", url: "https://photos.google.com"},
-                {name: "Google News", url: "https://news.google.com"},
-                {name: "Google Translate", url: "https://translate.google.com"},
-                {name: "Google Keep", url: "https://keep.google.com"},
-                {name: "Google Shopping", url: "https://shopping.google.com"},
-                {name: "Google Play", url: "https://play.google.com"},
-                {name: "Google Books", url: "https://books.google.com"},
-                {name: "Google Scholar", url: "https://scholar.google.com"},
-                {name: "Google Forms", url: "https://forms.google.com"}
-            ]
-        }
+        items: [
+            
+        ]
     },
     bottom: {
         show: false,
@@ -134,27 +123,45 @@ const SETTINGS = {
 }
 
 function saveToSettings(key, value) {
-    console.log(`Saving ${key} to ${isSynced.links ? "sync" : "local"} storage`);
+    let syncKey;
     switch (key) {
         case "linkGroups":
             SETTINGS.linkGroups = value;
+            syncKey = 'links';
             break;
         case "themeID":
-            SETTINGS.themeID = value;
-            break;
         case "themeData":
-            SETTINGS.themeData = value;
+            if (key === "themeID") {
+                SETTINGS.themeID = value;
+            } else {
+                SETTINGS.themeData = value;
+            }
+            syncKey = 'theme';
             break;
         case "background":
             SETTINGS.background = value;
+            syncKey = 'background';
             break;
         case "header":
             SETTINGS.header = value;
+            syncKey = 'header';
+            break;
+        case "bottom":
+            SETTINGS.bottom = value;
+            syncKey = 'bottom';
+            break;
+        case "accessibility":
+            SETTINGS.accessibility = value;
+            syncKey = 'accessibility';
             break;
         default:
-            console.warn("Unknown SETTINGS key:", key);
+            debug.warn("Unknown SETTINGS key:", key);
+            syncKey = 'other';
     }
-    if (isSynced.links) {
+
+    debug.log(`Saving ${key} to ${isSynced[syncKey] ? "sync" : "local"} storage`);
+
+    if (isSynced[syncKey]) {
         chrome.storage.sync.set({[key]: value});
     } else {
         chrome.storage.local.set({[key]: value});
@@ -177,6 +184,12 @@ function chromeStorageGet(storageArea, keys) {
 }
 
 /**
+ * Promise that resolves when all settings are initialized
+ * Other scripts should await this before using SETTINGS
+ */
+let settingsInitialized = null;
+
+/**
  * Initializes all settings by loading from storage
  */
 async function initializeSettings() {
@@ -188,6 +201,8 @@ async function initializeSettings() {
             isSynced.links = locations.locations.links !== undefined ? locations.locations.links : isSynced.links;
             isSynced.background = locations.locations.background !== undefined ? locations.locations.background : isSynced.background;
             isSynced.header = locations.locations.header !== undefined ? locations.locations.header : isSynced.header;
+            isSynced.bottom = locations.locations.bottom !== undefined ? locations.locations.bottom : isSynced.bottom;
+            isSynced.accessibility = locations.locations.accessibility !== undefined ? locations.locations.accessibility : isSynced.accessibility;
             isSynced.other = locations.locations.other !== undefined ? locations.locations.other : isSynced.other;
         }
 
@@ -196,12 +211,14 @@ async function initializeSettings() {
             loadLinkGroupsFromStorage(),
             loadThemeFromStorage(),
             loadBackgroundFromStorage(),
-            loadHeaderFromStorage()
+            loadHeaderFromStorage(),
+            loadBottomFromStorage(),
+            loadAccessibilityFromStorage()
         ]);
 
-        console.log("All settings loaded successfully");
+        debug.log("All settings loaded successfully");
     } catch (error) {
-        console.error("Error initializing settings:", error);
+        debug.error("Error initializing settings:", error);
     }
 }
 
@@ -214,10 +231,10 @@ async function loadLinkGroupsFromStorage() {
         const data = await chromeStorageGet(storageArea, ["linkGroups"]);
         if (data.linkGroups) {
             SETTINGS.linkGroups = data.linkGroups;
-            console.log("Loaded linkGroups from " + (isSynced.links ? "sync" : "local") + " storage");
+            debug.log("Loaded linkGroups from " + (isSynced.links ? "sync" : "local") + " storage");
         }
     } catch (error) {
-        console.error("Error loading linkGroups:", error);
+        debug.error("Error loading linkGroups:", error);
     }
 }
 
@@ -227,16 +244,16 @@ async function loadLinkGroupsFromStorage() {
 async function loadThemeFromStorage() {
     try {
         const storageArea = isSynced.theme ? chrome.storage.sync : chrome.storage.local;
-        const data = await chromeStorageGet(storageArea, ["themeID", "themeColors"]);
+        const data = await chromeStorageGet(storageArea, ["themeID", "themeData"]);
         if (data.themeID) {
             SETTINGS.themeID = data.themeID;
         }
-        if (data.themeColors) {
-            SETTINGS.themeColors = data.themeColors;
+        if (data.themeData) {
+            SETTINGS.themeData = data.themeData;
         }
-        console.log("Loaded theme settings from " + (isSynced.theme ? "sync" : "local") + " storage");
+        debug.log("Loaded theme settings from " + (isSynced.theme ? "sync" : "local") + " storage");
     } catch (error) {
-        console.error("Error loading theme:", error);
+        debug.error("Error loading theme:", error);
     }
 }
 
@@ -250,9 +267,9 @@ async function loadBackgroundFromStorage() {
         if (data.background) {
             SETTINGS.background = data.background;
         }
-        console.log("Loaded background settings from " + (isSynced.background ? "sync" : "local") + " storage");
+        debug.log("Loaded background settings from " + (isSynced.background ? "sync" : "local") + " storage");
     } catch (error) {
-        console.error("Error loading background:", error);
+        debug.error("Error loading background:", error);
     }
 }
 
@@ -266,13 +283,45 @@ async function loadHeaderFromStorage() {
         if (data.header) {
             SETTINGS.header = data.header;
         }
-        console.log("Loaded header settings from " + (isSynced.header ? "sync" : "local") + " storage");
+        debug.log("Loaded header settings from " + (isSynced.header ? "sync" : "local") + " storage");
     } catch (error) {
-        console.error("Error loading header:", error);
+        debug.error("Error loading header:", error);
     }
 }
 
-// Initialize settings when script loads
-initializeSettings();
+/**
+ * Loads bottom settings from the appropriate storage
+ */
+async function loadBottomFromStorage() {
+    try {
+        const storageArea = isSynced.bottom ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["bottom"]);
+        if (data.bottom) {
+            SETTINGS.bottom = data.bottom;
+        }
+        debug.log("Loaded bottom settings from " + (isSynced.bottom ? "sync" : "local") + " storage");
+    } catch (error) {
+        debug.error("Error loading bottom:", error);
+    }
+}
+
+/**
+ * Loads accessibility settings from the appropriate storage
+ */
+async function loadAccessibilityFromStorage() {
+    try {
+        const storageArea = isSynced.accessibility ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["accessibility"]);
+        if (data.accessibility) {
+            SETTINGS.accessibility = data.accessibility;
+        }
+        debug.log("Loaded accessibility settings from " + (isSynced.accessibility ? "sync" : "local") + " storage");
+    } catch (error) {
+        debug.error("Error loading accessibility:", error);
+    }
+}
+
+// Initialize settings when script loads and expose the promise
+settingsInitialized = initializeSettings();
 
 
