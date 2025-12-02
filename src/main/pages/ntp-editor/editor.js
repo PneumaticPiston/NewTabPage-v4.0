@@ -45,7 +45,13 @@ async function initializeEditor() {
 
     newGroup.appendChild(groupHoverPopup);
 
+    // Add resize handle
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'group-resize-handle';
+    newGroup.appendChild(resizeHandle);
+
     makeDraggable(newGroup);
+    makeResizable(newGroup);
 
     // Set position for all group types - convert percentage to px for consistency with drag system
     const canvasRect = groupContainer.getBoundingClientRect();
@@ -53,6 +59,12 @@ async function initializeEditor() {
     const yPx = (parseFloat(group.y) / 100) * canvasRect.height;
     newGroup.style.left = `${xPx}px`;
     newGroup.style.top = `${yPx}px`;
+
+    // Apply scale if it exists
+    const scale = group.scale || 1;
+    newGroup.style.transform = `scale(${scale})`;
+    newGroup.style.transformOrigin = 'top left';
+    newGroup.dataset.scale = scale;
 
     if(group.type == 0) {
         // Handle grid type groups
@@ -334,22 +346,103 @@ function stopDrag(e) {
 function handleResize(canvas) {
   const elements = canvas.querySelectorAll('[data-percent-x]');
   const canvasRect = canvas.getBoundingClientRect();
-  
+
   elements.forEach(el => {
     const percentX = parseFloat(el.dataset.percentX) || 0;
     const percentY = parseFloat(el.dataset.percentY) || 0;
-    
+
     let x = (percentX / 100) * canvasRect.width;
     let y = (percentY / 100) * canvasRect.height;
-    
+
     x = Math.round(x / gridSize) * gridSize;
     y = Math.round(y / gridSize) * gridSize;
-    
+
     el.style.left = x + 'px';
     el.style.top = y + 'px';
   });
 }
 window.addEventListener('resize', () => handleResize(groupContainer));
+
+// Resize functionality
+let resizedElement = null;
+let initialScale = 1;
+let initialDistance = 0;
+let resizeStartX = 0;
+let resizeStartY = 0;
+
+function makeResizable(element) {
+  const resizeHandle = element.querySelector('.group-resize-handle');
+  if (!resizeHandle) return;
+
+  resizeHandle.addEventListener('mousedown', startResize);
+}
+
+function startResize(e) {
+  // Find the resizable element
+  resizedElement = e.target.closest('.group');
+  if (!resizedElement) return;
+
+  // Get initial scale
+  initialScale = parseFloat(resizedElement.dataset.scale) || 1;
+
+  // Store initial mouse position
+  resizeStartX = e.clientX;
+  resizeStartY = e.clientY;
+
+  // Calculate initial distance from top-left corner
+  const rect = resizedElement.getBoundingClientRect();
+  initialDistance = Math.sqrt(Math.pow(rect.width, 2) + Math.pow(rect.height, 2));
+
+  document.addEventListener('mousemove', resize);
+  document.addEventListener('mouseup', stopResize);
+
+  e.preventDefault();
+  e.stopPropagation(); // Prevent drag from starting
+}
+
+function resize(e) {
+  if (!resizedElement) return;
+
+  // Calculate distance moved
+  const deltaX = e.clientX - resizeStartX;
+  const deltaY = e.clientY - resizeStartY;
+  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+  // Calculate new scale (positive if dragging away from origin, negative if toward)
+  const direction = (deltaX + deltaY) > 0 ? 1 : -1;
+  const scaleChange = (distance / 200) * direction; // Adjust sensitivity here
+  let newScale = Math.max(0.3, Math.min(3, initialScale + scaleChange)); // Clamp between 0.3 and 3
+
+  // Round to 2 decimal places
+  newScale = Math.round(newScale * 100) / 100;
+
+  // Apply scale
+  resizedElement.style.transform = `scale(${newScale})`;
+  resizedElement.dataset.scale = newScale;
+}
+
+function stopResize(e) {
+  if (!resizedElement) return;
+
+  try {
+    const elementIndex = parseInt(resizedElement.dataset.index);
+    const scale = parseFloat(resizedElement.dataset.scale) || 1;
+
+    // Update settings with new scale
+    if (SETTINGS.linkGroups[elementIndex]) {
+      SETTINGS.linkGroups[elementIndex].scale = scale;
+    }
+
+    saveSettings();
+  } catch (error) {
+    debug.error('Error in stopResize:', error);
+  } finally {
+    // Always clean up
+    resizedElement = null;
+    document.removeEventListener('mousemove', resize);
+    document.removeEventListener('mouseup', stopResize);
+  }
+}
 
 function reindexGroups() {
     const groups = document.querySelectorAll('.group');
@@ -392,7 +485,7 @@ document.getElementById('add-group-button').addEventListener('click', () => {
     const groupHoverPopup = document.createElement('div');
     groupHoverPopup.className = 'group-hover-popup';
 
-    
+
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
     editButton.ariaLabel = 'Edit Group';
@@ -416,7 +509,13 @@ document.getElementById('add-group-button').addEventListener('click', () => {
 
     newGroup.appendChild(groupHoverPopup);
 
+    // Add resize handle
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'group-resize-handle';
+    newGroup.appendChild(resizeHandle);
+
     makeDraggable(newGroup);
+    makeResizable(newGroup);
 
     const group = {
         name: "New Group",
@@ -1080,7 +1179,13 @@ function addWidget(typeIndex, variantIndex, typeName, variantName, settings = ''
 
     newGroup.appendChild(groupHoverPopup);
 
+    // Add resize handle
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'group-resize-handle';
+    newGroup.appendChild(resizeHandle);
+
     makeDraggable(newGroup);
+    makeResizable(newGroup);
 
     // Create the widget group data
     const widgetGroup = {

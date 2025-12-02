@@ -2,6 +2,12 @@ debug.log("Analog clock widget loaded");
 {
 const parentDiv = document.currentScript.parentElement;
 
+// Get settings from URL parameters
+const currentScript = document.currentScript;
+const scriptSrc = currentScript.src;
+const url = new URL(scriptSrc);
+const searchParam = url.searchParams.get('timezone');
+
 // Create canvas element
 const canvas = document.createElement('canvas');
 canvas.width = 300;

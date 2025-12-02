@@ -1,4 +1,4 @@
-.background-image {
+.groups-container {
     background-size: 20px 20px;
     background-image: radial-gradient(circle at 1px 1px, var(--t-col) 1.5px, transparent 1.6px);
     background-repeat: repeat;
@@ -37,6 +37,25 @@
 .group:hover .group-hover-popup {
     opacity: 1;
     transform: translateY(0);
+}
+
+.group-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    background-color: var(--p-col);
+    border: 2px solid var(--t-col);
+    border-radius: 3px;
+    cursor: nwse-resize;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 10;
+}
+
+.group:hover .group-resize-handle {
+    opacity: 1;
 }
 
 .grid .link:hover {

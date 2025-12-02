@@ -65,6 +65,36 @@ function setupEventListeners() {
         });
     });
 
+    // API key visibility toggle
+    const toggleApiKeyBtn = document.getElementById('toggle-api-key-visibility');
+    const apiKeyInput = document.getElementById('openweather-api-key');
+    if (toggleApiKeyBtn && apiKeyInput) {
+        toggleApiKeyBtn.addEventListener('click', () => {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                toggleApiKeyBtn.textContent = '🙈';
+            } else {
+                apiKeyInput.type = 'password';
+                toggleApiKeyBtn.textContent = '👁️';
+            }
+        });
+    }
+
+    // API key save button
+    const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+    if (saveApiKeyBtn && apiKeyInput) {
+        saveApiKeyBtn.addEventListener('click', () => {
+            saveApiKey();
+        });
+
+        // Also save on Enter key
+        apiKeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveApiKey();
+            }
+        });
+    }
+
     // Sync storage type changes
     const syncInputs = document.querySelectorAll('input[type="radio"][name^="storage-type-"]');
     syncInputs.forEach(input => {
@@ -168,6 +198,63 @@ function updateCustomTheme() {
     }
     SETTINGS.themeData = themeElement.textContent;
     saveSetting('theme');
+}
+
+/**
+ * Saves the OpenWeatherMap API key to storage
+ */
+function saveApiKey() {
+    const apiKeyInput = document.getElementById('openweather-api-key');
+    const statusDiv = document.getElementById('api-key-status');
+
+    if (!apiKeyInput || !statusDiv) {
+        debug.error('API key input or status div not found');
+        return;
+    }
+
+    const apiKey = apiKeyInput.value.trim();
+
+    if (!apiKey) {
+        statusDiv.textContent = 'Please enter an API key';
+        statusDiv.style.color = '#f44336';
+        setTimeout(() => {
+            statusDiv.textContent = '';
+        }, 3000);
+        return;
+    }
+
+    // Save to local storage
+    chrome.storage.local.set({ openWeatherApiKey: apiKey }, () => {
+        if (chrome.runtime.lastError) {
+            debug.error('Error saving API key:', chrome.runtime.lastError);
+            statusDiv.textContent = 'Error saving API key';
+            statusDiv.style.color = '#f44336';
+        } else {
+            debug.log('API key saved successfully');
+            statusDiv.textContent = 'API key saved successfully!';
+            statusDiv.style.color = '#4CAF50';
+
+            // Clear status message after 3 seconds
+            setTimeout(() => {
+                statusDiv.textContent = '';
+            }, 3000);
+        }
+    });
+}
+
+/**
+ * Loads the OpenWeatherMap API key from storage
+ */
+function loadApiKey() {
+    chrome.storage.local.get(['openWeatherApiKey'], (result) => {
+        if (result.openWeatherApiKey) {
+            const apiKeyInput = document.getElementById('openweather-api-key');
+            if (apiKeyInput) {
+                apiKeyInput.value = result.openWeatherApiKey;
+                debug.log('API key loaded');
+            }
+        }
+    });
 }
 
 /**
@@ -406,6 +493,9 @@ function loadSettings() {
             syncInput.checked = true;
         }
     });
+
+    // Load API key
+    loadApiKey();
 }
 
 /**

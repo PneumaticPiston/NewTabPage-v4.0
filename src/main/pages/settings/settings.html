@@ -162,6 +162,24 @@
                     </div>
                 </div>
             </div>
+            <div class="setting-item" id="api-keys-settings">
+                <h1>API Keys</h1>
+                <p>Configure API keys for widgets:</p>
+                <div class="api-keys-options">
+                    <div class="api-key-option">
+                        <label for="openweather-api-key">OpenWeatherMap API Key:</label>
+                        <div class="api-key-input-container">
+                            <input type="password" id="openweather-api-key" name="openweather-api-key" placeholder="Enter your API key">
+                            <button type="button" id="toggle-api-key-visibility" class="toggle-visibility-btn" title="Show/Hide API key">👁️</button>
+                            <button type="button" id="save-api-key-btn" class="save-api-key-btn">Save</button>
+                        </div>
+                        <p class="api-key-description">
+                            Get a free API key at <a href="https://openweathermap.org/api" target="_blank">openweathermap.org/api</a>
+                        </p>
+                        <div id="api-key-status" class="api-key-status"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <header id="header">
