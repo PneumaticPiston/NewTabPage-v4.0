@@ -21,6 +21,11 @@ async function initializeEditor() {
     const groupHoverPopup = document.createElement('div');
     groupHoverPopup.className = 'group-hover-popup';
 
+    const draggableLabel = document.createElement('span');
+    draggableLabel.textContent = 'Drag Here';
+    draggableLabel.className = 'draggable-label';
+    groupHoverPopup.appendChild(draggableLabel);
+
     
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
@@ -50,7 +55,7 @@ async function initializeEditor() {
     resizeHandle.className = 'group-resize-handle';
     newGroup.appendChild(resizeHandle);
 
-    makeDraggable(newGroup);
+    makeDraggable(groupHoverPopup);
     makeResizable(newGroup);
 
     // Set position for all group types - convert percentage to px for consistency with drag system
@@ -68,10 +73,13 @@ async function initializeEditor() {
 
     if(group.type == 0) {
         // Handle grid type groups
-        const h2 = document.createElement('h2');
-        h2.textContent = group.name;
-        h2.className = 'group-header';
-        newGroup.appendChild(h2);
+        if(group.name === null || group.name === undefined || group.name.trim() === "") {
+        } else {
+            const h2 = document.createElement('h2');
+            h2.textContent = group.name;
+            h2.className = 'group-header';
+            newGroup.appendChild(h2);
+        }
 
         const linksContainer = document.createElement('div');
         linksContainer.className = 'grid';
@@ -98,10 +106,13 @@ async function initializeEditor() {
         newGroup.appendChild(linksContainer);
     } else if (group.type == 1) {
         // Handle list type groups here
-        const h2 = document.createElement('h2');
-        h2.textContent = group.name;
-        h2.className = 'group-header';
-        newGroup.appendChild(h2);
+        if(group.name === null || group.name === undefined || group.name.trim() === "") {
+        } else {
+            const h2 = document.createElement('h2');
+            h2.textContent = group.name;
+            h2.className = 'group-header';
+            newGroup.appendChild(h2);
+        }
 
         const ul = document.createElement('ul');
         ul.className = 'list';
@@ -120,6 +131,18 @@ async function initializeEditor() {
 
         newGroup.appendChild(ul);
     } else if (group.type == 2) {
+        newGroup.classList.add('widget-group');
+
+        // Add edit button for widgets in hover popup (before the script)
+        const widgetEditButton = document.createElement('button');
+        widgetEditButton.textContent = 'Edit';
+        widgetEditButton.ariaLabel = 'Edit Widget';
+        widgetEditButton.addEventListener('click', () => {
+            editWidget(newGroup.dataset.index);
+        });
+        // Insert edit button before the remove button in hover popup
+        groupHoverPopup.insertBefore(widgetEditButton, groupHoverPopup.firstChild);
+
         // Handle widget type groups here
         const script = document.createElement('script');
         script.defer = true;
@@ -159,6 +182,9 @@ async function initializeEditor() {
     const themeElement = document.getElementById('theme');
 
     themeElement.textContent = SETTINGS.themeData;
+
+    // Apply UI style
+    document.documentElement.setAttribute('data-ui-style', SETTINGS.uiStyle || 'default');
 }
 
 // Initialize the editor when the page loads
@@ -267,53 +293,53 @@ let offsetY = 0;
 
 // Make elements draggable (call this for each element)
 function makeDraggable(element) {
-  element.style.position = 'absolute';
-  element.style.cursor = 'move';
-  element.dataset.draggable = 'true'; // Mark as draggable
-  element.addEventListener('mousedown', startDrag);
+    element.parentElement.style.position = 'absolute';
+    element.style.cursor = 'move';
+    element.parentElement.dataset.draggable = 'true'; // Mark as draggable
+    element.addEventListener('mousedown', startDrag);
 }
 
 function startDrag(e) {
-  // Find the draggable element (in case we clicked a child)
-  draggedElement = e.target.closest('[data-draggable]');
-  if (!draggedElement) return;
-  
-  const rect = draggedElement.getBoundingClientRect();
-  const canvasRect = draggedElement.parentElement.getBoundingClientRect();
-  
-  offsetX = e.clientX - rect.left;
-  offsetY = e.clientY - rect.top;
-  
-  document.addEventListener('mousemove', drag);
-  document.addEventListener('mouseup', stopDrag);
-  
-  e.preventDefault();
+    // Find the draggable element (in case we clicked a child)
+    draggedElement = e.target.closest('[data-draggable]');
+    if (!draggedElement) return;
+    
+    const rect = draggedElement.getBoundingClientRect();
+    const canvasRect = draggedElement.parentElement.getBoundingClientRect();
+    
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDrag);
+    
+    e.preventDefault();
 }
 
 function drag(e) {
-  if (!draggedElement) return;
-  
-  const canvas = draggedElement.parentElement;
-  const canvasRect = canvas.getBoundingClientRect();
-  
-  let x = e.clientX - canvasRect.left - offsetX;
-  let y = e.clientY - canvasRect.top - offsetY;
-  
-  x = Math.max(0, x);
-  y = Math.max(0, y);
-  
-  // Snap to grid while dragging
-  x = Math.round(x / gridSize) * gridSize;
-  y = Math.round(y / gridSize) * gridSize;
-  
-  draggedElement.style.left = x + 'px';
-  draggedElement.style.top = y + 'px';
+    if (!draggedElement) return;
+    
+    const canvas = draggedElement.parentElement;
+    const canvasRect = canvas.getBoundingClientRect();
+    
+    let x = e.clientX - canvasRect.left - offsetX;
+    let y = e.clientY - canvasRect.top - offsetY;
+    
+    x = Math.max(0, x);
+    y = Math.max(0, y);
+    
+    // Snap to grid while dragging
+    x = Math.round(x / gridSize) * gridSize;
+    y = Math.round(y / gridSize) * gridSize;
+    
+    draggedElement.style.left = x + 'px';
+    draggedElement.style.top = y + 'px';
 }
 
 function stopDrag(e) {
-  if (!draggedElement) return;
-  
-  try {
+    if (!draggedElement) return;
+
+    try {
         const canvas = draggedElement.parentElement;
         const canvasRect = canvas.getBoundingClientRect();
         const elementIndex = parseInt(draggedElement.dataset.index); // Ensure it's a number
@@ -344,22 +370,22 @@ function stopDrag(e) {
 
 // Handle window resize (call this on resize event)
 function handleResize(canvas) {
-  const elements = canvas.querySelectorAll('[data-percent-x]');
-  const canvasRect = canvas.getBoundingClientRect();
+    const elements = canvas.querySelectorAll('[data-percent-x]');
+    const canvasRect = canvas.getBoundingClientRect();
 
-  elements.forEach(el => {
-    const percentX = parseFloat(el.dataset.percentX) || 0;
-    const percentY = parseFloat(el.dataset.percentY) || 0;
+    elements.forEach(el => {
+        const percentX = parseFloat(el.dataset.percentX) || 0;
+        const percentY = parseFloat(el.dataset.percentY) || 0;
 
-    let x = (percentX / 100) * canvasRect.width;
-    let y = (percentY / 100) * canvasRect.height;
+        let x = (percentX / 100) * canvasRect.width;
+        let y = (percentY / 100) * canvasRect.height;
 
-    x = Math.round(x / gridSize) * gridSize;
-    y = Math.round(y / gridSize) * gridSize;
+        x = Math.round(x / gridSize) * gridSize;
+        y = Math.round(y / gridSize) * gridSize;
 
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
-  });
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+    });
 }
 window.addEventListener('resize', () => handleResize(groupContainer));
 
@@ -530,11 +556,15 @@ document.getElementById('add-group-button').addEventListener('click', () => {
     SETTINGS.linkGroups.push(group);
 
     // Handle grid type groups
-    const h2 = document.createElement('h2');
-    h2.textContent = group.name;
-    h2.className = 'group-header';
-    newGroup.appendChild(h2);
-
+    
+    if(group.name === null || group.name === undefined || group.name.trim() === "") {
+    } else {
+        const h2 = document.createElement('h2');
+        h2.textContent = group.name;
+        h2.className = 'group-header';
+        newGroup.appendChild(h2);
+    }
+    
     const linksContainer = document.createElement('div');
     linksContainer.className = 'grid';
 
@@ -985,124 +1015,151 @@ function showWidgetSelector() {
     };
 }
 
-function showWidgetSettings(typeIndex, variantIndex, typeName, variantName) {
+function parseWidgetSettings(settingsString) {
+    const params = new URLSearchParams(settingsString);
+    const settings = {};
+    for (const [key, value] of params) {
+        settings[key] = value;
+    }
+    return settings;
+}
+
+function showWidgetSettings(typeIndex, variantIndex, typeName, variantName, existingSettings = null, editIndex = null) {
     const settingsDialog = document.getElementById('widget-settings-dialog');
     const settingsForm = document.getElementById('widget-settings-form');
     const settingsTitle = document.getElementById('widget-settings-title');
+    const confirmButton = document.getElementById('add-widget-confirm');
 
     // Clear existing settings
     settingsForm.innerHTML = '';
-    settingsTitle.textContent = `Configure ${typeName} - ${variantName}`;
+
+    // Parse existing settings if in edit mode
+    const settings = existingSettings ? parseWidgetSettings(existingSettings) : {};
+
+    // Set dialog title and button text based on mode
+    if (editIndex !== null) {
+        settingsTitle.textContent = `Edit ${typeName} - ${variantName}`;
+        confirmButton.textContent = 'Save Changes';
+    } else {
+        settingsTitle.textContent = `Configure ${typeName} - ${variantName}`;
+        confirmButton.textContent = 'Add Widget';
+    }
 
     // Generate settings based on widget type
     if (typeName === 'Clock') {
         // Timezone setting
-        const timezoneGroup = document.createElement('div');
-        timezoneGroup.className = 'setting-group';
+        addSelectSetting(settingsForm, 'Timezone', 'widget-timezone',
+            ['local', 'UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+             'Europe/London', 'Europe/Paris', 'Asia/Tokyo', 'Asia/Shanghai', 'Australia/Sydney'],
+            settings.timezone || 'local');
 
-        const timezoneLabel = document.createElement('label');
-        timezoneLabel.textContent = 'Timezone:';
-        timezoneLabel.htmlFor = 'widget-timezone';
-        timezoneGroup.appendChild(timezoneLabel);
+        if (variantName === 'Digital') {
+            // 24-hour format
+            addCheckboxSetting(settingsForm, 'Use 24-hour format', 'widget-format24',
+                settings.format24Hour !== 'false');
 
-        const timezoneSelect = document.createElement('select');
-        timezoneSelect.id = 'widget-timezone';
-        const timezones = [
-            'Local', 'UTC', 'America/New_York', 'America/Chicago', 'America/Denver',
-            'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Tokyo',
-            'Asia/Shanghai', 'Australia/Sydney'
-        ];
-        timezones.forEach(tz => {
-            const option = document.createElement('option');
-            option.value = tz;
-            option.textContent = tz;
-            timezoneSelect.appendChild(option);
-        });
-        timezoneGroup.appendChild(timezoneSelect);
-        settingsForm.appendChild(timezoneGroup);
+            // Show seconds
+            addCheckboxSetting(settingsForm, 'Show seconds', 'widget-showSeconds',
+                settings.showSeconds !== 'false');
 
-        // Show background setting
-        const backgroundGroup = document.createElement('div');
-        backgroundGroup.className = 'setting-group';
-
-        const backgroundLabel = document.createElement('label');
-        backgroundLabel.textContent = 'Show Background:';
-        backgroundGroup.appendChild(backgroundLabel);
-
-        const checkboxWrapper = document.createElement('div');
-        checkboxWrapper.className = 'checkbox-wrapper';
-
-        const backgroundCheckbox = document.createElement('input');
-        backgroundCheckbox.type = 'checkbox';
-        backgroundCheckbox.id = 'widget-background';
-        backgroundCheckbox.checked = true;
-        checkboxWrapper.appendChild(backgroundCheckbox);
-
-        const checkboxLabel = document.createElement('label');
-        checkboxLabel.htmlFor = 'widget-background';
-        checkboxLabel.textContent = 'Display widget background';
-        checkboxWrapper.appendChild(checkboxLabel);
-
-        backgroundGroup.appendChild(checkboxWrapper);
-        settingsForm.appendChild(backgroundGroup);
+            // Font size
+            addNumberSetting(settingsForm, 'Font Size (px)', 'widget-fontSize',
+                settings.fontSize || '48', 20, 100);
+        }
 
     } else if (typeName === 'Search') {
         // Search engine setting
-        const engineGroup = document.createElement('div');
-        engineGroup.className = 'setting-group';
-
-        const engineLabel = document.createElement('label');
-        engineLabel.textContent = 'Search Engine:';
-        engineLabel.htmlFor = 'widget-search-engine';
-        engineGroup.appendChild(engineLabel);
-
-        const engineSelect = document.createElement('select');
-        engineSelect.id = 'widget-search-engine';
         const engines = [
-            { name: 'Google', value: 'https://www.google.com/search?q=' },
-            { name: 'Bing', value: 'https://www.bing.com/search?q=' },
-            { name: 'DuckDuckGo', value: 'https://duckduckgo.com/?q=' },
-            { name: 'Yahoo', value: 'https://search.yahoo.com/search?p=' },
-            { name: 'Brave', value: 'https://search.brave.com/search?q=' }
+            { name: 'Google', value: 'google' },
+            { name: 'Bing', value: 'bing' },
+            { name: 'DuckDuckGo', value: 'duckduckgo' },
+            { name: 'Yahoo', value: 'yahoo' },
+            { name: 'Brave', value: 'brave' }
         ];
-        engines.forEach(engine => {
-            const option = document.createElement('option');
-            option.value = engine.value;
-            option.textContent = engine.name;
-            engineSelect.appendChild(option);
-        });
-        engineGroup.appendChild(engineSelect);
-        settingsForm.appendChild(engineGroup);
+        addSelectSetting(settingsForm, 'Search Engine', 'widget-search-engine',
+            engines.map(e => ({ value: e.value, label: e.name })),
+            settings.engine || 'google');
 
-        // Show background setting
-        const backgroundGroup = document.createElement('div');
-        backgroundGroup.className = 'setting-group';
+        // Placeholder text
+        addTextSetting(settingsForm, 'Placeholder Text', 'widget-placeholder',
+            settings.placeholder || 'Search the web...');
 
-        const backgroundLabel = document.createElement('label');
-        backgroundLabel.textContent = 'Show Background:';
-        backgroundGroup.appendChild(backgroundLabel);
+        // Show icon
+        addCheckboxSetting(settingsForm, 'Show search icon', 'widget-showIcon',
+            settings.showIcon !== 'false');
 
-        const checkboxWrapper = document.createElement('div');
-        checkboxWrapper.className = 'checkbox-wrapper';
+        // Max width
+        addNumberSetting(settingsForm, 'Max Width (px)', 'widget-maxWidth',
+            settings.maxWidth || '700', 300, 1200);
 
-        const backgroundCheckbox = document.createElement('input');
-        backgroundCheckbox.type = 'checkbox';
-        backgroundCheckbox.id = 'widget-background';
-        backgroundCheckbox.checked = true;
-        checkboxWrapper.appendChild(backgroundCheckbox);
+    } else if (typeName === 'Weather') {
+        // Location
+        addTextSetting(settingsForm, 'Location', 'widget-location',
+            settings.location || 'London');
 
-        const checkboxLabel = document.createElement('label');
-        checkboxLabel.htmlFor = 'widget-background';
-        checkboxLabel.textContent = 'Display widget background';
-        checkboxWrapper.appendChild(checkboxLabel);
+        // API Key
+        addTextSetting(settingsForm, 'API Key (OpenWeatherMap)', 'widget-apiKey',
+            settings.apiKey || '', 'Get a free key from openweathermap.org');
 
-        backgroundGroup.appendChild(checkboxWrapper);
-        settingsForm.appendChild(backgroundGroup);
+        // Units
+        addSelectSetting(settingsForm, 'Units', 'widget-units',
+            [{ value: 'metric', label: 'Metric (°C)' },
+             { value: 'imperial', label: 'Imperial (°F)' },
+             { value: 'standard', label: 'Standard (K)' }],
+            settings.units || 'metric');
 
+        if (variantName === 'Temperature') {
+            // Show feels like
+            addCheckboxSetting(settingsForm, 'Show "Feels Like" temperature', 'widget-showFeelsLike',
+                settings.showFeelsLike !== 'false');
+
+            // Temperature font size
+            addNumberSetting(settingsForm, 'Temperature Font Size (px)', 'widget-tempFontSize',
+                settings.tempFontSize || '64', 24, 120);
+        }
+
+        // Title
+        addTextSetting(settingsForm, 'Widget Title', 'widget-title',
+            settings.title || 'Weather');
+
+    } else if (typeName === 'Note') {
+        // Title
+        addTextSetting(settingsForm, 'Note Title', 'widget-title',
+            settings.title || 'Note');
+
+        // Placeholder
+        addTextSetting(settingsForm, 'Placeholder Text', 'widget-placeholder',
+            settings.placeholder || 'Write your note here...');
+
+        // Min height
+        addNumberSetting(settingsForm, 'Minimum Height (px)', 'widget-minHeight',
+            settings.minHeight || '150', 100, 500);
+
+        // Max width
+        addNumberSetting(settingsForm, 'Max Width (px)', 'widget-maxWidth',
+            settings.maxWidth || '400', 200, 800);
+
+    } else if (typeName === 'Todo') {
+        // Title
+        addTextSetting(settingsForm, 'Todo List Title', 'widget-title',
+            settings.title || 'Todo List');
+
+        // Max width
+        addNumberSetting(settingsForm, 'Max Width (px)', 'widget-maxWidth',
+            settings.maxWidth || '450', 300, 800);
+
+        // Max height
+        addNumberSetting(settingsForm, 'Max Height (px)', 'widget-maxHeight',
+            settings.maxHeight || '400', 200, 800);
+
+    } else if (typeName === 'Timers') {
+        // Widget ID for storage
+        addTextSetting(settingsForm, 'Widget ID (for storage)', 'widget-id',
+            settings.id || `timer-${Date.now()}`);
     } else {
         // Default settings for other widgets
         const infoText = document.createElement('p');
-        infoText.textContent = 'This widget has no additional settings.';
+        infoText.textContent = 'This widget has minimal configuration options.';
         infoText.style.color = 'var(--t-col)';
         settingsForm.appendChild(infoText);
     }
@@ -1111,43 +1168,235 @@ function showWidgetSettings(typeIndex, variantIndex, typeName, variantName) {
     settingsDialog.style.display = 'block';
 
     // Setup confirm button
-    document.getElementById('add-widget-confirm').onclick = () => {
-        const settings = collectWidgetSettings(typeName);
-        addWidget(typeIndex, variantIndex, typeName, variantName, settings);
+    confirmButton.onclick = () => {
+        const collectedSettings = collectWidgetSettings(typeName, variantName);
+        if (editIndex !== null) {
+            // Edit mode - update existing widget
+            updateWidget(editIndex, typeIndex, variantIndex, typeName, variantName, collectedSettings);
+        } else {
+            // Add mode - create new widget
+            addWidget(typeIndex, variantIndex, typeName, variantName, collectedSettings);
+        }
         settingsDialog.style.display = 'none';
     };
 
     // Setup cancel button
     document.getElementById('cancel-widget-settings').onclick = () => {
         settingsDialog.style.display = 'none';
-        // Show widget selector again
-        showWidgetSelector();
+        if (editIndex === null) {
+            // Only show widget selector if we're not in edit mode
+            showWidgetSelector();
+        }
     };
 }
 
-function collectWidgetSettings(typeName) {
+// Helper functions to create form elements
+function addTextSetting(form, label, id, defaultValue = '', placeholder = '') {
+    const group = document.createElement('div');
+    group.className = 'setting-group';
+
+    const labelElem = document.createElement('label');
+    labelElem.textContent = label + ':';
+    labelElem.htmlFor = id;
+    group.appendChild(labelElem);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = id;
+    input.value = defaultValue;
+    if (placeholder) input.placeholder = placeholder;
+    group.appendChild(input);
+
+    form.appendChild(group);
+}
+
+function addNumberSetting(form, label, id, defaultValue = '0', min = 0, max = 1000) {
+    const group = document.createElement('div');
+    group.className = 'setting-group';
+
+    const labelElem = document.createElement('label');
+    labelElem.textContent = label + ':';
+    labelElem.htmlFor = id;
+    group.appendChild(labelElem);
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = id;
+    input.value = defaultValue;
+    input.min = min;
+    input.max = max;
+    group.appendChild(input);
+
+    form.appendChild(group);
+}
+
+function addCheckboxSetting(form, label, id, defaultChecked = true) {
+    const group = document.createElement('div');
+    group.className = 'setting-group';
+
+    const checkboxWrapper = document.createElement('div');
+    checkboxWrapper.className = 'checkbox-wrapper';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = id;
+    checkbox.checked = defaultChecked;
+    checkboxWrapper.appendChild(checkbox);
+
+    const labelElem = document.createElement('label');
+    labelElem.htmlFor = id;
+    labelElem.textContent = label;
+    checkboxWrapper.appendChild(labelElem);
+
+    group.appendChild(checkboxWrapper);
+    form.appendChild(group);
+}
+
+function addSelectSetting(form, label, id, options, defaultValue = '') {
+    const group = document.createElement('div');
+    group.className = 'setting-group';
+
+    const labelElem = document.createElement('label');
+    labelElem.textContent = label + ':';
+    labelElem.htmlFor = id;
+    group.appendChild(labelElem);
+
+    const select = document.createElement('select');
+    select.id = id;
+
+    // Handle both simple arrays and arrays of objects
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        if (typeof opt === 'object') {
+            option.value = opt.value;
+            option.textContent = opt.label;
+        } else {
+            option.value = opt;
+            option.textContent = opt;
+        }
+        if (option.value === defaultValue) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+
+    group.appendChild(select);
+    form.appendChild(group);
+}
+
+function collectWidgetSettings(typeName, variantName) {
     const params = new URLSearchParams();
 
     if (typeName === 'Clock') {
         const timezone = document.getElementById('widget-timezone')?.value;
-        const showBackground = document.getElementById('widget-background')?.checked;
-
-        if (timezone && timezone !== 'Local') {
+        if (timezone && timezone !== 'local') {
             params.append('timezone', timezone);
         }
-        if (showBackground !== undefined) {
-            params.append('background', showBackground ? '1' : '0');
+
+        if (variantName === 'Digital') {
+            const format24 = document.getElementById('widget-format24')?.checked;
+            const showSeconds = document.getElementById('widget-showSeconds')?.checked;
+            const fontSize = document.getElementById('widget-fontSize')?.value;
+
+            if (format24 !== undefined) {
+                params.append('format24Hour', format24 ? 'true' : 'false');
+            }
+            if (showSeconds !== undefined) {
+                params.append('showSeconds', showSeconds ? 'true' : 'false');
+            }
+            if (fontSize) {
+                params.append('fontSize', fontSize);
+            }
         }
 
     } else if (typeName === 'Search') {
         const searchEngine = document.getElementById('widget-search-engine')?.value;
-        const showBackground = document.getElementById('widget-background')?.checked;
+        const placeholder = document.getElementById('widget-placeholder')?.value;
+        const showIcon = document.getElementById('widget-showIcon')?.checked;
+        const maxWidth = document.getElementById('widget-maxWidth')?.value;
 
         if (searchEngine) {
-            params.append('engine', encodeURIComponent(searchEngine));
+            params.append('engine', searchEngine);
         }
-        if (showBackground !== undefined) {
-            params.append('background', showBackground ? '1' : '0');
+        if (placeholder) {
+            params.append('placeholder', placeholder);
+        }
+        if (showIcon !== undefined) {
+            params.append('showIcon', showIcon ? 'true' : 'false');
+        }
+        if (maxWidth) {
+            params.append('maxWidth', maxWidth);
+        }
+
+    } else if (typeName === 'Weather') {
+        const location = document.getElementById('widget-location')?.value;
+        const apiKey = document.getElementById('widget-apiKey')?.value;
+        const units = document.getElementById('widget-units')?.value;
+        const title = document.getElementById('widget-title')?.value;
+
+        if (location) {
+            params.append('location', location);
+        }
+        if (apiKey) {
+            params.append('apiKey', apiKey);
+        }
+        if (units) {
+            params.append('units', units);
+        }
+        if (title) {
+            params.append('title', title);
+        }
+
+        if (variantName === 'Temperature') {
+            const showFeelsLike = document.getElementById('widget-showFeelsLike')?.checked;
+            const tempFontSize = document.getElementById('widget-tempFontSize')?.value;
+
+            if (showFeelsLike !== undefined) {
+                params.append('showFeelsLike', showFeelsLike ? 'true' : 'false');
+            }
+            if (tempFontSize) {
+                params.append('tempFontSize', tempFontSize);
+            }
+        }
+
+    } else if (typeName === 'Note') {
+        const title = document.getElementById('widget-title')?.value;
+        const placeholder = document.getElementById('widget-placeholder')?.value;
+        const minHeight = document.getElementById('widget-minHeight')?.value;
+        const maxWidth = document.getElementById('widget-maxWidth')?.value;
+
+        if (title) {
+            params.append('title', title);
+        }
+        if (placeholder) {
+            params.append('placeholder', placeholder);
+        }
+        if (minHeight) {
+            params.append('minHeight', minHeight);
+        }
+        if (maxWidth) {
+            params.append('maxWidth', maxWidth);
+        }
+
+    } else if (typeName === 'Todo') {
+        const title = document.getElementById('widget-title')?.value;
+        const maxWidth = document.getElementById('widget-maxWidth')?.value;
+        const maxHeight = document.getElementById('widget-maxHeight')?.value;
+
+        if (title) {
+            params.append('title', title);
+        }
+        if (maxWidth) {
+            params.append('maxWidth', maxWidth);
+        }
+        if (maxHeight) {
+            params.append('maxHeight', maxHeight);
+        }
+
+    } else if (typeName === 'Timers') {
+        const id = document.getElementById('widget-id')?.value;
+        if (id) {
+            params.append('id', id);
         }
     }
 
@@ -1164,6 +1413,14 @@ function addWidget(typeIndex, variantIndex, typeName, variantName, settings = ''
     // Add hover popup for editing/removing
     const groupHoverPopup = document.createElement('div');
     groupHoverPopup.className = 'group-hover-popup';
+
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.ariaLabel = 'Edit Widget';
+    editButton.addEventListener('click', () => {
+        editWidget(newGroup.dataset.index);
+    });
+    groupHoverPopup.appendChild(editButton);
 
     const removeButton = document.createElement('button');
     removeButton.textContent = 'X';
@@ -1218,4 +1475,65 @@ function addWidget(typeIndex, variantIndex, typeName, variantName, settings = ''
     groupContainer.appendChild(newGroup);
 
     saveSettings();
+}
+
+function editWidget(index) {
+    debug.log('Edit Widget button clicked for index:', index);
+
+    const group = SETTINGS.linkGroups[index];
+    if (!group || group.type !== 2) {
+        debug.error('Widget group not found or not a widget type for index:', index);
+        return;
+    }
+
+    const typeIndex = group.id.type;
+    const variantIndex = group.id.var;
+    const widgetType = WIDGET_TYPES[typeIndex];
+    const variant = widgetType.variants[variantIndex];
+
+    debug.log('Editing widget:', widgetType.name, '-', variant.name);
+
+    // Show widget settings dialog in edit mode
+    showWidgetSettings(typeIndex, variantIndex, widgetType.name, variant.name, group.settings, index);
+}
+
+function updateWidget(index, typeIndex, variantIndex, typeName, variantName, settings) {
+    debug.log('Updating widget at index:', index, 'with settings:', settings);
+
+    const group = SETTINGS.linkGroups[index];
+    if (!group || group.type !== 2) {
+        debug.error('Widget group not found or not a widget type for index:', index);
+        return;
+    }
+
+    // Update the widget settings in SETTINGS
+    group.settings = settings;
+    group.name = `${typeName} - ${variantName}`;
+    group.id.type = typeIndex;
+    group.id.var = variantIndex;
+
+    // Find the widget element in the DOM
+    const widgetElement = document.querySelector(`.group[data-index='${index}']`);
+    if (!widgetElement) {
+        debug.error('Widget element not found for index:', index);
+        return;
+    }
+
+    // Remove the old script element
+    const oldScript = widgetElement.querySelector('script');
+    if (oldScript) {
+        oldScript.remove();
+    }
+
+    // Add the new widget script with updated settings
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = WIDGET_TYPES[typeIndex].variants[variantIndex].path + (settings ? '?' + settings : '');
+    widgetElement.appendChild(script);
+
+    saveSettings();
+
+    // Reload the page to properly reinitialize the widget
+    debug.log('Reloading page to apply widget changes...');
+    location.reload();
 }

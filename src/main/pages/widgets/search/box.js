@@ -9,8 +9,20 @@ const parentDiv = document.currentScript.parentElement;
 const currentScript = document.currentScript;
 const scriptSrc = currentScript.src;
 const url = new URL(scriptSrc);
-const widgetId = url.searchParams.get('id') || 'search-box-default';
-const searchEngine = url.searchParams.get('engine') || 'google';
+
+// Parse settings from URL parameters
+const settings = {
+  id: url.searchParams.get('id') || 'search-box-default',
+  engine: url.searchParams.get('engine') || 'google',
+  title: url.searchParams.get('title') || 'Quick Search',
+  placeholder: url.searchParams.get('placeholder') || 'Search...',
+  maxWidth: parseInt(url.searchParams.get('maxWidth')) || 350,
+  backgroundColor: url.searchParams.get('backgroundColor') || 'var(--s-col)',
+  textColor: url.searchParams.get('textColor') || 'var(--t-col)',
+  buttonColor: url.searchParams.get('buttonColor') || '#4285f4',
+  buttonHoverColor: url.searchParams.get('buttonHoverColor') || '#357ae8',
+  fontSize: parseInt(url.searchParams.get('fontSize')) || 14
+};
 
 // Search engine URLs
 const searchEngines = {
@@ -21,64 +33,84 @@ const searchEngines = {
   brave: 'https://search.brave.com/search?q='
 };
 
+// Create style element
+const style = document.createElement('style');
+style.textContent = `
+  .search-box-container {
+    max-width: ${settings.maxWidth}px;
+    margin: 20px;
+    padding: 10px;
+  }
+  .search-box-form {
+    display: flex;
+    flex-direction: column;
+    background-color: ${settings.backgroundColor};
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .search-box-title {
+    margin: 0 0 12px 0;
+    color: ${settings.textColor};
+    font-size: 16px;
+    text-align: center;
+  }
+  .search-box-input {
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: ${settings.fontSize}px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box-input:focus {
+    border-color: ${settings.buttonColor};
+    box-shadow: 0 0 5px rgba(66, 133, 244, 0.3);
+  }
+  .search-box-button {
+    padding: 10px 20px;
+    background-color: ${settings.buttonColor};
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: ${settings.fontSize}px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+  .search-box-button:hover {
+    background-color: ${settings.buttonHoverColor};
+  }
+`;
+parentDiv.appendChild(style);
+
 // Create container
 const container = document.createElement('div');
-container.style.cssText = `
-  max-width: 350px;
-  margin: 20px;
-  padding: 10px;
-`;
+container.className = 'search-box-container';
 
 // Create search form
 const form = document.createElement('form');
-form.style.cssText = `
-  display: flex;
-  flex-direction: column;
-  background-color: var(--s-col);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-`;
+form.className = 'search-box-form';
 
 // Create title
 const title = document.createElement('h4');
-title.textContent = 'Quick Search';
-title.style.cssText = `
-  margin: 0 0 12px 0;
-  color: var(--t-col);
-  font-size: 16px;
-  text-align: center;
-`;
+title.textContent = settings.title;
+title.className = 'search-box-title';
 
 // Create search input
 const searchInput = document.createElement('input');
 searchInput.type = 'text';
-searchInput.placeholder = 'Search...';
-searchInput.style.cssText = `
-  border: 1px solid #ddd;
-  outline: none;
-  font-size: 14px;
-  padding: 10px 12px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  background-color: #fff;
-  color: #333;
-`;
+searchInput.placeholder = settings.placeholder;
+searchInput.className = 'search-box-input';
 
 // Create submit button
 const submitButton = document.createElement('button');
 submitButton.type = 'submit';
 submitButton.textContent = '🔍 Search';
-submitButton.style.cssText = `
-  padding: 10px 20px;
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-`;
+submitButton.className = 'search-box-button';
 
 // Append elements
 form.appendChild(title);
@@ -92,29 +124,9 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
   const query = searchInput.value.trim();
   if (query) {
-    const baseUrl = searchEngines[searchEngine] || searchEngines.google;
+    const baseUrl = searchEngines[settings.engine] || searchEngines.google;
     window.location.href = baseUrl + encodeURIComponent(query);
   }
-});
-
-// Button hover effects
-submitButton.addEventListener('mouseenter', () => {
-  submitButton.style.backgroundColor = '#357ae8';
-});
-
-submitButton.addEventListener('mouseleave', () => {
-  submitButton.style.backgroundColor = '#4285f4';
-});
-
-// Focus effect
-searchInput.addEventListener('focus', () => {
-  searchInput.style.borderColor = '#4285f4';
-  searchInput.style.boxShadow = '0 0 5px rgba(66, 133, 244, 0.3)';
-});
-
-searchInput.addEventListener('blur', () => {
-  searchInput.style.borderColor = '#ddd';
-  searchInput.style.boxShadow = 'none';
 });
 
 }

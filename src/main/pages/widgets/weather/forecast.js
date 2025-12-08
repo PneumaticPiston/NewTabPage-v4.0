@@ -10,73 +10,126 @@ const parentDiv = document.currentScript.parentElement;
 const currentScript = document.currentScript;
 const scriptSrc = currentScript.src;
 const url = new URL(scriptSrc);
-const widgetId = url.searchParams.get('id') || 'weather-forecast-default';
-const apiKeyFromUrl = url.searchParams.get('apiKey') || '';
-const location = url.searchParams.get('location') || 'London';
-const units = url.searchParams.get('units') || 'metric'; // metric, imperial, or standard
-const days = parseInt(url.searchParams.get('days')) || 5; // Max 5 for free tier
 
-let apiKey = apiKeyFromUrl; // Will be updated from storage if available
+// Parse settings from URL parameters
+const settings = {
+  id: url.searchParams.get('id') || 'weather-forecast-default',
+  apiKey: url.searchParams.get('apiKey') || '',
+  location: url.searchParams.get('location') || 'London',
+  units: url.searchParams.get('units') || 'metric', // metric, imperial, or standard
+  days: parseInt(url.searchParams.get('days')) || 5, // Max 5 for free tier
+  title: url.searchParams.get('title') || 'Weather Forecast',
+  maxWidth: parseInt(url.searchParams.get('maxWidth')) || 650,
+  fontFamily: url.searchParams.get('fontFamily') || 'Arial, sans-serif',
+  backgroundColor: url.searchParams.get('backgroundColor') || 'var(--s-col)',
+  textColor: url.searchParams.get('textColor') || 'var(--t-col)',
+  errorColor: url.searchParams.get('errorColor') || '#f44336'
+};
+
+let apiKey = settings.apiKey; // Will be updated from storage if available
+
+// Create style element
+const style = document.createElement('style');
+style.textContent = `
+  .weather-forecast-container {
+    font-family: ${settings.fontFamily};
+    max-width: ${settings.maxWidth}px;
+    margin: 20px;
+    background-color: ${settings.backgroundColor};
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .weather-forecast-title {
+    margin: 0 0 10px 0;
+    color: ${settings.textColor};
+    font-size: 22px;
+    text-align: center;
+  }
+  .weather-forecast-location {
+    font-size: 16px;
+    color: ${settings.textColor};
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+  .weather-forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
+  }
+  .weather-forecast-card {
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+  }
+  .weather-forecast-day {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .weather-forecast-icon {
+    font-size: 40px;
+    margin: 10px 0;
+  }
+  .weather-forecast-temp {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  .weather-forecast-desc {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .weather-forecast-pop {
+    font-size: 11px;
+    color: #2196F3;
+  }
+  .weather-forecast-error {
+    font-size: 14px;
+    color: ${settings.errorColor};
+    margin-top: 10px;
+    display: none;
+    text-align: center;
+  }
+  .weather-forecast-updated {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    margin-top: 15px;
+  }
+`;
+parentDiv.appendChild(style);
 
 // Create container
 const container = document.createElement('div');
-container.style.cssText = `
-  font-family: Arial, sans-serif;
-  max-width: 650px;
-  margin: 20px;
-  background-color: var(--s-col);
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-`;
+container.className = 'weather-forecast-container';
 
 // Create title
 const title = document.createElement('h3');
-title.textContent = 'Weather Forecast';
-title.style.cssText = `
-  margin: 0 0 10px 0;
-  color: var(--t-col);
-  font-size: 22px;
-  text-align: center;
-`;
+title.textContent = settings.title;
+title.className = 'weather-forecast-title';
 
 // Create location display
 const locationDisplay = document.createElement('div');
-locationDisplay.textContent = location;
-locationDisplay.style.cssText = `
-  font-size: 16px;
-  color: var(--t-col);
-  text-align: center;
-  margin-bottom: 20px;
-  opacity: 0.8;
-`;
+locationDisplay.textContent = settings.location;
+locationDisplay.className = 'weather-forecast-location';
 
 // Create forecast container
 const forecastContainer = document.createElement('div');
-forecastContainer.style.cssText = `
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 12px;
-`;
+forecastContainer.className = 'weather-forecast-grid';
 
 // Create error display
 const errorDisplay = document.createElement('div');
-errorDisplay.style.cssText = `
-  font-size: 14px;
-  color: #f44336;
-  margin-top: 10px;
-  display: none;
-  text-align: center;
-`;
+errorDisplay.className = 'weather-forecast-error';
 
 // Create last updated
 const lastUpdated = document.createElement('div');
-lastUpdated.style.cssText = `
-  font-size: 11px;
-  color: #999;
-  text-align: center;
-  margin-top: 15px;
-`;
+lastUpdated.className = 'weather-forecast-updated';
 
 // Append elements
 container.appendChild(title);
@@ -88,7 +141,7 @@ parentDiv.appendChild(container);
 
 // Get unit symbol
 function getUnitSymbol() {
-  switch (units) {
+  switch (settings.units) {
     case 'imperial': return '°F';
     case 'standard': return 'K';
     default: return '°C';
@@ -114,69 +167,40 @@ function getWeatherIcon(iconCode) {
 // Create forecast day card
 function createDayCard(dayData) {
   const card = document.createElement('div');
-  card.style.cssText = `
-    background-color: rgba(255,255,255,0.5);
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-  `;
+  card.className = 'weather-forecast-card';
 
   // Day name
   const date = new Date(dayData.dt * 1000);
   const dayName = document.createElement('div');
   dayName.textContent = date.toLocaleDateString('en-US', { weekday: 'short' });
-  dayName.style.cssText = `
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 8px;
-  `;
+  dayName.className = 'weather-forecast-day';
 
   // Icon
   const icon = document.createElement('div');
   icon.textContent = getWeatherIcon(dayData.weather[0].icon);
-  icon.style.cssText = `
-    font-size: 40px;
-    margin: 10px 0;
-  `;
+  icon.className = 'weather-forecast-icon';
 
   // Temperature
   const temp = document.createElement('div');
   temp.textContent = `${Math.round(dayData.main.temp)}${getUnitSymbol()}`;
-  temp.style.cssText = `
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-  `;
+  temp.className = 'weather-forecast-temp';
 
   // Description
   const desc = document.createElement('div');
   desc.textContent = dayData.weather[0].main;
-  desc.style.cssText = `
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 8px;
-  `;
+  desc.className = 'weather-forecast-desc';
+
+  card.appendChild(dayName);
+  card.appendChild(icon);
+  card.appendChild(temp);
+  card.appendChild(desc);
 
   // Rain/Snow probability
   if (dayData.pop !== undefined) {
     const pop = document.createElement('div');
     pop.textContent = `💧 ${Math.round(dayData.pop * 100)}%`;
-    pop.style.cssText = `
-      font-size: 11px;
-      color: #2196F3;
-    `;
-    card.appendChild(dayName);
-    card.appendChild(icon);
-    card.appendChild(temp);
-    card.appendChild(desc);
+    pop.className = 'weather-forecast-pop';
     card.appendChild(pop);
-  } else {
-    card.appendChild(dayName);
-    card.appendChild(icon);
-    card.appendChild(temp);
-    card.appendChild(desc);
   }
 
   return card;
@@ -191,7 +215,7 @@ async function fetchForecast() {
   }
 
   try {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(location)}&units=${units}&appid=${apiKey}`;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(settings.location)}&units=${settings.units}&appid=${apiKey}`;
     debug.log('Fetching forecast with API key:', apiKey ? 'Key present (length: ' + apiKey.length + ')' : 'No key');
     const response = await fetch(apiUrl);
 
@@ -218,7 +242,7 @@ async function fetchForecast() {
       const date = new Date(forecast.dt * 1000);
       const dayKey = date.toDateString();
 
-      if (!seenDays.has(dayKey) && dailyForecasts.length < days) {
+      if (!seenDays.has(dayKey) && dailyForecasts.length < settings.days) {
         // Prefer forecasts around noon (12:00)
         const hour = date.getHours();
         if (hour >= 11 && hour <= 14) {
@@ -229,12 +253,12 @@ async function fetchForecast() {
     }
 
     // If we don't have enough noon forecasts, add any other forecast
-    if (dailyForecasts.length < days) {
+    if (dailyForecasts.length < settings.days) {
       for (const forecast of data.list) {
         const date = new Date(forecast.dt * 1000);
         const dayKey = date.toDateString();
 
-        if (!seenDays.has(dayKey) && dailyForecasts.length < days) {
+        if (!seenDays.has(dayKey) && dailyForecasts.length < settings.days) {
           seenDays.add(dayKey);
           dailyForecasts.push(forecast);
         }

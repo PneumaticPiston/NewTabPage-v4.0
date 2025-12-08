@@ -6,22 +6,43 @@ const parentDiv = document.currentScript.parentElement;
 const currentScript = document.currentScript;
 const scriptSrc = currentScript.src;
 const url = new URL(scriptSrc);
-const searchParam = url.searchParams.get('timezone');
+
+// Parse settings from URL parameters
+const settings = {
+  timezone: url.searchParams.get('timezone') || 'local',
+  size: parseInt(url.searchParams.get('size')) || 300,
+  showNumbers: url.searchParams.get('showNumbers') !== 'false', // default true
+  backgroundColor: url.searchParams.get('backgroundColor') || '#ffffff',
+  borderColor: url.searchParams.get('borderColor') || '#333',
+  hourHandColor: url.searchParams.get('hourHandColor') || '#333',
+  minuteHandColor: url.searchParams.get('minuteHandColor') || '#666',
+  secondHandColor: url.searchParams.get('secondHandColor') || '#e74c3c',
+  textColor: url.searchParams.get('textColor') || '#333'
+};
+
+// Create style element
+const style = document.createElement('style');
+style.textContent = `
+  .analog-clock-canvas {
+    border: 2px solid ${settings.borderColor};
+    border-radius: 50%;
+    display: block;
+    margin: 20px auto;
+  }
+`;
+parentDiv.appendChild(style);
 
 // Create canvas element
 const canvas = document.createElement('canvas');
-canvas.width = 300;
-canvas.height = 300;
-canvas.style.border = '2px solid #333';
-canvas.style.borderRadius = '50%';
-canvas.style.display = 'block';
-canvas.style.margin = '20px auto';
+canvas.className = 'analog-clock-canvas';
+canvas.width = settings.size;
+canvas.height = settings.size;
 parentDiv.appendChild(canvas);
 
 const ctx = canvas.getContext('2d');
 const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
-const clockRadius = 140;
+const clockRadius = (settings.size / 2) - 10;
 
 function drawClock() {
   // Clear canvas
@@ -30,9 +51,9 @@ function drawClock() {
   // Draw clock face
   ctx.beginPath();
   ctx.arc(centerX, centerY, clockRadius, 0, 2 * Math.PI);
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = settings.backgroundColor;
   ctx.fill();
-  ctx.strokeStyle = '#333';
+  ctx.strokeStyle = settings.borderColor;
   ctx.lineWidth = 3;
   ctx.stroke();
   
@@ -47,21 +68,23 @@ function drawClock() {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = settings.textColor;
     ctx.lineWidth = 3;
     ctx.stroke();
   }
-  
+
   // Draw hour numbers
-  ctx.font = 'bold 20px Arial';
-  ctx.fillStyle = '#333';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  for (let i = 1; i <= 12; i++) {
-    const angle = (i * 30 - 90) * Math.PI / 180;
-    const x = centerX + Math.cos(angle) * (clockRadius - 40);
-    const y = centerY + Math.sin(angle) * (clockRadius - 40);
-    ctx.fillText(i.toString(), x, y);
+  if (settings.showNumbers) {
+    ctx.font = `bold ${Math.round(settings.size / 15)}px Arial`;
+    ctx.fillStyle = settings.textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i * 30 - 90) * Math.PI / 180;
+      const x = centerX + Math.cos(angle) * (clockRadius - 40);
+      const y = centerY + Math.sin(angle) * (clockRadius - 40);
+      ctx.fillText(i.toString(), x, y);
+    }
   }
   
   const now = new Date();
@@ -74,44 +97,44 @@ function drawClock() {
   ctx.beginPath();
   ctx.moveTo(centerX, centerY);
   ctx.lineTo(
-    centerX + Math.cos(hourAngle) * 60,
-    centerY + Math.sin(hourAngle) * 60
+    centerX + Math.cos(hourAngle) * (clockRadius * 0.43),
+    centerY + Math.sin(hourAngle) * (clockRadius * 0.43)
   );
-  ctx.strokeStyle = '#333';
+  ctx.strokeStyle = settings.hourHandColor;
   ctx.lineWidth = 6;
   ctx.lineCap = 'round';
   ctx.stroke();
-  
+
   // Draw minute hand
   const minuteAngle = ((minutes + seconds / 60) * 6 - 90) * Math.PI / 180;
   ctx.beginPath();
   ctx.moveTo(centerX, centerY);
   ctx.lineTo(
-    centerX + Math.cos(minuteAngle) * 90,
-    centerY + Math.sin(minuteAngle) * 90
+    centerX + Math.cos(minuteAngle) * (clockRadius * 0.64),
+    centerY + Math.sin(minuteAngle) * (clockRadius * 0.64)
   );
-  ctx.strokeStyle = '#666';
+  ctx.strokeStyle = settings.minuteHandColor;
   ctx.lineWidth = 4;
   ctx.lineCap = 'round';
   ctx.stroke();
-  
+
   // Draw second hand
   const secondAngle = (seconds * 6 - 90) * Math.PI / 180;
   ctx.beginPath();
   ctx.moveTo(centerX, centerY);
   ctx.lineTo(
-    centerX + Math.cos(secondAngle) * 100,
-    centerY + Math.sin(secondAngle) * 100
+    centerX + Math.cos(secondAngle) * (clockRadius * 0.71),
+    centerY + Math.sin(secondAngle) * (clockRadius * 0.71)
   );
-  ctx.strokeStyle = '#e74c3c';
+  ctx.strokeStyle = settings.secondHandColor;
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
   ctx.stroke();
-  
+
   // Draw center dot
   ctx.beginPath();
   ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
-  ctx.fillStyle = '#333';
+  ctx.fillStyle = settings.hourHandColor;
   ctx.fill();
   
   requestAnimationFrame(drawClock);

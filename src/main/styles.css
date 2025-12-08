@@ -55,62 +55,62 @@
     --b-col: #caf0f8;
     --p-col: #023e8a;
     --s-col: #48cae4;
-    --t-col: #000000;
-    --a-col: #ff9f1c;
+    --t-col: #03045e;
+    --a-col: #ff9e00;
 }
 
 /* Sunset Theme */
 [data-theme="sunset"] {
-    --b-col: #ff7e5f;
-    --p-col: #feb47b;
-    --s-col: #ffb7b7;
-    --t-col: #ffffff;
-    --a-col: #ff6f61;
+    --b-col: #ffbf69;
+    --p-col: #582f0e;
+    --s-col: #f77f00;
+    --t-col: #003049;
+    --a-col: #d62828;
 }
 
 /* Cyberpunk Theme */
 [data-theme="cyberpunk"] {
-    --b-col: #0d0d0d;
-    --p-col: #ff00ff;
-    --s-col: #00ffff;
-    --t-col: #ffffff;
-    --a-col: #ff0080;
+    --b-col: #120458;
+    --p-col: #2b0f54;
+    --s-col: #7209b7;
+    --t-col: #f72585;
+    --a-col: #00ff9f;
 }
 
 /* Midnight‑Blue Theme */
 [data-theme="midnight-blue"] {
-    --b-col: #2c3e50;
-    --p-col: #1abc9c;
-    --s-col: #16a085;
+    --b-col: #0a1128;
+    --p-col: #0c2340;
+    --s-col: #1d4e89;
     --t-col: #ecf0f1;
-    --a-col: #e74c3c;
+    --a-col: #3da5d9;
 }
 
 /* Emerald‑Dark Theme */
 [data-theme="emerald-dark"] {
-    --b-col: #1a1118;
-    --p-col: #2c1f26;
-    --s-col: #4a3641;
-    --t-col: #f2e9ed;
-    --a-col: #d64b8b;
+    --b-col: #082c14;
+    --p-col: #064420;
+    --s-col: #0b6e4f;
+    --t-col: #d8f3dc;
+    --a-col: #83e377;
 }
 
 /* Slate‑Blue Theme */
 [data-theme="slate-blue"] {
-    --b-col: #f5f5f5;
-    --p-col: #333333;
-    --s-col: #777777;
-    --t-col: #111111;
-    --a-col: #bbbbbb;
+    --b-col: #0f172a;
+    --p-col: #1e3a8a;
+    --s-col: #3b82f6;
+    --t-col: #f8fafc;
+    --a-col: #22d3ee;
 }
 
 /* Deep‑Purple Theme */
 [data-theme="deep-purple"] {
-    --b-col: #f5f5f5;
-    --p-col: #333333;
-    --s-col: #777777;
-    --t-col: #111111;
-    --a-col: #bbbbbb;
+    --b-col: #2e1065;
+    --p-col: #4c1d95;
+    --s-col: #7c3aed;
+    --t-col: #f5f3ff;
+    --a-col: #2dd4bf;
 }
 
 /* Nord Theme */
@@ -124,29 +124,29 @@
 
 /* Rose‑Gold Theme */
 [data-theme="rose-gold"] {
-    --b-col: #fef6ff;
-    --p-col: #b8c0ff;
-    --s-col: #ffd6ff;
-    --t-col: #5c5470;
-    --a-col: #9bf6ff;
+    --b-col: #f9f2f5;
+    --p-col: #c17f98;
+    --s-col: #dda5b6;
+    --t-col: #442c37;
+    --a-col: #e8b4bc;
 }
 
 /* Neon‑Night Theme */
 [data-theme="neon-night"] {
-    --b-col: #1a1b26;
-    --p-col: #2b2d42;
-    --s-col: #8d99ae;
-    --t-col: #edf2f4;
-    --a-col: #ef233c;
+    --b-col: #0f0f0f;
+    --p-col: #1e0b28;
+    --s-col: #530068;
+    --t-col: #f2ebf2;
+    --a-col: #00ff95;
 }
 
 /* Autumn Theme */
 [data-theme="autumn"] {
-    --b-col: #fef6ff;
-    --p-col: #b8c0ff;
-    --s-col: #ffd6ff;
-    --t-col: #5c5470;
-    --a-col: #9bf6ff;
+    --b-col: #f4e9d2;
+    --p-col: #884a39;
+    --s-col: #c38154;
+    --t-col: #402218;
+    --a-col: #f76b15;
 }
 
 /* Pastel Theme */
@@ -224,6 +224,11 @@
     margin-bottom: 4px;
 }
 
+.group .link img {
+    background-color: transparent;
+    border-radius: 8px;
+}
+
 .list img {
     width: 20px;
     height: 20px;
@@ -270,4 +275,178 @@ ul li:hover {
     text-overflow: ellipsis;
     border-bottom: 1.5px solid #00000050;
     margin: 0;
+}
+
+/* ========================================
+   UI Style System
+   ======================================== */
+
+/* Default UI Style */
+[data-ui-style="default"] .group,
+[data-ui-style="default"] .grid .link,
+[data-ui-style="default"] ul li,
+[data-ui-style="default"] button,
+[data-ui-style="default"] input,
+[data-ui-style="default"] select,
+[data-ui-style="default"] .setting-item {
+    /* Default styling - already defined in base styles */
+}
+
+/* Liquid Glass UI Style */
+[data-ui-style="liquid-glass"] .group {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-ui-style="liquid-glass"] .grid .link,
+[data-ui-style="liquid-glass"] ul li,
+[data-ui-style="liquid-glass"] button,
+[data-ui-style="liquid-glass"] .setting-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-ui-style="liquid-glass"] .grid .link:hover,
+[data-ui-style="liquid-glass"] ul li:hover,
+[data-ui-style="liquid-glass"] button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* Frosted Glass UI Style */
+[data-ui-style="frosted-glass"] .group {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-ui-style="frosted-glass"] .grid .link,
+[data-ui-style="frosted-glass"] ul li,
+[data-ui-style="frosted-glass"] button,
+[data-ui-style="frosted-glass"] .setting-item {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-ui-style="frosted-glass"] .grid .link:hover,
+[data-ui-style="frosted-glass"] ul li:hover,
+[data-ui-style="frosted-glass"] button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Skeumorphic UI Style */
+[data-ui-style="skeumorphic"] .group {
+    background: linear-gradient(145deg, var(--b-col), var(--s-col));
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.15),
+        5px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-ui-style="skeumorphic"] .grid .link,
+[data-ui-style="skeumorphic"] ul li,
+[data-ui-style="skeumorphic"] button,
+[data-ui-style="skeumorphic"] .setting-item {
+    background: linear-gradient(145deg, var(--b-col), var(--s-col));
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow:
+        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.15),
+        3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-ui-style="skeumorphic"] .grid .link:hover,
+[data-ui-style="skeumorphic"] ul li:hover,
+[data-ui-style="skeumorphic"] button:hover {
+    box-shadow:
+        inset 3px 3px 7px rgba(255, 255, 255, 0.6),
+        inset -3px -3px 7px rgba(0, 0, 0, 0.2),
+        5px 5px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Neumorphic UI Style */
+[data-ui-style="neumorphic"] .group {
+    background: var(--b-col);
+    border: none;
+    box-shadow:
+        10px 10px 20px rgba(0, 0, 0, 0.15),
+        -10px -10px 20px rgba(255, 255, 255, 0.05);
+}
+
+[data-ui-style="neumorphic"] .grid .link,
+[data-ui-style="neumorphic"] ul li,
+[data-ui-style="neumorphic"] button,
+[data-ui-style="neumorphic"] .setting-item {
+    background: var(--b-col);
+    border: none;
+    box-shadow:
+        8px 8px 16px rgba(0, 0, 0, 0.15),
+        -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+[data-ui-style="neumorphic"] .grid .link:hover,
+[data-ui-style="neumorphic"] ul li:hover,
+[data-ui-style="neumorphic"] button:hover {
+    box-shadow:
+        inset 4px 4px 8px rgba(0, 0, 0, 0.15),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+}
+
+/* Material Design UI Style */
+[data-ui-style="material"] .group {
+    background: var(--b-col);
+    border: none;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+[data-ui-style="material"] .grid .link,
+[data-ui-style="material"] ul li,
+[data-ui-style="material"] button,
+[data-ui-style="material"] .setting-item {
+    background: var(--b-col);
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[data-ui-style="material"] .grid .link:hover,
+[data-ui-style="material"] ul li:hover,
+[data-ui-style="material"] button:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Flat UI Style */
+[data-ui-style="flat"] .group {
+    background: var(--p-col);
+    border: none;
+    box-shadow: none;
+}
+
+[data-ui-style="flat"] .grid .link,
+[data-ui-style="flat"] ul li,
+[data-ui-style="flat"] button,
+[data-ui-style="flat"] .setting-item {
+    background: var(--p-col);
+    border: none;
+    box-shadow: none;
+    transition: background-color 0.2s ease;
+}
+
+[data-ui-style="flat"] .grid .link:hover,
+[data-ui-style="flat"] ul li:hover,
+[data-ui-style="flat"] button:hover {
+    background: var(--s-col);
 }

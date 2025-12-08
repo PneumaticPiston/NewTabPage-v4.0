@@ -119,7 +119,8 @@ const SETTINGS = {
         uiScale: 100,
         reduceMotion: false,
         highContrast: false
-    }
+    },
+    uiStyle: "default"
 }
 
 function saveToSettings(key, value) {
@@ -153,6 +154,10 @@ function saveToSettings(key, value) {
         case "accessibility":
             SETTINGS.accessibility = value;
             syncKey = 'accessibility';
+            break;
+        case "uiStyle":
+            SETTINGS.uiStyle = value;
+            syncKey = 'other';
             break;
         default:
             debug.warn("Unknown SETTINGS key:", key);
@@ -213,7 +218,8 @@ async function initializeSettings() {
             loadBackgroundFromStorage(),
             loadHeaderFromStorage(),
             loadBottomFromStorage(),
-            loadAccessibilityFromStorage()
+            loadAccessibilityFromStorage(),
+            loadUIStyleFromStorage()
         ]);
 
         debug.log("All settings loaded successfully");
@@ -318,6 +324,22 @@ async function loadAccessibilityFromStorage() {
         debug.log("Loaded accessibility settings from " + (isSynced.accessibility ? "sync" : "local") + " storage");
     } catch (error) {
         debug.error("Error loading accessibility:", error);
+    }
+}
+
+/**
+ * Loads UI style settings from the appropriate storage
+ */
+async function loadUIStyleFromStorage() {
+    try {
+        const storageArea = isSynced.other ? chrome.storage.sync : chrome.storage.local;
+        const data = await chromeStorageGet(storageArea, ["uiStyle"]);
+        if (data.uiStyle) {
+            SETTINGS.uiStyle = data.uiStyle;
+        }
+        debug.log("Loaded UI style from " + (isSynced.other ? "sync" : "local") + " storage");
+    } catch (error) {
+        debug.error("Error loading UI style:", error);
     }
 }
 

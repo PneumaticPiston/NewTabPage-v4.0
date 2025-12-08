@@ -24,9 +24,14 @@
                     <!-- Themes will be dynamically loaded here -->
                 </div>
                 <div id="custom-theme-section" style="display: none; margin-top: 20px;">
+                    <h3>Custom Theme CSS</h3>
+                    <p>Edit the CSS below to customize your theme colors:</p>
                     <style id="theme" contenteditable="true">
 
                     </style>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        Tip: Use --b-col (background), --p-col (primary), --s-col (secondary), --t-col (text), and --a-col (accent) variables.
+                    </p>
                 </div>
             </div>
             <div class="setting-item" id="background-settings">
@@ -62,6 +67,81 @@
                                 <img class="preview-image" alt="Background preview">
                             </div>
                             <span class="card-title">Swirling Ink</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-item" id="ui-style-settings">
+                <h1>UI Style</h1>
+                <p>Choose your UI style:</p>
+                <div id="ui-style-options" class="ui-style-gallery">
+                    <div class="ui-style-card" data-style="default">
+                        <input type="radio" id="ui-default" name="ui-style" value="default" checked>
+                        <label for="ui-default" class="card-label">
+                            <div class="card-preview ui-style-preview default-preview">
+                                <div class="preview-element">Default</div>
+                            </div>
+                            <span class="card-title">Default</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="liquid-glass">
+                        <input type="radio" id="ui-liquid-glass" name="ui-style" value="liquid-glass">
+                        <label for="ui-liquid-glass" class="card-label">
+                            <div class="card-preview ui-style-preview liquid-glass-preview">
+                                <div class="preview-element">Liquid Glass</div>
+                            </div>
+                            <span class="card-title">Liquid Glass</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="frosted-glass">
+                        <input type="radio" id="ui-frosted-glass" name="ui-style" value="frosted-glass">
+                        <label for="ui-frosted-glass" class="card-label">
+                            <div class="card-preview ui-style-preview frosted-glass-preview">
+                                <div class="preview-element">Frosted Glass</div>
+                            </div>
+                            <span class="card-title">Frosted Glass</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="skeumorphic">
+                        <input type="radio" id="ui-skeumorphic" name="ui-style" value="skeumorphic">
+                        <label for="ui-skeumorphic" class="card-label">
+                            <div class="card-preview ui-style-preview skeumorphic-preview">
+                                <div class="preview-element">Skeumorphic</div>
+                            </div>
+                            <span class="card-title">Skeumorphic</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="neumorphic">
+                        <input type="radio" id="ui-neumorphic" name="ui-style" value="neumorphic">
+                        <label for="ui-neumorphic" class="card-label">
+                            <div class="card-preview ui-style-preview neumorphic-preview">
+                                <div class="preview-element">Neumorphic</div>
+                            </div>
+                            <span class="card-title">Neumorphic</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="material">
+                        <input type="radio" id="ui-material" name="ui-style" value="material">
+                        <label for="ui-material" class="card-label">
+                            <div class="card-preview ui-style-preview material-preview">
+                                <div class="preview-element">Material</div>
+                            </div>
+                            <span class="card-title">Material Design</span>
+                        </label>
+                    </div>
+
+                    <div class="ui-style-card" data-style="flat">
+                        <input type="radio" id="ui-flat" name="ui-style" value="flat">
+                        <label for="ui-flat" class="card-label">
+                            <div class="card-preview ui-style-preview flat-preview">
+                                <div class="preview-element">Flat</div>
+                            </div>
+                            <span class="card-title">Flat</span>
                         </label>
                     </div>
                 </div>

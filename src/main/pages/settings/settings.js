@@ -1,27 +1,223 @@
 
+// Theme data structure containing all predefined themes
+const THEMES = {
+    'light': { name: 'Light', colors: { b: '#ffffff', p: '#2f3a44', s: '#f3f4f6', t: '#111827', a: '#3b82f6' } },
+    'dark': { name: 'Dark', colors: { b: '#0b1220', p: '#111827', s: '#0f1724', t: '#e6eef6', a: '#60a5fa' } },
+    'modern-dark': { name: 'Modern Dark', colors: { b: '#1a1b26', p: '#2b2d42', s: '#8d99ae', t: '#edf2f4', a: '#ef233c' } },
+    'light-minimal': { name: 'Light Minimal', colors: { b: '#f1faee', p: '#457b9d', s: '#a8dadc', t: '#1d3557', a: '#e63946' } },
+    'forest': { name: 'Forest', colors: { b: '#b7e4c7', p: '#2d6a4f', s: '#95d5b2', t: '#081c15', a: '#d8a47f' } },
+    'ocean': { name: 'Ocean', colors: { b: '#caf0f8', p: '#023e8a', s: '#48cae4', t: '#03045e', a: '#ff9e00' } },
+    'sunset': { name: 'Sunset', colors: { b: '#ffbf69', p: '#582f0e', s: '#f77f00', t: '#003049', a: '#d62828' } },
+    'cyberpunk': { name: 'Cyberpunk', colors: { b: '#120458', p: '#2b0f54', s: '#7209b7', t: '#f72585', a: '#00ff9f' } },
+    'midnight-blue': { name: 'Midnight Blue', colors: { b: '#0a1128', p: '#0c2340', s: '#1d4e89', t: '#ecf0f1', a: '#3da5d9' } },
+    'emerald-dark': { name: 'Emerald Dark', colors: { b: '#082c14', p: '#064420', s: '#0b6e4f', t: '#d8f3dc', a: '#83e377' } },
+    'slate-blue': { name: 'Slate Blue', colors: { b: '#0f172a', p: '#1e3a8a', s: '#3b82f6', t: '#f8fafc', a: '#22d3ee' } },
+    'deep-purple': { name: 'Deep Purple', colors: { b: '#2e1065', p: '#4c1d95', s: '#7c3aed', t: '#f5f3ff', a: '#2dd4bf' } },
+    'nord': { name: 'Nord', colors: { b: '#2e3440', p: '#5e81ac', s: '#88c0d0', t: '#eceff4', a: '#bf616a' } },
+    'rose-gold': { name: 'Rose Gold', colors: { b: '#f9f2f5', p: '#c17f98', s: '#dda5b6', t: '#442c37', a: '#e8b4bc' } },
+    'neon-night': { name: 'Neon Night', colors: { b: '#0f0f0f', p: '#1e0b28', s: '#530068', t: '#f2ebf2', a: '#00ff95' } },
+    'autumn': { name: 'Autumn', colors: { b: '#f4e9d2', p: '#884a39', s: '#c38154', t: '#402218', a: '#f76b15' } },
+    'pastel': { name: 'Pastel', colors: { b: '#fef6ff', p: '#b8c0ff', s: '#ffd6ff', t: '#5c5470', a: '#9bf6ff' } },
+    'monochrome': { name: 'Monochrome', colors: { b: '#f5f5f5', p: '#333333', s: '#777777', t: '#111111', a: '#bbbbbb' } },
+    'dark-rose': { name: 'Dark Rose', colors: { b: '#1a1118', p: '#2c1f26', s: '#4a3641', t: '#f2e9ed', a: '#d64b8b' } }
+};
+
+/**
+ * Minifies CSS by removing unnecessary whitespace and newlines
+ * @param {string} css - The CSS to minify
+ * @returns {string} - Minified CSS
+ */
+function minifyCSS(css) {
+    return css
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .replace(/\s*([{}:;,])\s*/g, '$1') // Remove spaces around special characters
+        .trim();
+}
+
+/**
+ * Unminifies CSS by adding proper formatting and indentation
+ * @param {string} css - The minified CSS to format
+ * @returns {string} - Formatted CSS
+ */
+function unminifyCSS(css) {
+    if (!css || css.trim() === '') return '';
+
+    return css
+        .replace(/\{/g, ' {\n    ') // Add newline and indent after opening brace
+        .replace(/;/g, ';\n    ') // Add newline and indent after semicolon
+        .replace(/\}/g, '\n}') // Add newline before closing brace
+        .replace(/\s+\}/g, '\n}') // Clean up spacing before closing brace
+        .trim();
+}
+
 document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
 const themeElement = document.getElementById('theme');
 
-themeElement.textContent = SETTINGS.themeData;
+// Unminify and display the theme data
+themeElement.textContent = unminifyCSS(SETTINGS.themeData);
 
 // Wait for settings to be initialized, then load UI
 initializeSettings().then(() => {
     document.documentElement.setAttribute('data-theme', SETTINGS.themeID);
-    themeElement.textContent = SETTINGS.themeData;
+    // Unminify the CSS for display in the editor
+    themeElement.textContent = unminifyCSS(SETTINGS.themeData);
+    generateThemeCards();
     loadSettings();
     setupEventListeners();
-    // Initialize theme selector after other settings are loaded
 }).catch(error => {
     debug.error("Failed to initialize settings:", error);
     // Fall back to default behavior even if initialization fails
+    generateThemeCards();
     loadSettings();
     setupEventListeners();
 });
 
 /**
+ * Generates theme cards for all available themes
+ */
+function generateThemeCards() {
+    const themeOptions = document.getElementById('theme-options');
+    if (!themeOptions) {
+        debug.error('Theme options container not found');
+        return;
+    }
+
+    // Clear existing content
+    themeOptions.innerHTML = '';
+
+    // Generate cards for each predefined theme
+    Object.entries(THEMES).forEach(([themeId, themeData]) => {
+        const themeCard = createThemeCard(themeId, themeData);
+        themeOptions.appendChild(themeCard);
+    });
+
+    // Add custom theme card at the end
+    const customCard = createCustomThemeCard();
+    themeOptions.appendChild(customCard);
+}
+
+/**
+ * Creates a theme card element
+ */
+function createThemeCard(themeId, themeData) {
+    const card = document.createElement('div');
+    card.className = 'theme-card';
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.id = `theme-${themeId}`;
+    input.name = 'theme-type';
+    input.value = themeId;
+    input.checked = SETTINGS.themeID === themeId;
+
+    const label = document.createElement('label');
+    label.htmlFor = `theme-${themeId}`;
+    label.className = 'card-label';
+
+    const preview = document.createElement('div');
+    preview.className = 'card-preview theme-preview';
+
+    // Create color palette display
+    const colorPalette = document.createElement('div');
+    colorPalette.className = 'color-palette';
+    colorPalette.innerHTML = `
+        <div class="color-row">
+            <div class="color-swatch" style="background-color: ${themeData.colors.b}" title="Background"></div>
+            <div class="color-swatch" style="background-color: ${themeData.colors.p}" title="Primary"></div>
+            <div class="color-swatch" style="background-color: ${themeData.colors.s}" title="Secondary"></div>
+        </div>
+        <div class="color-row">
+            <div class="color-swatch" style="background-color: ${themeData.colors.t}" title="Text"></div>
+            <div class="color-swatch" style="background-color: ${themeData.colors.a}" title="Accent"></div>
+        </div>
+    `;
+
+    preview.appendChild(colorPalette);
+    label.appendChild(preview);
+
+    const title = document.createElement('span');
+    title.className = 'card-title';
+    title.textContent = themeData.name;
+    label.appendChild(title);
+
+    card.appendChild(input);
+    card.appendChild(label);
+
+    return card;
+}
+
+/**
+ * Creates the custom theme card
+ */
+function createCustomThemeCard() {
+    const card = document.createElement('div');
+    card.className = 'theme-card';
+
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.id = 'theme-custom';
+    input.name = 'theme-type';
+    input.value = 'custom';
+    input.checked = SETTINGS.themeID === 'custom';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'theme-custom';
+    label.className = 'card-label';
+
+    const preview = document.createElement('div');
+    preview.className = 'card-preview theme-preview';
+    preview.innerHTML = '<div class="custom-theme-icon">✏️</div>';
+
+    label.appendChild(preview);
+
+    const title = document.createElement('span');
+    title.className = 'card-title';
+    title.textContent = 'Custom';
+    label.appendChild(title);
+
+    card.appendChild(input);
+    card.appendChild(label);
+
+    return card;
+}
+
+/**
  * Sets up event listeners for all setting changes
  */
 function setupEventListeners() {
+
+    // Theme selection change
+    const themeInputs = document.querySelectorAll('input[name="theme-type"]');
+    themeInputs.forEach(input => {
+        input.addEventListener('change', (event) => {
+            const newThemeID = event.target.value;
+            debug.log('Theme changed to:', newThemeID);
+            SETTINGS.themeID = newThemeID;
+
+            // Apply theme immediately
+            document.documentElement.setAttribute('data-theme', newThemeID);
+
+            // Show/hide custom theme section
+            const customSection = document.getElementById('custom-theme-section');
+            if (newThemeID === 'custom') {
+                customSection.style.display = 'block';
+            } else {
+                customSection.style.display = 'none';
+            }
+
+            saveSetting('theme');
+            debug.log('Theme saved:', SETTINGS.themeID);
+        });
+    });
+
+    // Custom theme CSS editor change
+    const themeEditor = document.getElementById('theme');
+    if (themeEditor) {
+        themeEditor.addEventListener('input', () => {
+            updateCustomTheme();
+        });
+    }
 
     // Background type change
     const backgroundInputs = document.querySelectorAll('input[name="background-type"]');
@@ -32,6 +228,22 @@ function setupEventListeners() {
             SETTINGS.background.bgID = newBgID;
             saveSetting('background');
             debug.log('Background saved:', SETTINGS.background);
+        });
+    });
+
+    // UI Style selection change
+    const uiStyleInputs = document.querySelectorAll('input[name="ui-style"]');
+    uiStyleInputs.forEach(input => {
+        input.addEventListener('change', (event) => {
+            const newUIStyle = event.target.value;
+            debug.log('UI Style changed to:', newUIStyle);
+            SETTINGS.uiStyle = newUIStyle;
+
+            // Apply UI style immediately
+            document.documentElement.setAttribute('data-ui-style', newUIStyle);
+
+            saveUIStyle();
+            debug.log('UI Style saved:', SETTINGS.uiStyle);
         });
     });
 
@@ -117,20 +329,20 @@ function setupEventListeners() {
                     // Calculate file hash
                     const fileHash = await calculateFileHash(file);
                     debug.log('File hash calculated:', fileHash);
-                    
+
                     // Read file as data URL
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         const dataUrl = e.target.result;
-                        
-                        // Check size before saving (Chrome storage limit is ~10MB per item)
+
+                        // Check size - with unlimitedStorage we can handle larger files
                         const sizeInMB = dataUrl.length / (1024 * 1024);
-                        if (sizeInMB > 5) {
-                            debug.error('Image file is too large to save. Max 5MB allowed. Current:', sizeInMB.toFixed(2), 'MB');
-                            alert('Image file is too large. Please use an image smaller than 5MB.');
+                        if (sizeInMB > 50) {
+                            debug.error('Image file is too large to save. Max 50MB allowed. Current:', sizeInMB.toFixed(2), 'MB');
+                            alert('Image file is too large. Please use an image smaller than 50MB.');
                             return;
                         }
-                        
+
                         SETTINGS.background.imageHash = dataUrl;
                         SETTINGS.background.fileHash = fileHash;
                         SETTINGS.background.bgID = 1; // Ensure bgID is set to custom
@@ -140,13 +352,26 @@ function setupEventListeners() {
                             hasFileHash: !!SETTINGS.background.fileHash,
                             sizeInMB: sizeInMB.toFixed(2)
                         });
-                        
+
+                        // ALWAYS save background image to local storage separately
+                        // This ensures it persists even when switching background types
+                        chrome.storage.local.set({
+                            backgroundImage: dataUrl,
+                            backgroundImageHash: fileHash
+                        }, () => {
+                            if (chrome.runtime.lastError) {
+                                debug.error('Error saving background image to storage:', chrome.runtime.lastError);
+                            } else {
+                                debug.log('Background image saved to local storage successfully');
+                            }
+                        });
+
                         // Update UI to reflect custom background is now selected
                         const customBgRadio = document.getElementById('bg-custom');
                         if (customBgRadio) {
                             customBgRadio.checked = true;
                         }
-                        
+
                         // Update preview
                         const previewImg = document.querySelector('.custom-preview .preview-image');
                         if (previewImg) {
@@ -154,7 +379,7 @@ function setupEventListeners() {
                             previewImg.style.display = 'block';
                             debug.log('Preview image updated');
                         }
-                        
+
                         // Save to storage
                         await saveSetting('background');
                     };
@@ -189,6 +414,7 @@ function setupEventListeners() {
 
 /**
  * Updates the custom theme colors in SETTINGS
+ * Minifies the CSS before saving to storage
  */
 function updateCustomTheme() {
     const themeElement = document.getElementById('theme');
@@ -196,7 +422,8 @@ function updateCustomTheme() {
         debug.error('Theme element not found');
         return;
     }
-    SETTINGS.themeData = themeElement.textContent;
+    // Minify the CSS before saving to storage
+    SETTINGS.themeData = minifyCSS(themeElement.textContent);
     saveSetting('theme');
 }
 
@@ -288,7 +515,7 @@ function saveAccessibilitySettings() {
     document.documentElement.style.fontSize = (fontSize / 100 * 16) + 'px';
     document.documentElement.style.transform = `scale(${uiScale / 100})`;
     document.documentElement.style.transformOrigin = 'top left';
-    
+
     if (reduceMotion) {
         document.documentElement.setAttribute('data-reduce-motion', 'true');
     } else {
@@ -302,6 +529,19 @@ function saveAccessibilitySettings() {
     }
 
     saveSetting('other');
+}
+
+/**
+ * Saves UI style to storage
+ */
+function saveUIStyle() {
+    if (isSynced.other) {
+        chrome.storage.sync.set({ uiStyle: SETTINGS.uiStyle });
+        debug.log('UI style saved to sync storage');
+    } else {
+        chrome.storage.local.set({ uiStyle: SETTINGS.uiStyle });
+        debug.log('UI style saved to local storage');
+    }
 }
 
 /**
@@ -428,19 +668,27 @@ function loadSettings() {
     }
 
     // Load background image preview if available
-    if (SETTINGS.background.bgID === 1 && SETTINGS.background.imageHash) {
+    // Always try to load from storage, regardless of current bgID
+    chrome.storage.local.get(['backgroundImage'], (result) => {
         const previewImg = document.querySelector('.custom-preview .preview-image');
         if (previewImg) {
-            previewImg.src = SETTINGS.background.imageHash;
-            previewImg.style.display = 'block';
-            debug.log('Background preview loaded');
+            if (result.backgroundImage) {
+                previewImg.src = result.backgroundImage;
+                previewImg.style.display = 'block';
+                // Update SETTINGS if not already set
+                if (!SETTINGS.background.imageHash) {
+                    SETTINGS.background.imageHash = result.backgroundImage;
+                }
+                debug.log('Background preview loaded from storage');
+            } else if (SETTINGS.background.imageHash) {
+                previewImg.src = SETTINGS.background.imageHash;
+                previewImg.style.display = 'block';
+                debug.log('Background preview loaded from SETTINGS');
+            } else {
+                previewImg.style.display = 'none';
+            }
         }
-    } else {
-        const previewImg = document.querySelector('.custom-preview .preview-image');
-        if (previewImg) {
-            previewImg.style.display = 'none';
-        }
-    }
+    });
 
     // Load layout settings
     const bottomCheckbox = document.getElementById('show-bottom-section');
@@ -493,6 +741,14 @@ function loadSettings() {
             syncInput.checked = true;
         }
     });
+
+    // Load and display UI style setting
+    const uiStyleInput = document.querySelector(`input[name="ui-style"][value="${SETTINGS.uiStyle || 'default'}"]`);
+    if (uiStyleInput) {
+        uiStyleInput.checked = true;
+    }
+    // Apply UI style to document
+    document.documentElement.setAttribute('data-ui-style', SETTINGS.uiStyle || 'default');
 
     // Load API key
     loadApiKey();

@@ -10,91 +10,117 @@ const parentDiv = document.currentScript.parentElement;
 const currentScript = document.currentScript;
 const scriptSrc = currentScript.src;
 const url = new URL(scriptSrc);
-const widgetId = url.searchParams.get('id') || 'weather-temp-default';
-const apiKeyFromUrl = url.searchParams.get('apiKey') || '';
-const location = url.searchParams.get('location') || 'London';
-const units = url.searchParams.get('units') || 'metric'; // metric, imperial, or standard
 
-let apiKey = apiKeyFromUrl; // Will be updated from storage if available
+// Parse settings from URL parameters
+const settings = {
+  id: url.searchParams.get('id') || 'weather-temp-default',
+  apiKey: url.searchParams.get('apiKey') || '',
+  location: url.searchParams.get('location') || 'London',
+  units: url.searchParams.get('units') || 'metric', // metric, imperial, or standard
+  title: url.searchParams.get('title') || 'Temperature',
+  showFeelsLike: url.searchParams.get('showFeelsLike') !== 'false', // default true
+  maxWidth: parseInt(url.searchParams.get('maxWidth')) || 350,
+  fontFamily: url.searchParams.get('fontFamily') || 'Arial, sans-serif',
+  backgroundColor: url.searchParams.get('backgroundColor') || 'var(--s-col)',
+  textColor: url.searchParams.get('textColor') || 'var(--t-col)',
+  errorColor: url.searchParams.get('errorColor') || '#f44336',
+  tempFontSize: parseInt(url.searchParams.get('tempFontSize')) || 64
+};
+
+let apiKey = settings.apiKey; // Will be updated from storage if available
+
+// Create style element
+const style = document.createElement('style');
+style.textContent = `
+  .weather-temp-container {
+    font-family: ${settings.fontFamily};
+    max-width: ${settings.maxWidth}px;
+    margin: 20px;
+    background-color: ${settings.backgroundColor};
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .weather-temp-title {
+    margin: 0 0 10px 0;
+    color: ${settings.textColor};
+    font-size: 20px;
+  }
+  .weather-temp-location {
+    font-size: 16px;
+    color: ${settings.textColor};
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+  .weather-temp-display {
+    font-size: ${settings.tempFontSize}px;
+    font-weight: bold;
+    color: ${settings.textColor};
+    margin: 20px 0;
+    font-family: ${settings.fontFamily};
+  }
+  .weather-temp-desc {
+    font-size: 18px;
+    color: ${settings.textColor};
+    margin-bottom: 10px;
+    text-transform: capitalize;
+  }
+  .weather-temp-feels {
+    font-size: 14px;
+    color: ${settings.textColor};
+    opacity: 0.7;
+  }
+  .weather-temp-error {
+    font-size: 14px;
+    color: ${settings.errorColor};
+    margin-top: 10px;
+    display: none;
+  }
+  .weather-temp-updated {
+    font-size: 11px;
+    color: #999;
+    margin-top: 15px;
+  }
+`;
+parentDiv.appendChild(style);
 
 // Create container
 const container = document.createElement('div');
-container.style.cssText = `
-  font-family: Arial, sans-serif;
-  max-width: 350px;
-  margin: 20px;
-  background-color: var(--s-col);
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  text-align: center;
-`;
+container.className = 'weather-temp-container';
 
 // Create title
 const title = document.createElement('h3');
-title.textContent = 'Temperature';
-title.style.cssText = `
-  margin: 0 0 10px 0;
-  color: var(--t-col);
-  font-size: 20px;
-`;
+title.textContent = settings.title;
+title.className = 'weather-temp-title';
 
 // Create location display
 const locationDisplay = document.createElement('div');
-locationDisplay.textContent = location;
-locationDisplay.style.cssText = `
-  font-size: 16px;
-  color: var(--t-col);
-  margin-bottom: 20px;
-  opacity: 0.8;
-`;
+locationDisplay.textContent = settings.location;
+locationDisplay.className = 'weather-temp-location';
 
 // Create temperature display
 const tempDisplay = document.createElement('div');
 tempDisplay.textContent = '--°';
-tempDisplay.style.cssText = `
-  font-size: 64px;
-  font-weight: bold;
-  color: var(--t-col);
-  margin: 20px 0;
-  font-family: 'Arial', sans-serif;
-`;
+tempDisplay.className = 'weather-temp-display';
 
 // Create description display
 const descDisplay = document.createElement('div');
 descDisplay.textContent = 'Loading...';
-descDisplay.style.cssText = `
-  font-size: 18px;
-  color: var(--t-col);
-  margin-bottom: 10px;
-  text-transform: capitalize;
-`;
+descDisplay.className = 'weather-temp-desc';
 
 // Create feels like display
 const feelsLikeDisplay = document.createElement('div');
 feelsLikeDisplay.textContent = '';
-feelsLikeDisplay.style.cssText = `
-  font-size: 14px;
-  color: var(--t-col);
-  opacity: 0.7;
-`;
+feelsLikeDisplay.className = 'weather-temp-feels';
 
 // Create error display
 const errorDisplay = document.createElement('div');
-errorDisplay.style.cssText = `
-  font-size: 14px;
-  color: #f44336;
-  margin-top: 10px;
-  display: none;
-`;
+errorDisplay.className = 'weather-temp-error';
 
 // Create last updated
 const lastUpdated = document.createElement('div');
-lastUpdated.style.cssText = `
-  font-size: 11px;
-  color: #999;
-  margin-top: 15px;
-`;
+lastUpdated.className = 'weather-temp-updated';
 
 // Append elements
 container.appendChild(title);
@@ -108,7 +134,7 @@ parentDiv.appendChild(container);
 
 // Get unit symbol
 function getUnitSymbol() {
-  switch (units) {
+  switch (settings.units) {
     case 'imperial': return '°F';
     case 'standard': return 'K';
     default: return '°C';
@@ -125,7 +151,7 @@ async function fetchWeather() {
   }
 
   try {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&units=${units}&appid=${apiKey}`;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(settings.location)}&units=${settings.units}&appid=${apiKey}`;
     debug.log('Fetching weather with API key:', apiKey ? 'Key present (length: ' + apiKey.length + ')' : 'No key');
     const response = await fetch(apiUrl);
 
@@ -141,7 +167,9 @@ async function fetchWeather() {
     // Update displays
     tempDisplay.textContent = `${Math.round(data.main.temp)}${getUnitSymbol()}`;
     descDisplay.textContent = data.weather[0].description;
-    feelsLikeDisplay.textContent = `Feels like ${Math.round(data.main.feels_like)}${getUnitSymbol()}`;
+    if (settings.showFeelsLike) {
+      feelsLikeDisplay.textContent = `Feels like ${Math.round(data.main.feels_like)}${getUnitSymbol()}`;
+    }
     locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
     errorDisplay.style.display = 'none';
 

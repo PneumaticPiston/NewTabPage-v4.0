@@ -23,10 +23,13 @@ async function initializeNewTabPage() {
 
     if(group.type == 0) {
         // Handle grid type groups
-        const h2 = document.createElement('h2');
-        h2.textContent = group.name;
-        h2.className = 'group-header';
-        newGroup.appendChild(h2);
+        if(group.name === null || group.name === undefined || group.name.trim() === "") {
+        } else {
+            const h2 = document.createElement('h2');
+            h2.textContent = group.name;
+            h2.className = 'group-header';
+            newGroup.appendChild(h2);
+        }
 
         const linksContainer = document.createElement('div');
         linksContainer.className = 'grid';
@@ -54,10 +57,13 @@ async function initializeNewTabPage() {
         newGroup.appendChild(linksContainer);
     } else if (group.type == 1) {
         // Handle list type groups here
-        const h2 = document.createElement('h2');
-        h2.textContent = group.name;
-        h2.className = 'group-header';
-        newGroup.appendChild(h2);
+        if(group.name === null || group.name === undefined || group.name.trim() === "") {
+        } else {
+            const h2 = document.createElement('h2');
+            h2.textContent = group.name;
+            h2.className = 'group-header';
+            newGroup.appendChild(h2);
+        }
 
         const ul = document.createElement('ul');
         ul.className = 'list';
@@ -93,13 +99,17 @@ async function initializeNewTabPage() {
         case 0:
             break;
         case 1:
-            if(SETTINGS.background.imageHash) {
-                background.style.backgroundImage = `url('${SETTINGS.background.imageHash}')`;
-                background.style.backgroundSize = 'cover';
-                background.style.backgroundPosition = 'center';
-            } else {
-                background.style.background = '';
-            }
+            // Try to load from local storage first, then fallback to SETTINGS
+            chrome.storage.local.get(['backgroundImage'], (result) => {
+                const imageData = result.backgroundImage || SETTINGS.background.imageHash;
+                if(imageData) {
+                    background.style.backgroundImage = `url('${imageData}')`;
+                    background.style.backgroundSize = 'cover';
+                    background.style.backgroundPosition = 'center';
+                } else {
+                    background.style.background = '';
+                }
+            });
             break;
         case 2:
             background.style.background = `linear-gradient(var(--grad-angle), var(--p-col) 0%, var(--s-col) 100%)`;
@@ -115,6 +125,9 @@ async function initializeNewTabPage() {
     const themeElement = document.getElementById('theme');
 
     themeElement.textContent = SETTINGS.themeData;
+
+    // Apply UI style
+    document.documentElement.setAttribute('data-ui-style', SETTINGS.uiStyle || 'default');
 }
 
 // Initialize the new tab page when it loads
