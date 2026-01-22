@@ -8,26 +8,27 @@
     position: absolute;
     top: 0;
     left: 0;
+    z-index: -1;
     width: 100vw;
     height: 100vh;
     background-color: var(--b-col);
     background-size: cover;
     background-position: center;
-    z-index: -1;
 }
 
 html, body {
+    margin: 0;
+    padding: 0;
     width: 100vw;
     height: 100vh;
     overflow-x: hidden;
     overflow-y: scroll;
-    margin: 0;
-    padding: 0;
     font-family: var(--font-family);
     font-size: var(--font-size);
     background-color: var(--b-col);
     color: var(--t-col);
 }
+
 body {
     top: 60px
 }
@@ -38,21 +39,21 @@ header {
     left: 0;
     width: 100%;
     height: var(--header-height);
-    background-color: var(--p-col);
-    color: var(--t-col);
     display: flex;
     align-items: center;
     padding: 0 20px;
+    background-color: var(--p-col);
+    color: var(--t-col);
 }
 
 main {
     padding-top: var(--header-height);
-    margin-left: 10%;
-    margin-right: 10%;
-    width: calc(100% - 30%);
+    width: calc(100vw - 30vw);
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-main #settings-container {
+.main-content #settings-container {
     padding-left: 10%;
     padding-right: 10%;
 }
@@ -66,7 +67,7 @@ main #settings-container {
 #theme-options {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1.5rem;
+    gap: .5rem;
     margin-top: 1rem;
 }
 
@@ -98,14 +99,14 @@ main #settings-container {
 
 .card-label {
     display: block;
-    cursor: pointer;
     padding: 1rem;
     border: 2px solid #ddd;
     border-radius: 8px;
+    cursor: pointer;
     text-align: center;
-    transition: all 0.2s ease;
     box-sizing: border-box;
     overflow: hidden; /* ensure inner preview/content is clipped to the label's rounded corners */
+    transition: all 0.2s ease;
 }
 
 .card-label:hover {
@@ -115,16 +116,16 @@ main #settings-container {
 }
 
 .card-preview {
-    width: 100%;
-    max-width: 120px;
-    height: 120px;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    overflow: hidden;
-    border: 1px solid #ccc;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    max-width: 120px;
+    height: 120px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
     box-sizing: border-box; /* prevent padding/border from causing overflow */
 }
 
@@ -147,10 +148,10 @@ main #settings-container {
 
 .custom-preview {
     position: relative;
-    background-color: #f5f5f5;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f5f5f5;
 }
 
 .upload-placeholder {
@@ -166,11 +167,11 @@ main #settings-container {
 }
 
 .card-title {
-    font-weight: 500;
-    color: var(--t-col, #333);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--t-col, #333);
+    font-weight: 500;
 }
 
 /* API Keys Section */
@@ -184,9 +185,9 @@ main #settings-container {
 
 .api-key-option label {
     display: block;
-    font-weight: 500;
-    color: var(--t-col, #333);
     margin-bottom: 0.5rem;
+    color: var(--t-col, #333);
+    font-weight: 500;
 }
 
 .api-key-input-container {
@@ -314,10 +315,10 @@ main #settings-container {
 
 /* Custom theme editor section */
 #custom-theme-section {
-    background-color: var(--s-col);
+    padding: 1rem;
     border: 2px solid var(--p-col);
     border-radius: 8px;
-    padding: 1rem;
+    background-color: var(--s-col);
 }
 
 #theme {
@@ -325,8 +326,6 @@ main #settings-container {
     width: 100%;
     min-height: 120px;
     padding: 1rem;
-    background-color: var(--b-col);
-    color: var(--t-col);
     border: 2px solid var(--p-col);
     border-radius: 8px;
     font-family: 'Courier New', monospace;
@@ -334,6 +333,8 @@ main #settings-container {
     line-height: 1.6;
     resize: vertical;
     overflow: auto;
+    background-color: var(--b-col);
+    color: var(--t-col);
 }
 
 #theme:focus {
@@ -373,18 +374,18 @@ main #settings-container {
 }
 
 .ui-style-preview .preview-element {
-    width: 80%;
-    height: 60%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--b-col);
-    color: var(--t-col);
+    width: 80%;
+    height: 60%;
+    padding: 0.5rem;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
     text-align: center;
-    padding: 0.5rem;
+    background: var(--b-col);
+    color: var(--t-col);
 }
 
 /* UI Style Previews */
@@ -408,33 +409,33 @@ main #settings-container {
 }
 
 .skeumorphic-preview .preview-element {
+    border: 1px solid #ddd;
     background: linear-gradient(145deg, #f0f0f0, #cacaca);
     box-shadow:
         inset 5px 5px 10px #bebebe,
         inset -5px -5px 10px #ffffff,
         5px 5px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid #ddd;
 }
 
 .neumorphic-preview .preview-element {
     background: var(--b-col);
+    border: none;
     box-shadow:
         8px 8px 16px rgba(0, 0, 0, 0.2),
         -8px -8px 16px rgba(255, 255, 255, 0.7);
-    border: none;
 }
 
 .material-preview .preview-element {
     background: var(--b-col);
+    border: none;
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.1),
         0 8px 16px rgba(0, 0, 0, 0.1);
-    border: none;
 }
 
 .flat-preview .preview-element {
+    border: none;
     background: var(--p-col);
     color: var(--t-col);
-    border: none;
     box-shadow: none;
 }

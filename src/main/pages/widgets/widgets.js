@@ -41,7 +41,15 @@ const WIDGET_TYPES = [
             {name: 'Simple', path: '/pages/widgets/note/simple.js'}
         ]
     },
-    {  
+    {
+        show: true,
+        name: 'Hidden Group',
+        variants: [
+            {name: 'Hidden Group', path: '/pages/widgets/hidden/group.js'},
+            {name: 'Hidden Stack', path: '/pages/widgets/hidden/stack.js'}
+        ]
+    },
+    {
         show: true,
         name: 'Todo',
         variants: [

@@ -1,37 +1,36 @@
 html {
-    font-size: 16px;
     margin: 0;
     padding: 0;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    font-size: 16px;
 }
 
 body {
     margin: 0;
     padding: 0;
-    height: 100vh;
     width: 100vw;
+    height: 100vh;
     background-color: var(--b-col);
     color: var(--t-col);
 }
 
 header {
-    background-color: var(--b-col);
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: var(--header-height);
-    color: var(--t-col);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
     box-sizing: border-box;
     z-index: 2;
+    background-color: var(--b-col);
+    color: var(--t-col);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .left-header,
@@ -52,25 +51,22 @@ header {
 .center-header {
     position: absolute;
     left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
     transform: translateX(-50%);
     z-index: 3;
-
-    /* keep the center area constrained so it won't overlap side groups */
     max-width: calc(100% - 240px); /* tweak if needed */
     width: 100%;
     box-sizing: border-box;
     padding: 0 8px;
-
-    /* allow multiline text and wrapping instead of truncation */
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: anywhere;
     overflow: visible;
-
-    /* center text content */
     text-align: center;
     justify-content: center;
-    align-items: center;
 }
 
 /* Right group stays at the end */
@@ -82,16 +78,14 @@ header {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: -1;
     width: 100vw;
     height: 100vh;
-    background-color: var(--b-col);
-    
     opacity: 0;
-    transition: opacity .3s ease;
-
+    background-color: var(--b-col);
     background-size: cover;
     background-position: center;
-    z-index: -1;
+    transition: opacity .3s ease;
 }
 
 .background-image.loaded {
@@ -113,23 +107,23 @@ main {
     right: 20px;
     width: 40px;
     height: 40px;
-    border: none;
-    cursor: pointer;
     padding: 8px;
+    border: none;
     border-radius: 50%;
     color: var(--t-col);
     background-color: var(--p-col);
-    transition: background-color 0.1s, transform 0.2s;
+    cursor: pointer;
     rotate: 0deg;
     scale: 1;
+    transition: background-color 0.1s, transform 0.2s;
 }
 
 .settings-button:hover {
+    scale: 1.05;
+    rotate: 90deg;
     background-color: var(--a-col);
     transform: scale(1.1) rotate(90deg);
     transform-origin: center;
-    rotate: 90deg;
-    scale: 1.05;
     transition: background-color 0.2s, transform 0.25s;
 }
 
@@ -137,35 +131,34 @@ main {
     position: relative;
     top: 0;
     width: 100vw;
-    overflow-y: scroll;
     margin: 0;
     padding: 0;
+    overflow-y: scroll;
 }
 
 .groups-container {
     position: relative;
     top: 0px;
     left: 0px;
-    width: 100vw;
-    height: 100vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    transform-origin: center;
+    width: 100vw;
+    height: 100vh;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     gap: 0;
+    transform-origin: center;
 }
 
 .bottom-section {
     width: 100vw;
     height: auto;
-    padding: 20px;
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 .bottom-content {

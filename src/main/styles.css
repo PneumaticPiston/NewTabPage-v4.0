@@ -179,54 +179,54 @@
 .group {
     position: absolute;
     border-radius: var(--border-radius);
-    background-color: var(--s-col);
     color: var(--t-col);
+    background-color: var(--s-col);
     box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 }
 
 .grid {
-    padding: 8px;
     display: grid; /* Use grid layout */
-    align-items: stretch; /* Stretch items to allow bottom text alignment */
-    justify-items: center;
     grid-template-columns: repeat(1, 1fr); /* Default to 1 column */
     grid-template-rows: repeat(1, 1fr); /* Default to 1 row */
-    transform: scale(var(--group-scale)); /* Scale group based on settings */
     gap: 10px;
+    padding: 8px;
+    align-items: stretch; /* Stretch items to allow bottom text alignment */
+    justify-items: center;
+    transform: scale(var(--group-scale)); /* Scale group based on settings */
 }
 
 .grid .link {
-    width: 70px;
-    border-radius: var(--border-radius);
-    height: 85px;
-    padding: 6px;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    position: relative;
+    width: 70px;
+    height: 85px;
+    padding: 6px;
+    border-radius: var(--border-radius);
     text-decoration: none;
     color: var(--t-col);
-    transition: scale .2s ease, box-shadow 0.8s ease;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    transition: scale .2s ease, box-shadow 0.8s ease;
 }
 
 .grid .link:hover {
+    scale: 1.05;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     transition: box-shadow 0.8s ease, scale .2s ease;
-    scale: 1.05;
 }
 
 .grid .link img {
-    background-color: var(--s-col);
     width: 50px;
     height: 50px;
     margin-bottom: 4px;
+    background-color: var(--s-col);
 }
 
 .group .link img {
-    background-color: transparent;
     border-radius: 8px;
+    background-color: transparent;
 }
 
 .list img {
@@ -236,24 +236,24 @@
 }
 
 ul.list {
-    padding: 5px;
     margin: 0;
+    padding: 5px;
 }
 
 ul.list li a {
-    text-decoration: none;
     color: var(--t-col);
+    text-decoration: none;
 }
 
 ul li {
     display: flex;
     align-items: center;
-    list-style: none;
-    padding: 5px;
     margin: 0;
+    padding: 5px;
+    list-style: none;
+    border: 1px solid rgba(27, 31, 35, 0.15);
     border-radius: 8px;
     transition: scale .2s ease, box-shadow 0.8s ease;
-    border: 1px solid rgba(27, 31, 35, 0.15);
 }
 
 ul li:hover {
@@ -263,18 +263,18 @@ ul li:hover {
 
 .group-header {
     --border-radius: 5px;
-    font-size: 14px;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
     margin-bottom: 5px;
     padding: 5px 10px;
-    user-select: none;
-    width: auto;
     box-sizing: border-box;
     color: var(--t-col);
-    max-width: 100%;
+    font-size: 14px;
     overflow-x: hidden;
     text-overflow: ellipsis;
     border-bottom: 1.5px solid #00000050;
-    margin: 0;
+    user-select: none;
 }
 
 /* ========================================
@@ -367,7 +367,7 @@ ul li:hover {
 
 [data-ui-style="skeumorphic"] .grid .link:hover,
 [data-ui-style="skeumorphic"] ul li:hover,
-[data-ui-style="skeumorphic"] button:hover {
+[data-ui-style="skeumorphic"] button:hover w{
     box-shadow:
         inset 3px 3px 7px rgba(255, 255, 255, 0.6),
         inset -3px -3px 7px rgba(0, 0, 0, 0.2),
